@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/navigation"
+    app:startDestination="@id/homeFragment">
+
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="com.example.devexercise.ui.HomeFragment"
+        android:label="Cases by Country" >
+        <action
+            android:id="@+id/show_country_in_map"
+            app:destination="@id/countryMapFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/mapFragment"
+        android:name="com.example.devexercise.ui.MapFragment"
+        android:label="COVID-19 World Map"
+        tools:layout="@layout/fragment_map" />
+    <fragment
+        android:id="@+id/countryMapFragment"
+        android:name="com.example.devexercise.ui.CountryMapFragment"
+        android:label="Country Selected"
+        tools:layout="@layout/fragment_country_map" >
+        <argument
+            android:name="selectedCountry"
+            app:argType="com.example.devexercise.repository.CountryModel" />
+    </fragment>
+</navigation>
