@@ -19,6 +19,7 @@ import com.example.devexercise.databinding.ListItemCasesCountryBinding
 import com.example.devexercise.repository.CountryModel
 import com.example.devexercise.viewmodel.HomeViewModel
 import com.example.devexercise.viewmodel.HomeViewModelFactory
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_home.*
 
 
@@ -61,8 +62,11 @@ class HomeFragment : Fragment() {
             swipe_refresh_layout.isRefreshing = true
             viewModel.getData()
             swipe_refresh_layout.isRefreshing = false
-            println("UPDATED!!")
         }
+
+        viewModel.lastUpdate.observe(this, Observer {lastUpdate ->
+            Snackbar.make(activity!!.findViewById(android.R.id.content), "Last server update: $lastUpdate", Snackbar.LENGTH_LONG).show()
+        })
 
         setHasOptionsMenu(true)
 

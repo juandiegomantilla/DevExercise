@@ -10,13 +10,17 @@ import com.example.devexercise.repository.CountryModel
 
 class CountryMapViewModel(country: CountryModel, application: Application): AndroidViewModel(application){
 
+    private val _mapStatus = MutableLiveData<String>()
+    val mapStatus: LiveData<String>
+        get() = _mapStatus
+
     private val _selectedCountry = MutableLiveData<CountryModel>()
 
     init {
         _selectedCountry.value = country
     }
 
-    val countryMap = ArcGISMap(Basemap.Type.TOPOGRAPHIC, country.Lat!!, country.Long_!!, 16)
+    val countryMap = createMap(country)
 
     private val _deathLayer = MutableLiveData<FeatureLayer>()
     private val _casesLayer = MutableLiveData<FeatureLayer>()
@@ -28,7 +32,19 @@ class CountryMapViewModel(country: CountryModel, application: Application): Andr
         countryMap.loadAsync()
     }
 
-    fun loadLayers(){
+    private fun createMap(country: CountryModel): ArcGISMap{
+        return try{
+            val countryMap = ArcGISMap(Basemap.Type.TOPOGRAPHIC, country.Lat!!, country.Long_!!, 16)
+            _mapStatus.value = "${country.Country_Region} successfully founded in map"
+            countryMap
+        }catch (e: Exception){
+            val baseMap = ArcGISMap(Basemap.Type.TOPOGRAPHIC, 40.000000000000057, -99.999999999999929, 16)
+            _mapStatus.value = "Country not founded in map"
+            baseMap
+        }
+    }
+
+    private fun loadLayers(){
         _deathLayer.value = ArcgisLayer.deathLayer
         _casesLayer.value = ArcgisLayer.casesLayer
     }

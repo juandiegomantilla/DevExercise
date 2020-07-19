@@ -18,9 +18,6 @@ class CountryRepository(private val database: LocalDatabase){
         withContext(Dispatchers.IO){
             val dataList = ArcgisApi.retrofitService.getArcgisData().await()
             database.databaseDao.insertCountryToDatabase(*dataList.asDatabaseModel())
-
-            println("LAST UPDATE: " + dataList.countryContainer.get(0).countryDetails.Last_Update)
         }
-
     }
 }
