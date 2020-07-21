@@ -1,6 +1,7 @@
 package com.example.devexercise.viewmodel
 
 import android.app.Application
+import android.text.format.DateUtils
 import androidx.lifecycle.*
 import com.example.devexercise.database.getDatabase
 import com.example.devexercise.repository.CountryModel
@@ -17,6 +18,10 @@ class HomeViewModel(application: Application): AndroidViewModel(application) {
 
     private val dataRepository = CountryRepository(database)
 
+    private val _lastUpdate = MutableLiveData<CharSequence>()
+    val lastUpdate: LiveData<CharSequence>
+        get() = _lastUpdate
+
     private val _navigateToSelectedCountry = MutableLiveData<CountryModel>()
     val navigateToSelectedCountry: LiveData<CountryModel>
         get() = _navigateToSelectedCountry
@@ -32,6 +37,8 @@ class HomeViewModel(application: Application): AndroidViewModel(application) {
         viewModelScope.launch {
             dataRepository.refreshData()
         }
+        val update = DateUtils.getRelativeTimeSpanString(dataRepository.country.value?.get(1)?.Last_Update!!.toLong())
+        _lastUpdate.value = update
     }
 
     val dataList = dataRepository.country

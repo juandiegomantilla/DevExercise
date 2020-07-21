@@ -30,7 +30,7 @@ class MapFragment : Fragment() {
         binding.viewModel = viewModel
 
         binding.root.findViewById<MapView>(R.id.mapView).apply {
-            map = viewModel.map
+            map = viewModel.map.value
         }
 
         return binding.root
