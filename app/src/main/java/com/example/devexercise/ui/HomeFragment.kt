@@ -3,7 +3,6 @@ package com.example.devexercise.ui
 import android.os.Bundle
 import android.view.*
 import androidx.fragment.app.Fragment
-import androidx.annotation.LayoutRes
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
@@ -15,8 +14,8 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.devexercise.R
 import com.example.devexercise.databinding.FragmentHomeBinding
-import com.example.devexercise.databinding.ListItemCasesCountryBinding
-import com.example.devexercise.repository.CountryModel
+import com.example.devexercise.util.CountryClick
+import com.example.devexercise.util.HomeAdapter
 import com.example.devexercise.viewmodel.HomeViewModel
 import com.example.devexercise.viewmodel.HomeViewModelFactory
 import com.google.android.material.snackbar.Snackbar
@@ -93,48 +92,6 @@ class HomeFragment : Fragment() {
             item,
             view!!.findNavController())
                 || super.onOptionsItemSelected(item)
-    }
-}
-
-class CountryClick(val clickListener: (CountryModel) -> Unit){
-    fun onClick(country:CountryModel) = clickListener(country)
-}
-
-class HomeAdapter(val onClickListener: CountryClick): RecyclerView.Adapter<HomeViewHolder>(){
-
-    var countries: List<CountryModel> = emptyList()
-        set(value){
-            field = value
-            notifyDataSetChanged()
-        }
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HomeViewHolder {
-        val withDatabinding: ListItemCasesCountryBinding = DataBindingUtil.inflate(
-            LayoutInflater.from(parent.context),
-            HomeViewHolder.LAYOUT,
-            parent,
-            false)
-        return HomeViewHolder(withDatabinding)
-    }
-
-    override fun getItemCount() = countries.size
-
-    override fun onBindViewHolder(holder: HomeViewHolder, position: Int) {
-        holder.viewDataBinding.also{
-            it.country = countries[position]
-        }
-        val countryInfo = countries.get(position)
-        holder.itemView.setOnClickListener {
-            onClickListener.onClick(countryInfo)
-        }
-
-    }
-}
-
-class HomeViewHolder(val viewDataBinding: ListItemCasesCountryBinding): RecyclerView.ViewHolder(viewDataBinding.root){
-    companion object {
-        @LayoutRes
-        val LAYOUT = R.layout.list_item_cases_country
     }
 }
 
