@@ -15,7 +15,7 @@ android {
         versionCode 1
         versionName "1.0"
 
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "com.example.devexercise.network.MockTestRunner"
     }
 
     buildTypes {
@@ -84,5 +84,17 @@ dependencies {
 
     //Mockito
     testImplementation "org.mockito:mockito-core:$version_mockito"
+
+    //MockWebServer, Espresso & okhttp3
+    androidTestImplementation "com.squareup.okhttp3:mockwebserver:$version_mockWebServer"
+    androidTestImplementation "com.jakewharton.espresso:okhttp3-idling-resource:$version_espresso"
+    androidTestImplementation "androidx.test:rules:$version_test"
+    androidTestImplementation "androidx.test:runner:$version_test"
+    implementation "com.squareup.okhttp3:okhttp:$version_okhttp"
+
+
+    //Dagger
+    implementation "com.google.dagger:dagger:$version_dagger"
+    kapt "com.google.dagger:dagger-compiler:$version_dagger"
 
 }
