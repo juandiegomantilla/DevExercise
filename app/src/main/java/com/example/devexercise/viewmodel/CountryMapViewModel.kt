@@ -17,21 +17,14 @@ class CountryMapViewModel(country: CountryModel, application: Application): Andr
     val mapStatus: LiveData<String>
         get() = _mapStatus
 
-    private val _selectedCountry = MutableLiveData<CountryModel>()
-
-    init {
-        _selectedCountry.value = country
-    }
-
     val countryMap = createMap(country)
 
-    private val _deathLayer = MutableLiveData<FeatureLayer>()
-    private val _casesLayer = MutableLiveData<FeatureLayer>()
+    private val deathLayer = ArcgisLayer.deathLayer
+    private val casesLayer = ArcgisLayer.casesLayer
 
     init{
-        loadLayers()
-        countryMap.operationalLayers.add(_deathLayer.value)
-        countryMap.operationalLayers.add(_casesLayer.value )
+        countryMap.operationalLayers.add(deathLayer)
+        countryMap.operationalLayers.add(casesLayer)
         countryMap.loadAsync()
     }
 
@@ -51,15 +44,8 @@ class CountryMapViewModel(country: CountryModel, application: Application): Andr
         }
     }
 
-    private fun loadLayers(){
-        _deathLayer.value = ArcgisLayer.deathLayer
-        _casesLayer.value = ArcgisLayer.casesLayer
-    }
-
     override fun onCleared() {
         super.onCleared()
-        _deathLayer.value = null
-        _casesLayer.value =null
         countryMap.operationalLayers.clear()
     }
 }

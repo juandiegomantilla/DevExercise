@@ -45,13 +45,6 @@ class HomeFragment : Fragment() {
             viewModel.displayCountryOnMap(it)
         })
 
-        viewModel.navigateToSelectedCountry.observe(this, Observer {
-            if(null != it){
-              this.findNavController().navigate(HomeFragmentDirections.showCountryInMap(it))
-                viewModel.displayCountryOnMapComplete()
-            }
-        })
-
         binding.root.findViewById<RecyclerView>(R.id.recycler_view).apply {
             layoutManager = LinearLayoutManager(context)
             adapter = viewModelAdapter
@@ -63,10 +56,6 @@ class HomeFragment : Fragment() {
             swipe_refresh_layout.isRefreshing = false
         }
 
-        viewModel.lastUpdate.observe(this, Observer {lastUpdate ->
-            Snackbar.make(activity!!.findViewById(android.R.id.content), "Last server update: $lastUpdate", Snackbar.LENGTH_LONG).show()
-        })
-
         setHasOptionsMenu(true)
 
         return binding.root
@@ -74,11 +63,22 @@ class HomeFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+
         viewModel.dataList.observe(viewLifecycleOwner, Observer {countries ->
             countries?.apply {
                 viewModelAdapter?.countries = countries
             }
+        })
 
+        viewModel.lastUpdate.observe(this, Observer {lastUpdate ->
+            Snackbar.make(activity!!.findViewById(android.R.id.content), "Last server update: $lastUpdate", Snackbar.LENGTH_LONG).show()
+        })
+
+        viewModel.navigateToSelectedCountry.observe(this, Observer {
+            if(null != it){
+                this.findNavController().navigate(HomeFragmentDirections.showCountryInMap(it))
+                viewModel.displayCountryOnMapComplete()
+            }
         })
     }
 

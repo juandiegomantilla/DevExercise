@@ -15,6 +15,7 @@ import com.example.devexercise.databinding.FragmentCountryMapBinding
 import com.example.devexercise.viewmodel.CountryMapViewModel
 import com.example.devexercise.viewmodel.CountryMapViewModelFactory
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.android.synthetic.main.fragment_country_map.*
 
 
 class CountryMapFragment : Fragment() {
@@ -38,11 +39,28 @@ class CountryMapFragment : Fragment() {
             map = viewModel.countryMap
         }
 
-        viewModel.mapStatus.observe(this, Observer { message ->
-            Snackbar.make(activity!!.findViewById(android.R.id.content), message, Snackbar.LENGTH_LONG).show()
-        })
-
         return binding.root
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        viewModel.mapStatus.observe(this, Observer { message ->
+            Snackbar.make(activity!!.findViewById(android.R.id.content), message, Snackbar.LENGTH_LONG).show()
+        })
+    }
+
+    override fun onPause() {
+        super.onPause()
+        mapView.pause()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        mapView.resume()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        mapView.dispose()
+    }
 }
