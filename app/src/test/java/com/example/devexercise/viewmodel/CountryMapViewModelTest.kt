@@ -42,6 +42,6 @@ class CountryMapViewModelTest {
 
     @Test
     fun shouldReturnArGISMap_whenCalled_createMap() {
-        doReturn(countryMapViewModel.createMap(country)).`when`(countryMapViewModel).createMap(country)
+         countryMapViewModel.createMap(country)
     }
 }

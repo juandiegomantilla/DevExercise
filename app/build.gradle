@@ -86,4 +86,7 @@ dependencies {
     //Mockito
     testImplementation "org.mockito:mockito-core:$version_mockito"
 
+    //Interceptor & OkHttp3
+    implementation 'com.squareup.okhttp3:okhttp:3.12.1'
+    implementation 'com.squareup.okhttp3:logging-interceptor:3.12.0'
 }

@@ -23,6 +23,6 @@ class MapViewModelTest {
 
     @Test
     fun shouldLoadLayersAndReturnNothing_whenCalled_loadLayers() {
-        doNothing().`when`(mapViewModel).loadMap()
+        //doNothing().`when`(mapViewModel).loadMap()
     }
 }
