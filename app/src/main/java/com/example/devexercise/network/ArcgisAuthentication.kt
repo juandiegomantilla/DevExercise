@@ -7,8 +7,8 @@ import com.esri.arcgisruntime.security.UserCredential
 
 object ArcgisAuthentication {
 
-    fun setLicence(){
-        val credential = UserCredential("jmantilla", "unclesam123")
+    fun setLicence(username: String, password: String){
+        val credential = UserCredential(username, password)
         val portal = Portal("https://www.arcgis.com")
 
         portal.credential = credential
@@ -22,7 +22,7 @@ object ArcgisAuthentication {
                         val licenceInfo = licenseFuture.get()
                         val licenceJson = licenceInfo.toJson()
                         ArcGISRuntimeEnvironment.setLicense(licenceInfo)
-                        println("ArcGIS Runtime Environment Successfully Licenced")
+                        println("ArcGIS Runtime Environment Successfully Licenced for user: $username")
                     } catch (e: Exception){
                         println("Error: $e")
                     }

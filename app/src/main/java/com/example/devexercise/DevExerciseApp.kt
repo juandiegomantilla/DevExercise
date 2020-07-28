@@ -7,6 +7,6 @@ class DevExerciseApp: Application(){
     override fun onCreate() {
         super.onCreate()
 
-        ArcgisAuthentication.setLicence()
+        ArcgisAuthentication.setLicence("jmantilla","unclesam123")
     }
 }

@@ -85,6 +85,7 @@ dependencies {
 
     //Mockito
     testImplementation "org.mockito:mockito-core:$version_mockito"
+    testImplementation 'androidx.arch.core:core-testing:2.0.1'
 
     //Interceptor & OkHttp3
     implementation 'com.squareup.okhttp3:okhttp:3.12.1'

@@ -28,7 +28,7 @@ class CountryMapViewModel(country: CountryModel, application: Application): Andr
         countryMap.loadAsync()
     }
 
-    fun createMap(country: CountryModel): ArcGISMap{
+    private fun createMap(country: CountryModel): ArcGISMap{
         return try{
             val countryMap = ArcGISMap(Basemap.Type.TOPOGRAPHIC, country.Lat!!, country.Long_!!, 16)
             _mapStatus.value = "${country.Country_Region} successfully founded in map"

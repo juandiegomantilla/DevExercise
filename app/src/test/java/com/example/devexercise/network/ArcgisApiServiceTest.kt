@@ -18,7 +18,7 @@ class ArcgisApiServiceTest {
     lateinit var service: ArcgisApiService
 
     @Before
-    fun setUp() {
+    fun setup() {
         val retrofit = Retrofit.Builder()
             .baseUrl(COUNTRY_LAYER)
             .client(OkHttpClient.Builder().addInterceptor(MockInterceptor()).build())
@@ -32,7 +32,8 @@ class ArcgisApiServiceTest {
     fun `Data Should Be Received From The Arcgis Server`(){
         runBlocking {
             val data = ArcgisApi.retrofitService.getArcgisData().await()
-            println(data)
+            assert(data.countryContainer.count() >= 180)
+            println("Arcgis server: $data")
         }
     }
 
@@ -41,7 +42,7 @@ class ArcgisApiServiceTest {
         runBlocking {
             val interceptedData = service.getArcgisData().await()
             assert(interceptedData.countryContainer.count() == 188)
-            println(interceptedData)
+            println("Interceptor: $interceptedData")
         }
     }
 
