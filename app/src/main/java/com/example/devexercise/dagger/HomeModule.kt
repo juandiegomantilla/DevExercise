@@ -9,5 +9,5 @@ import dagger.Provides
 @Module
 class HomeModule {
     //@Provides
-    //fun ProvideCountryRepository(database: LocalDatabase): CountryRepository = { }
+    //fun provideCountryRepository(database: LocalDatabase): CountryRepository = { }
 }

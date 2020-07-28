@@ -9,7 +9,6 @@ import javax.inject.Singleton
 
 @Singleton
 @Component(modules = [AndroidInjectionModule::class, ActivityCreatorModule::class, AppModule::class])
-
 @Suppress("unused")
 interface AppComponent {
     @Component.Builder
