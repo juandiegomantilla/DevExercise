@@ -1,4 +1,5 @@
 package com.example.devexercise.network
+
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import kotlinx.coroutines.runBlocking
 import okhttp3.OkHttpClient
@@ -7,13 +8,11 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mock
 import org.mockito.junit.MockitoJUnitRunner
-import retrofit2.HttpException
-
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 
 @RunWith(MockitoJUnitRunner::class)
-class ArcgisApiServiceTest {
+class ArcgisApiServiceExceptionTest {
 
     @Mock
     lateinit var service: ArcgisApiService
@@ -29,30 +28,10 @@ class ArcgisApiServiceTest {
         service = retrofit.create(ArcgisApiService::class.java)
     }
 
-    @Test
-    fun `Data Should Be Received From The Arcgis Server`(){
+    @Test(expected = retrofit2.HttpException::class)
+    fun `Throw HttpException when 404 occurs`(){
         runBlocking {
-            val data = ArcgisApi.retrofitService.getArcgisData().await()
-            assert(data.countryContainer.count() >= 180)
-            println("Arcgis server: $data")
-        }
-    }
-
-    @Test
-    fun `Data Should Be Received From The MockInterceptor`(){
-        runBlocking {
-            val interceptedData = service.getArcgisData().await()
-            assert(interceptedData.countryContainer.count() == 188)
-            println("Interceptor: $interceptedData")
-        }
-    }
-
-    @Test
-    fun `Arcgis Data And Intercepted Data Must Be Different`(){
-        runBlocking {
-            val arcgisData = ArcgisApi.retrofitService.getArcgisData().await()
-            val interceptedData = service.getArcgisData().await()
-            assert(arcgisData != interceptedData)
+            service.getArcgisData().await()
         }
     }
 }
