@@ -19,24 +19,10 @@ const val COUNTRY_LAYER = "https://services1.arcgis.com/0MSEUqKaxRlEPj5g/ArcGIS/
 private const val QUERY_COUNTRY_LAYER = "query?where=1%3D1&outFields=*&f=json"
 
 
-//Cases by Country data retrieve & conversion:
+//Cases by Country Query:
 interface ArcgisApiService  {
     @GET(QUERY_COUNTRY_LAYER)
     fun getArcgisData(): Deferred<NetworkDataContainer>
-}
-
-val moshi = Moshi.Builder()
-    .add(KotlinJsonAdapterFactory())
-    .build()
-
-object ArcgisApi{
-    private val retrofit = Retrofit.Builder()
-        .baseUrl(COUNTRY_LAYER)
-        .addConverterFactory(MoshiConverterFactory.create(moshi))
-        .addCallAdapterFactory(CoroutineCallAdapterFactory())
-        .build()
-
-    val retrofitService = retrofit.create(ArcgisApiService::class.java)
 }
 
 //Map layers retrieving:

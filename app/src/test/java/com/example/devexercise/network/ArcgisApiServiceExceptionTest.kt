@@ -1,6 +1,8 @@
 package com.example.devexercise.network
 
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
+import com.squareup.moshi.Moshi
+import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import kotlinx.coroutines.runBlocking
 import okhttp3.OkHttpClient
 import org.junit.Before
@@ -19,6 +21,10 @@ class ArcgisApiServiceExceptionTest {
 
     @Before
     fun setup() {
+        val moshi = Moshi.Builder()
+            .add(KotlinJsonAdapterFactory())
+            .build()
+
         val retrofit = Retrofit.Builder()
             .baseUrl(COUNTRY_LAYER)
             .client(OkHttpClient.Builder().addInterceptor(MockInterceptor()).build())

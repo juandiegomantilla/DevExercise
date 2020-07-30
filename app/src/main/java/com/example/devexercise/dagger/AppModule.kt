@@ -18,5 +18,5 @@ class AppModule(private val app: Application) {
 
     @Provides
     @Singleton
-    fun provideDatabase(): LocalDatabase{ return getDatabase(app) }
+    fun provideDatabase(): LocalDatabase = getDatabase(app)
 }
