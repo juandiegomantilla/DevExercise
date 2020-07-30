@@ -12,7 +12,7 @@ import com.example.devexercise.network.ArcgisLayer
 import com.example.devexercise.viewmodel.impl.MapViewModelImpl
 import javax.inject.Inject
 
-class MapViewModel @Inject constructor(application: Application): AndroidViewModel(application), MapViewModelImpl{
+class MapViewModel(application: Application): AndroidViewModel(application), MapViewModelImpl{
 
     val map = createMap()
 

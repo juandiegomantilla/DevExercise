@@ -6,8 +6,8 @@ import com.example.devexercise.ui.MapFragment
 import dagger.Component
 import javax.inject.Singleton
 
-@Component(modules = [AppModule::class, ViewModelModule::class, ModelModule::class])
+@Component(modules = [AppModule::class, ViewModelModule::class])
 @Singleton
 interface AppComponent{
-    fun inject(target: MapFragment)
+    fun inject(target: HomeFragment)
 }

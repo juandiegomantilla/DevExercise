@@ -1,7 +1,5 @@
 package com.example.devexercise.ui
 
-import android.app.Activity
-import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -10,31 +8,20 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import com.esri.arcgisruntime.mapping.view.MapView
-import com.example.devexercise.DevExerciseApp
 import com.example.devexercise.R
-import com.example.devexercise.dagger.DaggerAppComponent
 import com.example.devexercise.databinding.FragmentMapBinding
 import com.example.devexercise.viewmodel.MapViewModel
 import com.example.devexercise.viewmodel.MapViewModelFactory
 import kotlinx.android.synthetic.main.fragment_map.*
-import javax.inject.Inject
 
 class MapFragment : Fragment() {
 
-    /*private val viewModel: MapViewModel by lazy {
+    private val viewModel: MapViewModel by lazy {
         val activity = requireNotNull(this.activity) {
             "Unable to access the ViewModel"
         }
         ViewModelProviders.of(this, MapViewModelFactory(activity.application))
             .get(MapViewModel::class.java)
-    }*/
-
-    @Inject
-    lateinit var viewModel: MapViewModel
-
-    override fun onAttach(context: Context) {
-        (context.applicationContext as DevExerciseApp).appComp().inject(this)
-        super.onAttach(context)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {

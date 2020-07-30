@@ -13,10 +13,15 @@ class DevExerciseApp: Application(){
     override fun onCreate() {
         super.onCreate()
 
-        appComponent = DaggerAppComponent.create()
+        appComponent = initDagger(this)
 
         ArcgisAuthentication.setLicence("jmantilla","unclesam123")
     }
+
+    private fun initDagger(app: DevExerciseApp): AppComponent =
+        DaggerAppComponent.builder()
+            .appModule(AppModule(app))
+            .build()
 
     fun appComp() = appComponent
 }

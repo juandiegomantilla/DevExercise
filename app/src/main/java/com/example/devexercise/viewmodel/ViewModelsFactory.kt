@@ -3,6 +3,7 @@ package com.example.devexercise.viewmodel
 import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.example.devexercise.database.LocalDatabase
 import com.example.devexercise.repository.CountryModel
 
 class CountryMapViewModelFactory(private val country: CountryModel, private val application: Application) : ViewModelProvider.Factory {
@@ -15,11 +16,11 @@ class CountryMapViewModelFactory(private val country: CountryModel, private val 
     }
 }
 
-class HomeViewModelFactory(val app: Application): ViewModelProvider.Factory{
+class HomeViewModelFactory(val database: LocalDatabase): ViewModelProvider.Factory{
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         if(modelClass.isAssignableFrom(HomeViewModel::class.java)){
             @Suppress("UNCHECKED_CAST")
-            return HomeViewModel(app) as T
+            return HomeViewModel(database) as T
         }
         throw IllegalArgumentException("Unable to construct HomeViewModelFactory")
     }
