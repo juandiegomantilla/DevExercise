@@ -27,14 +27,6 @@ import javax.inject.Inject
 
 class HomeFragment : Fragment() {
 
-    /*private val viewModel: HomeViewModel by lazy {
-        val activity = requireNotNull(this.activity) {
-            "Unable to access the ViewModel"
-        }
-        ViewModelProviders.of(this, HomeViewModelFactory(activity.application))
-            .get(HomeViewModel::class.java)
-    }*/
-
     @Inject
     lateinit var viewModel: HomeViewModel
 

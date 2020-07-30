@@ -4,14 +4,14 @@ import android.app.Application
 import androidx.lifecycle.*
 import com.esri.arcgisruntime.geometry.Envelope
 import com.esri.arcgisruntime.geometry.SpatialReference
-import com.esri.arcgisruntime.layers.FeatureLayer
 import com.esri.arcgisruntime.mapping.ArcGISMap
 import com.esri.arcgisruntime.mapping.Basemap
 import com.esri.arcgisruntime.mapping.Viewpoint
 import com.example.devexercise.network.ArcgisLayer
 import com.example.devexercise.repository.CountryModel
+import com.example.devexercise.viewmodel.impl.CountryMapViewModelImpl
 
-class CountryMapViewModel(country: CountryModel, application: Application): AndroidViewModel(application){
+class CountryMapViewModel(country: CountryModel, application: Application): AndroidViewModel(application), CountryMapViewModelImpl{
 
     private val _mapStatus = MutableLiveData<String>()
     val mapStatus: LiveData<String>
@@ -28,7 +28,7 @@ class CountryMapViewModel(country: CountryModel, application: Application): Andr
         countryMap.loadAsync()
     }
 
-    private fun createMap(country: CountryModel): ArcGISMap{
+    override fun createMap(country: CountryModel): ArcGISMap{
         return try{
             val countryMap = ArcGISMap(Basemap.Type.TOPOGRAPHIC, country.Lat!!, country.Long_!!, 16)
             _mapStatus.value = "${country.Country_Region} successfully founded in map"

@@ -1,10 +1,7 @@
 package com.example.devexercise.viewmodel
 
-import android.app.Application
 import android.text.format.DateUtils
 import androidx.lifecycle.*
-import com.example.devexercise.database.LocalDatabase
-import com.example.devexercise.database.getDatabase
 import com.example.devexercise.repository.CountryModel
 import com.example.devexercise.repository.CountryRepository
 import com.example.devexercise.viewmodel.impl.HomeViewModelImpl
@@ -16,10 +13,6 @@ class HomeViewModel @Inject constructor(private val dataRepository: CountryRepos
     private val viewModelJob = SupervisorJob()
 
     private val viewModelScope = CoroutineScope(viewModelJob + Dispatchers.Main)
-
-    //private val database = getDatabase(application)
-
-    //private val dataRepository = CountryRepository(database)
 
     private val _lastUpdate = MutableLiveData<CharSequence>()
     val lastUpdate: LiveData<CharSequence>
