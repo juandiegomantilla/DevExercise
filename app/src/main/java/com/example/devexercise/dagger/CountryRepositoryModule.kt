@@ -7,8 +7,8 @@ import dagger.Provides
 import javax.inject.Singleton
 
 @Module
-class RepositoryModule {
+class CountryRepositoryModule {
     @Provides
     @Singleton
-    fun provideRepository(database: LocalDatabase): CountryRepository = CountryRepository(database)
+    fun provideCountryRepository(database: LocalDatabase): CountryRepository = CountryRepository(database)
 }
