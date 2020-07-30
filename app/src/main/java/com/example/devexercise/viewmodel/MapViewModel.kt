@@ -9,8 +9,10 @@ import com.esri.arcgisruntime.mapping.ArcGISMap
 import com.esri.arcgisruntime.mapping.Basemap
 import com.esri.arcgisruntime.mapping.Viewpoint
 import com.example.devexercise.network.ArcgisLayer
+import com.example.devexercise.viewmodel.impl.MapViewModelImpl
+import javax.inject.Inject
 
-class MapViewModel(application: Application): AndroidViewModel(application){
+class MapViewModel @Inject constructor(application: Application): AndroidViewModel(application), MapViewModelImpl{
 
     val map = createMap()
 
@@ -23,7 +25,7 @@ class MapViewModel(application: Application): AndroidViewModel(application){
         map.loadAsync()
     }
 
-    private fun createMap(): ArcGISMap{
+    override fun createMap(): ArcGISMap{
         val baseMap = ArcGISMap(Basemap.createTopographic())
         val initialExtent = Envelope(-99.999999999999929, 40.000000000000057, -99.999999999999929, 40.000000000000057, SpatialReference.create(102100))
         val viewPoint = Viewpoint(initialExtent)

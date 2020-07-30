@@ -91,4 +91,9 @@ dependencies {
     //Interceptor & OkHttp3
     implementation "com.squareup.okhttp3:okhttp:$version_okhttp3"
     implementation "com.squareup.okhttp3:logging-interceptor:$version_interceptor"
+
+    //Dagger
+    implementation "com.google.dagger:dagger:$version_dagger"
+    kapt "com.google.dagger:dagger-compiler:$version_dagger"
+    compileOnly "javax.annotation:jsr250-api:$version_annotation"
 }
