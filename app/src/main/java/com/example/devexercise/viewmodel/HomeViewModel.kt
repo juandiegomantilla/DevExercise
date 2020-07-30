@@ -11,7 +11,7 @@ import com.example.devexercise.viewmodel.impl.HomeViewModelImpl
 import kotlinx.coroutines.*
 import javax.inject.Inject
 
-class HomeViewModel @Inject constructor(database: LocalDatabase): ViewModel(), HomeViewModelImpl {
+class HomeViewModel @Inject constructor(private val dataRepository: CountryRepository): ViewModel(), HomeViewModelImpl {
 
     private val viewModelJob = SupervisorJob()
 
@@ -19,7 +19,7 @@ class HomeViewModel @Inject constructor(database: LocalDatabase): ViewModel(), H
 
     //private val database = getDatabase(application)
 
-    private val dataRepository = CountryRepository(database)
+    //private val dataRepository = CountryRepository(database)
 
     private val _lastUpdate = MutableLiveData<CharSequence>()
     val lastUpdate: LiveData<CharSequence>

@@ -3,6 +3,7 @@ package com.example.devexercise.dagger
 import android.app.Application
 import com.example.devexercise.database.LocalDatabase
 import com.example.devexercise.repository.CountryModel
+import com.example.devexercise.repository.CountryRepository
 import com.example.devexercise.viewmodel.CountryMapViewModel
 import com.example.devexercise.viewmodel.HomeViewModel
 import com.example.devexercise.viewmodel.MapViewModel
@@ -17,5 +18,5 @@ import javax.inject.Singleton
 class ViewModelModule {
     @Provides
     @Singleton
-    fun provideHomeViewModel(database: LocalDatabase): HomeViewModelImpl = HomeViewModel(database)
+    fun provideHomeViewModel(dataRepository: CountryRepository): HomeViewModelImpl = HomeViewModel(dataRepository)
 }
