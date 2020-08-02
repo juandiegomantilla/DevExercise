@@ -4,19 +4,20 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.Transformations
 import com.example.devexercise.database.LocalDatabase
 import com.example.devexercise.database.asRepositoryDomainModel
-import com.example.devexercise.network.ArcgisApi
+import com.example.devexercise.network.ArcgisApiService
 import com.example.devexercise.network.asDatabaseModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
-class CountryRepository(private val database: LocalDatabase){
+class CountryRepository @Inject constructor(private val database: LocalDatabase, private val service: ArcgisApiService){
     val country: LiveData<List<CountryModel>> = Transformations.map(database.databaseDao.getCountryFromDatabase()){
         it.asRepositoryDomainModel()
     }
 
     suspend fun refreshData(){
         withContext(Dispatchers.IO){
-            val dataList = ArcgisApi.retrofitService.getArcgisData().await()
+            val dataList = service.getArcgisData().await()
             database.databaseDao.insertCountryToDatabase(*dataList.asDatabaseModel())
         }
     }

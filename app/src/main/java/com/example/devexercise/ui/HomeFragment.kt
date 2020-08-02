@@ -1,5 +1,6 @@
 package com.example.devexercise.ui
 
+import android.content.Context
 import android.os.Bundle
 import android.view.*
 import androidx.fragment.app.Fragment
@@ -12,6 +13,7 @@ import androidx.navigation.ui.NavigationUI
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.example.devexercise.DevExerciseApp
 import com.example.devexercise.R
 import com.example.devexercise.databinding.FragmentHomeBinding
 import com.example.devexercise.util.CountryClick
@@ -20,19 +22,19 @@ import com.example.devexercise.viewmodel.HomeViewModel
 import com.example.devexercise.viewmodel.HomeViewModelFactory
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_home.*
+import javax.inject.Inject
 
 
 class HomeFragment : Fragment() {
 
-    private val viewModel: HomeViewModel by lazy {
-        val activity = requireNotNull(this.activity) {
-            "Unable to access the ViewModel"
-        }
-        ViewModelProviders.of(this, HomeViewModelFactory(activity.application))
-            .get(HomeViewModel::class.java)
-    }
+    @Inject
+    lateinit var viewModel: HomeViewModel
 
     private var viewModelAdapter: HomeAdapter? = null
+    override fun onAttach(context: Context) {
+        (context.applicationContext as DevExerciseApp).appComp().inject(this)
+        super.onAttach(context)
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val binding: FragmentHomeBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_home, container, false)
@@ -43,13 +45,6 @@ class HomeFragment : Fragment() {
 
         viewModelAdapter = HomeAdapter(CountryClick{
             viewModel.displayCountryOnMap(it)
-        })
-
-        viewModel.navigateToSelectedCountry.observe(this, Observer {
-            if(null != it){
-              this.findNavController().navigate(HomeFragmentDirections.showCountryInMap(it))
-                viewModel.displayCountryOnMapComplete()
-            }
         })
 
         binding.root.findViewById<RecyclerView>(R.id.recycler_view).apply {
@@ -63,10 +58,6 @@ class HomeFragment : Fragment() {
             swipe_refresh_layout.isRefreshing = false
         }
 
-        viewModel.lastUpdate.observe(this, Observer {lastUpdate ->
-            Snackbar.make(activity!!.findViewById(android.R.id.content), "Last server update: $lastUpdate", Snackbar.LENGTH_LONG).show()
-        })
-
         setHasOptionsMenu(true)
 
         return binding.root
@@ -74,11 +65,22 @@ class HomeFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+
         viewModel.dataList.observe(viewLifecycleOwner, Observer {countries ->
             countries?.apply {
                 viewModelAdapter?.countries = countries
             }
+        })
 
+        viewModel.lastUpdate.observe(this, Observer {lastUpdate ->
+            Snackbar.make(activity!!.findViewById(android.R.id.content), "Last server update: $lastUpdate", Snackbar.LENGTH_LONG).show()
+        })
+
+        viewModel.navigateToSelectedCountry.observe(this, Observer {
+            if(null != it){
+                this.findNavController().navigate(HomeFragmentDirections.showCountryInMap(it))
+                viewModel.displayCountryOnMapComplete()
+            }
         })
     }
 

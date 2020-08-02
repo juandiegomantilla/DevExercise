@@ -27,10 +27,12 @@ class MapFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val binding: FragmentMapBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_map, container, false)
 
+        binding.setLifecycleOwner(this)
+
         binding.viewModel = viewModel
 
         binding.root.findViewById<MapView>(R.id.mapView).apply {
-            map = viewModel.map.value
+            map = viewModel.map
         }
 
         return binding.root
@@ -50,5 +52,4 @@ class MapFragment : Fragment() {
         super.onDestroyView()
         mapView.dispose()
     }
-
 }

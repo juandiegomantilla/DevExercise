@@ -14,6 +14,12 @@ buildscript {
         version_room = "2.0.0"
         version_arcgis = "100.8.0"
         version_mockito = "2.7.22"
+        version_mockk = "1.10.0"
+        version_arch = "2.0.1"
+        version_okhttp3 = "3.12.1"
+        version_interceptor = "3.12.0"
+        version_dagger = "2.11"
+        version_annotation = "1.0"
     }
 
     repositories {

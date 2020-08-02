@@ -9,40 +9,32 @@ import com.esri.arcgisruntime.mapping.ArcGISMap
 import com.esri.arcgisruntime.mapping.Basemap
 import com.esri.arcgisruntime.mapping.Viewpoint
 import com.example.devexercise.network.ArcgisLayer
+import com.example.devexercise.viewmodel.impl.MapViewModelImpl
+import javax.inject.Inject
 
-class MapViewModel(application: Application): AndroidViewModel(application){
+class MapViewModel(application: Application): AndroidViewModel(application), MapViewModelImpl{
 
-    private val _map = MutableLiveData<ArcGISMap>()
-    val map: LiveData<ArcGISMap>
-        get() = _map
+    val map = createMap()
 
-    private val _deathLayer = MutableLiveData<FeatureLayer>()
-    private val _casesLayer = MutableLiveData<FeatureLayer>()
+    private val deathLayer = ArcgisLayer.deathLayer
+    private val casesLayer = ArcgisLayer.casesLayer
 
     init{
-        loadMap()
+        map.operationalLayers.add(deathLayer)
+        map.operationalLayers.add(casesLayer)
+        map.loadAsync()
     }
 
-    fun loadMap(){
-        _map.value = ArcGISMap(Basemap.createTopographic())
+    override fun createMap(): ArcGISMap{
+        val baseMap = ArcGISMap(Basemap.createTopographic())
         val initialExtent = Envelope(-99.999999999999929, 40.000000000000057, -99.999999999999929, 40.000000000000057, SpatialReference.create(102100))
         val viewPoint = Viewpoint(initialExtent)
-
-        _map.value?.initialViewpoint = viewPoint
-
-        _deathLayer.value = ArcgisLayer.deathLayer
-        _casesLayer.value = ArcgisLayer.casesLayer
-
-        _map.value?.operationalLayers?.add(_deathLayer.value)
-        _map.value?.operationalLayers?.add(_casesLayer.value)
-
-        _map.value?.loadAsync()
+        baseMap.initialViewpoint = viewPoint
+        return baseMap
     }
 
     override fun onCleared() {
         super.onCleared()
-        _deathLayer.value = null
-        _casesLayer.value = null
-        _map.value?.operationalLayers?.clear()
+        map.operationalLayers.clear()
     }
 }
