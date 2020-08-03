@@ -28,7 +28,7 @@ interface ArcgisApiService  {
 //Map layers retrieving:
 object ArcgisLayer{
     private val deathLayerTable = ServiceFeatureTable(DEATH_LAYER)
-    private val casesLayerTable = ServiceFeatureTable(CASES_LAYER)
+    val casesLayerTable = ServiceFeatureTable(CASES_LAYER)
 
     val deathLayer = FeatureLayer(deathLayerTable)
     val casesLayer = FeatureLayer(casesLayerTable)
