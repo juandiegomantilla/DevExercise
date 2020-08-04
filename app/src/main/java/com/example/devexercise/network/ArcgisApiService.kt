@@ -28,9 +28,31 @@ interface ArcgisApiService  {
 //Map layers retrieving:
 object ArcgisLayer{
     private val deathLayerTable = ServiceFeatureTable(DEATH_LAYER)
-    private val casesLayerTable = ServiceFeatureTable(CASES_LAYER)
+    val casesLayerTable = ServiceFeatureTable(CASES_LAYER)
 
     val deathLayer = FeatureLayer(deathLayerTable)
     val casesLayer = FeatureLayer(casesLayerTable)
+}
+
+//query?where=1%3D1&outFields=OBJECTID%2CProvince_State%2CCountry_Region%2CLast_Update%2CLat%2CLong_%2CConfirmed%2CRecovered%2CDeaths%2CActive&returnGeometry=false&f=pjson
+private const val QUERY_MAP_POINTS = "query?where=1%3D1&outFields=OBJECTID%2CProvince_State%2CCountry_Region%2CLast_Update%2CLat%2CLong_%2CConfirmed%2CRecovered%2CDeaths%2CActive&returnGeometry=false&f=pjson"
+
+interface ArcgisMapService  {
+    @GET(QUERY_MAP_POINTS)
+    fun getArcgisMapData(): Deferred<NetworkMapDataContainer>
+}
+
+private val moshi = Moshi.Builder()
+    .add(KotlinJsonAdapterFactory())
+    .build()
+
+object ArcgisMapPoints{
+    private val retrofit = Retrofit.Builder()
+        .baseUrl(CASES_LAYER)
+        .addConverterFactory(MoshiConverterFactory.create(moshi))
+        .addCallAdapterFactory(CoroutineCallAdapterFactory())
+        .build()
+
+    val retrofitMapService = retrofit.create(ArcgisMapService::class.java)
 }
 

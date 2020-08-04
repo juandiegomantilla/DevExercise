@@ -11,9 +11,15 @@ interface DatabaseDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertCountryToDatabase(vararg countryEntity: CountryEntity)
+
+    @Query("select * from mappointentity where OBJECTID = :pointId")
+    fun getMapPointFromDatabase(pointId: Long): LiveData<List<MapPointEntity>>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertMapPointToDatabase(vararg mapPointEntity: MapPointEntity)
 }
 
-@Database(entities = [CountryEntity::class], version = 1)
+@Database(entities = [CountryEntity::class, MapPointEntity::class], version = 1)
 abstract class LocalDatabase: RoomDatabase(){
     abstract val databaseDao: DatabaseDao
 }
