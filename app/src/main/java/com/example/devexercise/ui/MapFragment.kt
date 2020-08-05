@@ -1,17 +1,20 @@
 package com.example.devexercise.ui
 
+import android.content.Context
 import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.text.method.ScrollingMovementMethod
-import android.view.LayoutInflater
-import android.view.MotionEvent
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
+import android.widget.PopupWindow
 import android.widget.TextView
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.esri.arcgisruntime.data.QueryParameters
 import com.esri.arcgisruntime.data.ServiceFeatureTable
 import com.esri.arcgisruntime.geometry.Envelope
@@ -20,10 +23,13 @@ import com.esri.arcgisruntime.mapping.view.DefaultMapViewOnTouchListener
 import com.example.devexercise.R
 import com.example.devexercise.databinding.FragmentMapBinding
 import com.example.devexercise.network.ArcgisLayer
+import com.example.devexercise.util.MapPointAdapter
+import com.example.devexercise.util.PointClick
 import com.example.devexercise.viewmodel.MapViewModel
 import com.example.devexercise.viewmodel.MapViewModelFactory
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_map.*
+import kotlinx.android.synthetic.main.fragment_point_details.view.*
 import kotlin.math.roundToInt
 
 class MapFragment : Fragment() {
@@ -36,6 +42,10 @@ class MapFragment : Fragment() {
             .get(MapViewModel::class.java)
     }
 
+    private var viewModelAdapter: MapPointAdapter? = null
+
+    private var pointPopup: PopupWindow? = null
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val binding: FragmentMapBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_map, container, false)
 
@@ -43,13 +53,22 @@ class MapFragment : Fragment() {
 
         binding.viewModel = viewModel
 
+        //val window = PopupWindow(context)
+        //val view = layoutInflater.inflate(R.layout.fragment_point_details, null)
+        //window.contentView = view
+        //window.showAtLocation(mapView, Gravity.CENTER, 0, 0)
+        /*val calloutContent = binding.root.findViewById<RecyclerView>(R.id.point_recycler_view).apply {
+            layoutManager = LinearLayoutManager(context)
+            adapter = viewModelAdapter
+        }*/
+
         val calloutContent = TextView(context).apply {
             setTextColor(Color.BLACK)
             isSingleLine = false
             isVerticalScrollBarEnabled = true
             scrollBarStyle = View.SCROLLBARS_INSIDE_INSET
             movementMethod = ScrollingMovementMethod()
-            setLines(13)
+            setLines(1)
         }
 
         binding.mapView.let {
@@ -76,17 +95,23 @@ class MapFragment : Fragment() {
                             while (iterator.hasNext()) {
                                 val feature = iterator.next()
                                 val attr = feature.attributes
-                                //val keys = attr.keys
-                                /*for(key in keys){
-                                    val value = attr[key]
-                                    calloutContent.append("$key|$value\n")
-                                }*/
-                                calloutContent.append("${attr["OBJECTID"]}")
+                                val pointId = attr["OBJECTID"] as Long
+                                val pointRequested = viewModel.mapDataList(pointId)
 
-                                viewModel.mapDataList(attr["OBJECTID"] as Long).observe(viewLifecycleOwner, Observer { point ->
-                                    println("Observer: "+ point)
+                                pointRequested.observe(viewLifecycleOwner, Observer { point ->
+                                    point?.apply {
+                                        viewModelAdapter?.pointDetails = point
+                                        println(point)
+                                    }
                                 })
 
+                                pointPopup = showPointDetails()
+                                pointPopup?.isOutsideTouchable = true
+                                pointPopup?.isFocusable = true
+                                pointPopup?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+                                pointPopup?.showAtLocation(it, Gravity.CENTER, 0, 0)
+
+                                calloutContent.text = pointId.toString()
                                 counter++
                                 it.callout.apply {
                                     location = tappedPoint
@@ -95,7 +120,8 @@ class MapFragment : Fragment() {
                                 }
                             }
                         } catch (e: Exception) {
-                            Snackbar.make(activity!!.findViewById(android.R.id.content), "Select feature failed: " + e.message, Snackbar.LENGTH_LONG).show()
+                            println(e)
+                            Snackbar.make(activity!!.findViewById(android.R.id.content), "Select map point failed: " + e.message, Snackbar.LENGTH_LONG).show()
                         }
                     }
                     return super.onSingleTapConfirmed(motionEvent)
@@ -104,6 +130,16 @@ class MapFragment : Fragment() {
         }
 
         return binding.root
+    }
+
+    private fun showPointDetails(): PopupWindow{
+        viewModelAdapter = MapPointAdapter(PointClick{/*HOLAAA*/})
+        val inflater = layoutInflater.inflate(R.layout.fragment_point_details, null, false)
+        val recyclerView = inflater.findViewById<RecyclerView>(R.id.point_recycler_view)
+        //if(recyclerView.parent != null) recyclerView.removeView(recyclerView)
+        recyclerView.adapter = viewModelAdapter
+        recyclerView.layoutManager = LinearLayoutManager(context)
+        return PopupWindow(view, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
     }
 
     override fun onPause() {
