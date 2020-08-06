@@ -18,7 +18,7 @@ data class CountryModel(
 
 @Parcelize
 data class MapPointModel(
-    val OBJECTID: Int,
+    val OBJECTID: Long,
     val Province_State: String?,
     val Country_Region: String?,
     val Last_Update: String?,

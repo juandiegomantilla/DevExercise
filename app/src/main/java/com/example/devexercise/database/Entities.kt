@@ -20,6 +20,21 @@ data class CountryEntity(
     val Active: Int?
 )
 
+@Entity
+data class MapPointEntity(
+    @PrimaryKey
+    val OBJECTID: Long,
+    val Province_State: String?,
+    val Country_Region: String?,
+    val Last_Update: String?,
+    val Lat: Double?,
+    val Long_: Double?,
+    val Confirmed: Int?,
+    val Recovered: Int?,
+    val Deaths: Int?,
+    val Active: Int?
+)
+
 fun List<CountryEntity>.asRepositoryDomainModel(): List<CountryModel>{
     return map {
         CountryModel(
@@ -35,21 +50,6 @@ fun List<CountryEntity>.asRepositoryDomainModel(): List<CountryModel>{
         )
     }
 }
-
-@Entity
-data class MapPointEntity(
-    @PrimaryKey
-    val OBJECTID: Int,
-    val Province_State: String?,
-    val Country_Region: String?,
-    val Last_Update: String?,
-    val Lat: Double?,
-    val Long_: Double?,
-    val Confirmed: Int?,
-    val Recovered: Int?,
-    val Deaths: Int?,
-    val Active: Int?
-)
 
 fun List<MapPointEntity>.asMapRepositoryDomainModel(): List<MapPointModel>{
     return map {

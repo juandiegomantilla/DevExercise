@@ -18,7 +18,7 @@ data class PointsContainer(
 
 @JsonClass(generateAdapter = true)
 data class PointDetails(
-    val OBJECTID: Int,
+    val OBJECTID: Long,
     val Province_State: String?,
     val Country_Region: String?,
     val Last_Update: String?,
@@ -31,8 +31,6 @@ data class PointDetails(
 )
 
 fun NetworkMapDataContainer.asDatabaseModel(): Array<MapPointEntity>{
-    //println("asDatabaseModel:" + pointsContainer.get(744).pointDetails.Province_State)
-    //println("asDatabaseModel:" + pointsContainer)
     return pointsContainer.map{
         MapPointEntity(
             OBJECTID = it.pointDetails.OBJECTID,

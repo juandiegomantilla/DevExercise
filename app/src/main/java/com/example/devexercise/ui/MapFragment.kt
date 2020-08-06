@@ -68,16 +68,19 @@ class MapFragment : Fragment() {
                                 pointRequested.observe(viewLifecycleOwner, Observer { point ->
                                     point?.apply {
                                         viewModelAdapter?.pointDetails = point
-                                        println(point)
+                                        //println(point)
                                     }
                                 })
+
                                 showPointDetails()
+
                                 counter++
                             }
                         } catch (e: Exception) {
-                            Snackbar.make(activity!!.findViewById(android.R.id.content), "Map point failed: " + e.message, Snackbar.LENGTH_LONG).show()
+                            Snackbar.make(activity!!.findViewById(android.R.id.content), "Point selected failed: " + e.message, Snackbar.LENGTH_LONG).show()
                         }
                     }
+
                     return super.onSingleTapConfirmed(motionEvent)
                 }
             }
