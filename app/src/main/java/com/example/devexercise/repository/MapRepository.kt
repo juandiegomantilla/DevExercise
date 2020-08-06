@@ -11,6 +11,9 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class MapRepository @Inject constructor(private val database: LocalDatabase, private val service: ArcgisMapService){
+
+    lateinit var updatedTime: String
+
     fun getPointDetails(pointId: Long): LiveData<List<MapPointModel>>{
         return Transformations.map(database.databaseDao.getMapPointFromDatabase(pointId)){
             it.asMapRepositoryDomainModel()
@@ -21,6 +24,7 @@ class MapRepository @Inject constructor(private val database: LocalDatabase, pri
         withContext(Dispatchers.IO){
             val dataList = service.getArcgisMapData().await()
             database.databaseDao.insertMapPointToDatabase(*dataList.asDatabaseModel())
+            updatedTime = dataList.pointsContainer[1].pointDetails.Last_Update.toString()
         }
     }
 }

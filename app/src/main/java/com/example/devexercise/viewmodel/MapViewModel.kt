@@ -1,5 +1,6 @@
 package com.example.devexercise.viewmodel
 
+import android.text.format.DateUtils
 import androidx.lifecycle.*
 import com.esri.arcgisruntime.concurrent.ListenableFuture
 import com.esri.arcgisruntime.data.FeatureQueryResult
@@ -29,6 +30,10 @@ class MapViewModel @Inject constructor(private val mapRepository: MapRepository)
     private val deathLayer = ArcgisLayer.deathLayer
     private val casesLayer = ArcgisLayer.casesLayer
 
+    private val _lastUpdate = MutableLiveData<CharSequence>()
+    val lastUpdate: LiveData<CharSequence>
+        get() = _lastUpdate
+
     init{
         map.operationalLayers.add(deathLayer.copy())
         map.operationalLayers.add(casesLayer.copy())
@@ -36,6 +41,13 @@ class MapViewModel @Inject constructor(private val mapRepository: MapRepository)
         viewModelScope.launch {
             mapRepository.refreshData()
         }
+    }
+
+    fun refreshMap(){
+        viewModelScope.launch {
+            mapRepository.refreshData()
+        }
+        _lastUpdate.value = DateUtils.getRelativeTimeSpanString(mapRepository.updatedTime.toLong())
     }
 
     fun getPointOnMap(envelope: Envelope): ListenableFuture<FeatureQueryResult>{

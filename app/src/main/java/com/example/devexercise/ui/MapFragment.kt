@@ -86,7 +86,18 @@ class MapFragment : Fragment() {
             }
         }
 
+        binding.updateMap.setOnClickListener {
+            viewModel.refreshMap()
+        }
+
         return binding.root
+    }
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        viewModel.lastUpdate.observe(this, Observer {lastUpdate ->
+            Snackbar.make(activity!!.findViewById(android.R.id.content), "Last map server update: $lastUpdate", Snackbar.LENGTH_LONG).show()
+        })
     }
 
     private fun showPointDetails(){
