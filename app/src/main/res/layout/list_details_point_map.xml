@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
@@ -11,7 +10,6 @@
     </data>
 
     <androidx.cardview.widget.CardView
-        android:id="@+id/cardview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
 
@@ -20,27 +18,6 @@
             android:layout_height="wrap_content"
             android:padding="5dp">
 
-            <TextView
-                android:id="@+id/objectid"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:paddingBottom="5dp"
-                android:text="ObjectID"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:text="ObjectID" />
-
-            <TextView
-                android:id="@+id/value_objectid"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginStart="30dp"
-                android:paddingBottom="5dp"
-                android:text="@{point.OBJECTID}"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/objectid"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:text="Value ObjectID" />
 
             <TextView
                 android:id="@+id/province_state"
@@ -49,7 +26,6 @@
                 android:paddingBottom="5dp"
                 android:text="Province State"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/objectid"
                 tools:text="Province State" />
 
             <TextView
@@ -61,7 +37,6 @@
                 android:text="@{point.province_State}"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/province_state"
-                app:layout_constraintTop_toBottomOf="@+id/value_objectid"
                 tools:text="Value Province State" />
 
             <TextView
@@ -168,7 +143,7 @@
                 android:layout_height="match_parent"
                 android:layout_marginStart="30dp"
                 android:paddingBottom="5dp"
-                android:text="@{point.confirmed}"
+                android:text="@{point.confirmed.toString()}"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/confirmed"
                 app:layout_constraintTop_toBottomOf="@+id/value_long_"
@@ -190,7 +165,7 @@
                 android:layout_height="match_parent"
                 android:layout_marginStart="30dp"
                 android:paddingBottom="5dp"
-                android:text="@{point.recovered}"
+                android:text="@{point.recovered.toString()}"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/recovered"
                 app:layout_constraintTop_toBottomOf="@+id/value_confirmed"
@@ -212,7 +187,7 @@
                 android:layout_height="match_parent"
                 android:layout_marginStart="30dp"
                 android:paddingBottom="5dp"
-                android:text="@{point.deaths}"
+                android:text="@{point.deaths.toString()}"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/deaths"
                 app:layout_constraintTop_toBottomOf="@+id/value_recovered"
@@ -234,7 +209,7 @@
                 android:layout_height="match_parent"
                 android:layout_marginStart="30dp"
                 android:paddingBottom="5dp"
-                android:text="@{point.active}"
+                android:text="@{point.active.toString()}"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/active"
                 app:layout_constraintTop_toBottomOf="@+id/value_deaths"

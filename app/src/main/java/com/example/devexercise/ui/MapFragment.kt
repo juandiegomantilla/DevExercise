@@ -1,5 +1,7 @@
 package com.example.devexercise.ui
 
+import android.annotation.SuppressLint
+import android.app.Dialog
 import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
@@ -11,6 +13,7 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat.getSystemService
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -44,8 +47,6 @@ class MapFragment : Fragment() {
 
     private var viewModelAdapter: MapPointAdapter? = null
 
-    private var pointPopup: PopupWindow? = null
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val binding: FragmentMapBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_map, container, false)
 
@@ -53,34 +54,13 @@ class MapFragment : Fragment() {
 
         binding.viewModel = viewModel
 
-        //val window = PopupWindow(context)
-        //val view = layoutInflater.inflate(R.layout.fragment_point_details, null)
-        //window.contentView = view
-        //window.showAtLocation(mapView, Gravity.CENTER, 0, 0)
-        /*val calloutContent = binding.root.findViewById<RecyclerView>(R.id.point_recycler_view).apply {
-            layoutManager = LinearLayoutManager(context)
-            adapter = viewModelAdapter
-        }*/
-
-        val calloutContent = TextView(context).apply {
-            setTextColor(Color.BLACK)
-            isSingleLine = false
-            isVerticalScrollBarEnabled = true
-            scrollBarStyle = View.SCROLLBARS_INSIDE_INSET
-            movementMethod = ScrollingMovementMethod()
-            setLines(1)
-        }
+        viewModelAdapter = MapPointAdapter(PointClick{ println("hello") })
 
         binding.mapView.let {
             it.map = viewModel.map
             it.selectionProperties.color = Color.BLUE
             it.onTouchListener = object : DefaultMapViewOnTouchListener(context, it){
                 override fun onSingleTapConfirmed(motionEvent: MotionEvent): Boolean {
-
-                    if(it.callout.isShowing) {
-                        it.callout.dismiss()
-                        calloutContent.text = null
-                    }
 
                     val tappedPoint = it.screenToLocation(android.graphics.Point(motionEvent.x.roundToInt(), motionEvent.y.roundToInt()))
                     val tolerance = 25
@@ -104,24 +84,12 @@ class MapFragment : Fragment() {
                                         println(point)
                                     }
                                 })
-
-                                pointPopup = showPointDetails()
-                                pointPopup?.isOutsideTouchable = true
-                                pointPopup?.isFocusable = true
-                                pointPopup?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-                                pointPopup?.showAtLocation(it, Gravity.CENTER, 0, 0)
-
-                                calloutContent.text = pointId.toString()
+                                showPointDetails()
                                 counter++
-                                it.callout.apply {
-                                    location = tappedPoint
-                                    content = calloutContent
-                                    show()
-                                }
                             }
                         } catch (e: Exception) {
                             println(e)
-                            Snackbar.make(activity!!.findViewById(android.R.id.content), "Select map point failed: " + e.message, Snackbar.LENGTH_LONG).show()
+                            Snackbar.make(activity!!.findViewById(android.R.id.content), "Map point failed: " + e.message, Snackbar.LENGTH_LONG).show()
                         }
                     }
                     return super.onSingleTapConfirmed(motionEvent)
@@ -132,14 +100,18 @@ class MapFragment : Fragment() {
         return binding.root
     }
 
-    private fun showPointDetails(): PopupWindow{
-        viewModelAdapter = MapPointAdapter(PointClick{/*HOLAAA*/})
-        val inflater = layoutInflater.inflate(R.layout.fragment_point_details, null, false)
-        val recyclerView = inflater.findViewById<RecyclerView>(R.id.point_recycler_view)
-        //if(recyclerView.parent != null) recyclerView.removeView(recyclerView)
-        recyclerView.adapter = viewModelAdapter
-        recyclerView.layoutManager = LinearLayoutManager(context)
-        return PopupWindow(view, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+    private fun showPointDetails(){
+        val dialog = Dialog(requireContext())
+        dialog.setCanceledOnTouchOutside(true)
+        dialog.setContentView(R.layout.fragment_point_details)
+        dialog.findViewById<RecyclerView>(R.id.point_recycler_view).apply {
+            adapter = viewModelAdapter
+            layoutManager = LinearLayoutManager(context)
+        }
+        if(dialog.isShowing){
+            dialog.dismiss()
+        }
+        dialog.show()
     }
 
     override fun onPause() {
