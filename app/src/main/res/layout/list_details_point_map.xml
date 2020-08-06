@@ -62,35 +62,13 @@
                 tools:text="Value Country Region" />
 
             <TextView
-                android:id="@+id/last_update"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:paddingBottom="5dp"
-                android:text="Last Update"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/country_region"
-                tools:text="Last Update" />
-
-            <TextView
-                android:id="@+id/value_last_update"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginStart="30dp"
-                android:paddingBottom="5dp"
-                android:text="@{point.last_Update}"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/last_update"
-                app:layout_constraintTop_toBottomOf="@+id/value_country_region"
-                tools:text="Value Last Update" />
-
-            <TextView
                 android:id="@+id/latitude"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:paddingBottom="5dp"
                 android:text="Latitude"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/last_update"
+                app:layout_constraintTop_toBottomOf="@+id/country_region"
                 tools:text="Latitude" />
 
             <TextView
@@ -102,7 +80,7 @@
                 android:text="@{point.lat.toString()}"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/latitude"
-                app:layout_constraintTop_toBottomOf="@+id/value_last_update"
+                app:layout_constraintTop_toBottomOf="@+id/country_region"
                 tools:text="Value Latitude" />
 
             <TextView
