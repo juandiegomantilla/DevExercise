@@ -19,13 +19,12 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class MapViewModel(application: Application): AndroidViewModel(application), MapViewModelImpl{
+class MapViewModel @Inject constructor(private val mapRepository: MapRepository): ViewModel(), MapViewModelImpl{
 
     private val viewModelJob = SupervisorJob()
     private val viewModelScope = CoroutineScope(viewModelJob + Dispatchers.Main)
-    private val database = getDatabase(application)
-    private val mapRepository = MapRepository(database)
 
     val map = createMap()
 
@@ -33,8 +32,8 @@ class MapViewModel(application: Application): AndroidViewModel(application), Map
     private val casesLayer = ArcgisLayer.casesLayer
 
     init{
-        map.operationalLayers.add(deathLayer)
-        map.operationalLayers.add(casesLayer)
+        map.operationalLayers.add(deathLayer.copy())
+        map.operationalLayers.add(casesLayer.copy())
         map.loadAsync()
         viewModelScope.launch {
             mapRepository.refreshData()

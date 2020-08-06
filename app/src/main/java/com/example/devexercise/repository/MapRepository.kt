@@ -4,13 +4,13 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.Transformations
 import com.example.devexercise.database.LocalDatabase
 import com.example.devexercise.database.asMapRepositoryDomainModel
-import com.example.devexercise.network.ArcgisMapPoints
+import com.example.devexercise.network.ArcgisMapService
 import com.example.devexercise.network.asDatabaseModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
-class MapRepository(private val database: LocalDatabase){
-
+class MapRepository @Inject constructor(private val database: LocalDatabase, private val service: ArcgisMapService){
     fun getPointDetails(pointId: Long): LiveData<List<MapPointModel>>{
         return Transformations.map(database.databaseDao.getMapPointFromDatabase(pointId)){
             it.asMapRepositoryDomainModel()
@@ -19,7 +19,7 @@ class MapRepository(private val database: LocalDatabase){
 
     suspend fun refreshData(){
         withContext(Dispatchers.IO){
-            val dataList = ArcgisMapPoints.retrofitMapService.getArcgisMapData().await()
+            val dataList = service.getArcgisMapData().await()
             database.databaseDao.insertMapPointToDatabase(*dataList.asDatabaseModel())
         }
     }

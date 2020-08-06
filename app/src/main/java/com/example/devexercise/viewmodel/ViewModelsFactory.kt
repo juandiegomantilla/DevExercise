@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.devexercise.database.LocalDatabase
 import com.example.devexercise.repository.CountryModel
 import com.example.devexercise.repository.CountryRepository
+import com.example.devexercise.repository.MapRepository
 
 class CountryMapViewModelFactory(private val country: CountryModel, private val application: Application) : ViewModelProvider.Factory {
     @Suppress("unchecked_cast")
@@ -27,11 +28,11 @@ class HomeViewModelFactory(val repository: CountryRepository): ViewModelProvider
     }
 }
 
-class MapViewModelFactory(val app: Application): ViewModelProvider.Factory{
+    class MapViewModelFactory(val repository: MapRepository): ViewModelProvider.Factory{
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         if(modelClass.isAssignableFrom(MapViewModel::class.java)){
             @Suppress("UNCHECKED_CAST")
-            return MapViewModel(app) as T
+            return MapViewModel(repository) as T
         }
         throw IllegalArgumentException("Unable to construct MapViewModelFactory")
     }

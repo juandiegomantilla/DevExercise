@@ -1,6 +1,7 @@
 package com.example.devexercise.ui
 
 import android.app.Dialog
+import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
 import android.view.*
@@ -12,6 +13,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.esri.arcgisruntime.geometry.Envelope
 import com.esri.arcgisruntime.mapping.view.DefaultMapViewOnTouchListener
+import com.example.devexercise.DevExerciseApp
 import com.example.devexercise.R
 import com.example.devexercise.databinding.FragmentMapBinding
 import com.example.devexercise.util.MapPointAdapter
@@ -19,19 +21,19 @@ import com.example.devexercise.viewmodel.MapViewModel
 import com.example.devexercise.viewmodel.MapViewModelFactory
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_map.*
+import javax.inject.Inject
 import kotlin.math.roundToInt
 
 class MapFragment : Fragment() {
 
-    private val viewModel: MapViewModel by lazy {
-        val activity = requireNotNull(this.activity) {
-            "Unable to access the ViewModel"
-        }
-        ViewModelProviders.of(this, MapViewModelFactory(activity.application))
-            .get(MapViewModel::class.java)
-    }
+    @Inject
+    lateinit var viewModel: MapViewModel
 
     private var viewModelAdapter: MapPointAdapter? = null
+    override fun onAttach(context: Context) {
+        (context.applicationContext as DevExerciseApp).appComp().inject(this)
+        super.onAttach(context)
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val binding: FragmentMapBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_map, container, false)
