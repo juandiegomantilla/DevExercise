@@ -1,38 +1,24 @@
 package com.example.devexercise.ui
 
-import android.annotation.SuppressLint
 import android.app.Dialog
-import android.content.Context
 import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.text.method.ScrollingMovementMethod
 import android.view.*
-import android.widget.PopupWindow
-import android.widget.TextView
-import androidx.core.content.ContextCompat.getSystemService
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.esri.arcgisruntime.data.QueryParameters
-import com.esri.arcgisruntime.data.ServiceFeatureTable
 import com.esri.arcgisruntime.geometry.Envelope
-import com.esri.arcgisruntime.layers.FeatureLayer
 import com.esri.arcgisruntime.mapping.view.DefaultMapViewOnTouchListener
 import com.example.devexercise.R
 import com.example.devexercise.databinding.FragmentMapBinding
-import com.example.devexercise.network.ArcgisLayer
 import com.example.devexercise.util.MapPointAdapter
-import com.example.devexercise.util.PointClick
 import com.example.devexercise.viewmodel.MapViewModel
 import com.example.devexercise.viewmodel.MapViewModelFactory
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_map.*
-import kotlinx.android.synthetic.main.fragment_point_details.view.*
 import kotlin.math.roundToInt
 
 class MapFragment : Fragment() {
@@ -54,7 +40,7 @@ class MapFragment : Fragment() {
 
         binding.viewModel = viewModel
 
-        viewModelAdapter = MapPointAdapter(PointClick{ println("hello") })
+        viewModelAdapter = MapPointAdapter()
 
         binding.mapView.let {
             it.map = viewModel.map
@@ -66,17 +52,18 @@ class MapFragment : Fragment() {
                     val tolerance = 25
                     val mapTolerance = tolerance * it.unitsPerDensityIndependentPixel
                     val envelope = Envelope(tappedPoint.x - mapTolerance, tappedPoint.y - mapTolerance, tappedPoint.x + mapTolerance, tappedPoint.y + mapTolerance, it.spatialReference)
-                    val featureQueryResultFuture = viewModel.getFeatureQueryResult(envelope)
-                    featureQueryResultFuture.addDoneListener {
+                    val pointSelectedOnMap = viewModel.getPointOnMap(envelope)
+
+                    pointSelectedOnMap.addDoneListener {
                         try {
-                            val featureQueryResult = featureQueryResultFuture.get()
+                            val featureQueryResult = pointSelectedOnMap.get()
                             val iterator = featureQueryResult.iterator()
                             var counter = 0
                             while (iterator.hasNext()) {
                                 val feature = iterator.next()
                                 val attr = feature.attributes
                                 val pointId = attr["OBJECTID"] as Long
-                                val pointRequested = viewModel.mapDataList(pointId)
+                                val pointRequested = viewModel.getMapPointInfo(pointId)
 
                                 pointRequested.observe(viewLifecycleOwner, Observer { point ->
                                     point?.apply {
@@ -88,7 +75,6 @@ class MapFragment : Fragment() {
                                 counter++
                             }
                         } catch (e: Exception) {
-                            println(e)
                             Snackbar.make(activity!!.findViewById(android.R.id.content), "Map point failed: " + e.message, Snackbar.LENGTH_LONG).show()
                         }
                     }

@@ -5,7 +5,6 @@ import androidx.lifecycle.*
 import com.esri.arcgisruntime.concurrent.ListenableFuture
 import com.esri.arcgisruntime.data.FeatureQueryResult
 import com.esri.arcgisruntime.data.QueryParameters
-import com.esri.arcgisruntime.data.ServiceFeatureTable
 import com.esri.arcgisruntime.geometry.Envelope
 import com.esri.arcgisruntime.geometry.SpatialReference
 import com.esri.arcgisruntime.layers.FeatureLayer
@@ -14,14 +13,12 @@ import com.esri.arcgisruntime.mapping.Basemap
 import com.esri.arcgisruntime.mapping.Viewpoint
 import com.example.devexercise.database.getDatabase
 import com.example.devexercise.network.ArcgisLayer
-import com.example.devexercise.repository.MapPointModel
 import com.example.devexercise.repository.MapRepository
 import com.example.devexercise.viewmodel.impl.MapViewModelImpl
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 class MapViewModel(application: Application): AndroidViewModel(application), MapViewModelImpl{
 
@@ -44,15 +41,13 @@ class MapViewModel(application: Application): AndroidViewModel(application), Map
         }
     }
 
-    fun mapDataList(pointId: Long): LiveData<List<MapPointModel>>{
-        return mapRepository.getPointDetails(pointId)
-    }
-
-    fun getFeatureQueryResult(envelope: Envelope): ListenableFuture<FeatureQueryResult>{
+    fun getPointOnMap(envelope: Envelope): ListenableFuture<FeatureQueryResult>{
         val queryParameters = QueryParameters()
         queryParameters.geometry = envelope
         return casesLayer.selectFeaturesAsync(queryParameters, FeatureLayer.SelectionMode.NEW)
     }
+
+    fun getMapPointInfo(pointId: Long) = mapRepository.getPointDetails(pointId)
 
     override fun createMap(): ArcGISMap{
         val baseMap = ArcGISMap(Basemap.createTopographic())

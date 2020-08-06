@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.devexercise.databinding.ListDetailsPointMapBinding
 import com.example.devexercise.repository.MapPointModel
 
-class MapPointAdapter(val onClickListener: PointClick): RecyclerView.Adapter<MapPointViewHolder>(){
+class MapPointAdapter: RecyclerView.Adapter<MapPointViewHolder>(){
 
     var pointDetails: List<MapPointModel> = emptyList()
         set(value){
@@ -31,10 +31,5 @@ class MapPointAdapter(val onClickListener: PointClick): RecyclerView.Adapter<Map
         holder.viewDataBinding.also{
             it.point = pointDetails[position]
         }
-        val mapPointinfo = pointDetails.get(position)
-        holder.itemView.setOnClickListener {
-            onClickListener.onClick(mapPointinfo)
-        }
-
     }
 }
