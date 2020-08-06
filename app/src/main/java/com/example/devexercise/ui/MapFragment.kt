@@ -8,7 +8,6 @@ import android.view.*
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.esri.arcgisruntime.geometry.Envelope
@@ -18,7 +17,6 @@ import com.example.devexercise.R
 import com.example.devexercise.databinding.FragmentMapBinding
 import com.example.devexercise.util.MapPointAdapter
 import com.example.devexercise.viewmodel.MapViewModel
-import com.example.devexercise.viewmodel.MapViewModelFactory
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_map.*
 import javax.inject.Inject

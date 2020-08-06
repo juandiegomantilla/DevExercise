@@ -1,6 +1,5 @@
 package com.example.devexercise.viewmodel
 
-import android.app.Application
 import androidx.lifecycle.*
 import com.esri.arcgisruntime.concurrent.ListenableFuture
 import com.esri.arcgisruntime.data.FeatureQueryResult
@@ -11,7 +10,6 @@ import com.esri.arcgisruntime.layers.FeatureLayer
 import com.esri.arcgisruntime.mapping.ArcGISMap
 import com.esri.arcgisruntime.mapping.Basemap
 import com.esri.arcgisruntime.mapping.Viewpoint
-import com.example.devexercise.database.getDatabase
 import com.example.devexercise.network.ArcgisLayer
 import com.example.devexercise.repository.MapRepository
 import com.example.devexercise.viewmodel.impl.MapViewModelImpl

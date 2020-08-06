@@ -9,21 +9,17 @@ import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.esri.arcgisruntime.geometry.Envelope
 import com.esri.arcgisruntime.mapping.view.DefaultMapViewOnTouchListener
-import com.esri.arcgisruntime.mapping.view.MapView
 import com.example.devexercise.DevExerciseApp
 
 import com.example.devexercise.R
 import com.example.devexercise.databinding.FragmentCountryMapBinding
 import com.example.devexercise.util.MapPointAdapter
 import com.example.devexercise.viewmodel.CountryMapViewModel
-import com.example.devexercise.viewmodel.CountryMapViewModelFactory
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_country_map.*
 import javax.inject.Inject

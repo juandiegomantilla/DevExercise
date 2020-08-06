@@ -6,7 +6,6 @@ import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.NavigationUI
@@ -19,7 +18,6 @@ import com.example.devexercise.databinding.FragmentHomeBinding
 import com.example.devexercise.util.CountryClick
 import com.example.devexercise.util.HomeAdapter
 import com.example.devexercise.viewmodel.HomeViewModel
-import com.example.devexercise.viewmodel.HomeViewModelFactory
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_home.*
 import javax.inject.Inject

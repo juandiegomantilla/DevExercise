@@ -1,6 +1,5 @@
 package com.example.devexercise.viewmodel
 
-import android.app.Application
 import androidx.lifecycle.*
 import com.esri.arcgisruntime.concurrent.ListenableFuture
 import com.esri.arcgisruntime.data.FeatureQueryResult
