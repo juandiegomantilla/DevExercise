@@ -13,6 +13,7 @@ import com.esri.arcgisruntime.mapping.Basemap
 import com.esri.arcgisruntime.mapping.Viewpoint
 import com.example.devexercise.network.ArcgisLayer
 import com.example.devexercise.repository.CountryModel
+import com.example.devexercise.repository.MapPointModel
 import com.example.devexercise.repository.MapRepository
 import com.example.devexercise.viewmodel.impl.CountryMapViewModelImpl
 import kotlinx.coroutines.CoroutineScope
@@ -95,7 +96,13 @@ class CountryMapViewModel @Inject constructor(private val mapRepository: MapRepo
         return casesLayer.selectFeaturesAsync(queryParameters, FeatureLayer.SelectionMode.NEW)
     }
 
-    override fun getMapPointInfo(pointId: Long) = mapRepository.getPointDetails(pointId)
+    override fun getMapPointInfo(pointSelectedOnMap: FeatureQueryResult): LiveData<List<MapPointModel>> {
+        val iterator = pointSelectedOnMap.iterator()
+        val feature = iterator.next()
+        val attr = feature.attributes
+        val pointId = attr["OBJECTID"] as Long
+        return mapRepository.getPointDetails(pointId)
+    }
 
     override fun onCleared() {
         super.onCleared()

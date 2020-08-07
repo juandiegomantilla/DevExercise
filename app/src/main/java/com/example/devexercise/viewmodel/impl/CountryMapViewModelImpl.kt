@@ -13,5 +13,5 @@ interface CountryMapViewModelImpl {
     fun refreshMap()
     fun addMapLayers(map: ArcGISMap)
     fun getPointOnMap(envelope: Envelope): ListenableFuture<FeatureQueryResult>
-    fun getMapPointInfo(pointId: Long): LiveData<List<MapPointModel>>
+    fun getMapPointInfo(pointSelectedOnMap: FeatureQueryResult): LiveData<List<MapPointModel>>
 }

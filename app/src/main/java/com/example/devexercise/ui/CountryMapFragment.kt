@@ -62,34 +62,19 @@ class CountryMapFragment : Fragment() {
 
                     pointSelectedOnMap.addDoneListener {
                         try {
-                            val featureQueryResult = pointSelectedOnMap.get()
-                            val iterator = featureQueryResult.iterator()
-                            var counter = 0
-                            while (iterator.hasNext()) {
-                                val feature = iterator.next()
-                                val attr = feature.attributes
-                                val pointId = attr["OBJECTID"] as Long
-                                val pointRequested = viewModel.getMapPointInfo(pointId)
-
-                                pointRequested.observe(viewLifecycleOwner, Observer { point ->
-                                    point?.apply {
-                                        viewModelAdapter?.pointDetails = point
-                                        //println(point)
-                                    }
-                                })
-
-                                showPointDetails()
-
-                                counter++
-                            }
+                            val pointRequested = viewModel.getMapPointInfo(pointSelectedOnMap.get())
+                            pointRequested.observe(viewLifecycleOwner, Observer { point ->
+                                point?.apply {
+                                    viewModelAdapter?.pointDetails = point
+                                    //println(point)
+                                }
+                            })
+                            showPointDetails()
                         } catch (e: Exception) {
-                            Snackbar.make(
-                                activity!!.findViewById(android.R.id.content),
-                                "Point selected failed: " + e.message,
-                                Snackbar.LENGTH_LONG
-                            ).show()
+                            Snackbar.make(activity!!.findViewById(android.R.id.content), "Point selected failed: " + e.message, Snackbar.LENGTH_LONG).show()
                         }
                     }
+
                     return super.onSingleTapConfirmed(motionEvent)
                 }
             }
