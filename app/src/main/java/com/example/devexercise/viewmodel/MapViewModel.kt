@@ -14,14 +14,15 @@ import com.esri.arcgisruntime.mapping.Viewpoint
 import com.example.devexercise.network.ArcgisLayer
 import com.example.devexercise.repository.MapPointModel
 import com.example.devexercise.repository.MapRepository
-import com.example.devexercise.viewmodel.impl.MapViewModelImpl
+import com.example.devexercise.viewmodel.impl.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class MapViewModel @Inject constructor(private val mapRepository: MapRepository): ViewModel(), MapViewModelImpl{
+class MapViewModel @Inject constructor(private val mapRepository: MapRepository): ViewModel(),
+    CreateWorldMap, RefreshMap, AddMapLayers, GetPointOnMap, GetMapPointInfo{
 
     private val viewModelJob = SupervisorJob()
     private val viewModelScope = CoroutineScope(viewModelJob + Dispatchers.Main)
