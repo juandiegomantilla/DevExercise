@@ -39,17 +39,16 @@ class HomeViewModel @Inject constructor(private val dataRepository: CountryRepos
 
     val dataList = dataRepository.country
 
+    override fun displayCountryOnMap(country: CountryModel) {
+        _navigateToSelectedCountry.value = country
+    }
+
+    override fun displayCountryOnMapComplete() {
+        _navigateToSelectedCountry.value = null
+    }
 
     override fun onCleared() {
         super.onCleared()
         viewModelJob.cancel()
-    }
-
-    fun displayCountryOnMap(country: CountryModel) {
-        _navigateToSelectedCountry.value = country
-    }
-
-    fun displayCountryOnMapComplete() {
-        _navigateToSelectedCountry.value = null
     }
 }

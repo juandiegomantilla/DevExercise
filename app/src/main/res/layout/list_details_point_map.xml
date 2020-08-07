@@ -24,19 +24,23 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:paddingBottom="5dp"
-                android:text="Province State"
+                android:text="@string/province_state"
+                android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
+                tools:layout_editor_absoluteY="5dp"
                 tools:text="Province State" />
 
             <TextView
                 android:id="@+id/value_province_state"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginStart="30dp"
+                android:layout_marginStart="145dp"
                 android:paddingBottom="5dp"
                 android:text="@{point.province_State}"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/province_state"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toStartOf="parent"
+                tools:layout_editor_absoluteY="5dp"
                 tools:text="Value Province State" />
 
             <TextView
@@ -44,7 +48,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:paddingBottom="5dp"
-                android:text="Country Region"
+                android:text="@string/country_region"
+                android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/province_state"
                 tools:text="Country Region" />
@@ -53,11 +58,12 @@
                 android:id="@+id/value_country_region"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginStart="30dp"
+                android:layout_marginStart="145dp"
                 android:paddingBottom="5dp"
                 android:text="@{point.country_Region}"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/country_region"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/value_province_state"
                 tools:text="Value Country Region" />
 
@@ -66,7 +72,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:paddingBottom="5dp"
-                android:text="Latitude"
+                android:text="@string/latitude"
+                android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/country_region"
                 tools:text="Latitude" />
@@ -75,12 +82,13 @@
                 android:id="@+id/value_lat"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginStart="30dp"
+                android:layout_marginStart="145dp"
                 android:paddingBottom="5dp"
                 android:text="@{point.lat.toString()}"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/latitude"
-                app:layout_constraintTop_toBottomOf="@+id/country_region"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/value_country_region"
                 tools:text="Value Latitude" />
 
             <TextView
@@ -88,7 +96,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:paddingBottom="5dp"
-                android:text="Longitude"
+                android:text="@string/longitude"
+                android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/latitude"
                 tools:text="Longitude" />
@@ -97,11 +106,12 @@
                 android:id="@+id/value_long_"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginStart="30dp"
+                android:layout_marginStart="145dp"
                 android:paddingBottom="5dp"
                 android:text="@{point.long_.toString()}"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/longitude"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/value_lat"
                 tools:text="Value Longitude" />
 
@@ -110,7 +120,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:paddingBottom="5dp"
-                android:text="Confirmed"
+                android:text="@string/confirmed"
+                android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/longitude"
                 tools:text="Confirmed" />
@@ -119,11 +130,12 @@
                 android:id="@+id/value_confirmed"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginStart="30dp"
+                android:layout_marginStart="145dp"
                 android:paddingBottom="5dp"
                 android:text="@{point.confirmed.toString()}"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/confirmed"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/value_long_"
                 tools:text="Value Confirmed" />
 
@@ -132,7 +144,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:paddingBottom="5dp"
-                android:text="Recovered"
+                android:text="@string/recovered"
+                android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/confirmed"
                 tools:text="Recovered" />
@@ -141,11 +154,12 @@
                 android:id="@+id/value_recovered"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginStart="30dp"
+                android:layout_marginStart="145dp"
                 android:paddingBottom="5dp"
                 android:text="@{point.recovered.toString()}"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/recovered"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/value_confirmed"
                 tools:text="Value Recovered" />
 
@@ -154,7 +168,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:paddingBottom="5dp"
-                android:text="Deaths"
+                android:text="@string/deaths"
+                android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/recovered"
                 tools:text="Deaths" />
@@ -163,11 +178,12 @@
                 android:id="@+id/value_deaths"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginStart="30dp"
+                android:layout_marginStart="145dp"
                 android:paddingBottom="5dp"
                 android:text="@{point.deaths.toString()}"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/deaths"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/value_recovered"
                 tools:text="Value Deaths" />
 
@@ -176,7 +192,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:paddingBottom="5dp"
-                android:text="Active"
+                android:text="@string/active"
+                android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/deaths"
                 tools:text="Active" />
@@ -185,11 +202,12 @@
                 android:id="@+id/value_active"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginStart="30dp"
+                android:layout_marginStart="145dp"
                 android:paddingBottom="5dp"
                 android:text="@{point.active.toString()}"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/active"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/value_deaths"
                 tools:text="Value Active" />
 

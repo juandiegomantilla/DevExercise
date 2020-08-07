@@ -72,7 +72,7 @@ class CountryMapViewModel @Inject constructor(private val mapRepository: MapRepo
         }
     }
 
-    fun refreshMap(){
+    override fun refreshMap(){
         addMapLayers(controlMap)
         viewModelScope.launch {
             mapRepository.refreshData()
@@ -80,7 +80,7 @@ class CountryMapViewModel @Inject constructor(private val mapRepository: MapRepo
         _lastUpdate.value = DateUtils.getRelativeTimeSpanString(mapRepository.updatedTime.toLong())
     }
 
-    private fun addMapLayers(map: ArcGISMap){
+    override fun addMapLayers(map: ArcGISMap){
         if(map.operationalLayers != null){
             map.operationalLayers.clear()
         }
@@ -89,13 +89,13 @@ class CountryMapViewModel @Inject constructor(private val mapRepository: MapRepo
         map.loadAsync()
     }
 
-    fun getPointOnMap(envelope: Envelope): ListenableFuture<FeatureQueryResult> {
+    override fun getPointOnMap(envelope: Envelope): ListenableFuture<FeatureQueryResult> {
         val queryParameters = QueryParameters()
         queryParameters.geometry = envelope
         return casesLayer.selectFeaturesAsync(queryParameters, FeatureLayer.SelectionMode.NEW)
     }
 
-    fun getMapPointInfo(pointId: Long) = mapRepository.getPointDetails(pointId)
+    override fun getMapPointInfo(pointId: Long) = mapRepository.getPointDetails(pointId)
 
     override fun onCleared() {
         super.onCleared()

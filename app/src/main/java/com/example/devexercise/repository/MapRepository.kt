@@ -6,21 +6,22 @@ import com.example.devexercise.database.LocalDatabase
 import com.example.devexercise.database.asMapRepositoryDomainModel
 import com.example.devexercise.network.ArcgisMapService
 import com.example.devexercise.network.asDatabaseModel
+import com.example.devexercise.repository.impl.MapRepositoryImpl
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
-class MapRepository @Inject constructor(private val database: LocalDatabase, private val service: ArcgisMapService){
+class MapRepository @Inject constructor(private val database: LocalDatabase, private val service: ArcgisMapService): MapRepositoryImpl{
 
     lateinit var updatedTime: String
 
-    fun getPointDetails(pointId: Long): LiveData<List<MapPointModel>>{
+    override fun getPointDetails(pointId: Long): LiveData<List<MapPointModel>>{
         return Transformations.map(database.databaseDao.getMapPointFromDatabase(pointId)){
             it.asMapRepositoryDomainModel()
         }
     }
 
-    suspend fun refreshData(){
+    override suspend fun refreshData(){
         withContext(Dispatchers.IO){
             val dataList = service.getArcgisMapData().await()
             database.databaseDao.insertMapPointToDatabase(*dataList.asDatabaseModel())
