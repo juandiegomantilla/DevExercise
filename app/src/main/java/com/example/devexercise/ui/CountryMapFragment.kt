@@ -93,14 +93,24 @@ class CountryMapFragment : Fragment() {
                     return super.onSingleTapConfirmed(motionEvent)
                 }
             }
+
+            binding.updateMap.setOnClickListener {
+                viewModel.refreshMap()
+            }
+
             return binding.root
         }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         viewModel.mapStatus.observe(this, Observer { message ->
             Snackbar.make(activity!!.findViewById(android.R.id.content), message, Snackbar.LENGTH_LONG).show()
+        })
+
+        viewModel.lastUpdate.observe(this, Observer {lastUpdate ->
+            Snackbar.make(activity!!.findViewById(android.R.id.content), "Last map server update: $lastUpdate", Snackbar.LENGTH_LONG).show()
         })
     }
 

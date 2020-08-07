@@ -35,19 +35,35 @@ class MapViewModel @Inject constructor(private val mapRepository: MapRepository)
         get() = _lastUpdate
 
     init{
-        map.operationalLayers.add(deathLayer.copy())
-        map.operationalLayers.add(casesLayer.copy())
-        map.loadAsync()
+        addMapLayers(map)
         viewModelScope.launch {
             mapRepository.refreshData()
         }
     }
 
+    override fun createMap(): ArcGISMap{
+        val baseMap = ArcGISMap(Basemap.createTopographic())
+        val initialExtent = Envelope(-157.498337, -41.4544999999999, 174.886, 64.9631000000001, SpatialReference.create(4326))
+        val viewPoint = Viewpoint(initialExtent)
+        baseMap.initialViewpoint = viewPoint
+        return baseMap
+    }
+
     fun refreshMap(){
+        addMapLayers(map)
         viewModelScope.launch {
             mapRepository.refreshData()
         }
         _lastUpdate.value = DateUtils.getRelativeTimeSpanString(mapRepository.updatedTime.toLong())
+    }
+
+    private fun addMapLayers(map: ArcGISMap){
+        if(map.operationalLayers != null){
+            map.operationalLayers.clear()
+        }
+        map.operationalLayers.add(deathLayer.copy())
+        map.operationalLayers.add(casesLayer.copy())
+        map.loadAsync()
     }
 
     fun getPointOnMap(envelope: Envelope): ListenableFuture<FeatureQueryResult>{
@@ -57,14 +73,6 @@ class MapViewModel @Inject constructor(private val mapRepository: MapRepository)
     }
 
     fun getMapPointInfo(pointId: Long) = mapRepository.getPointDetails(pointId)
-
-    override fun createMap(): ArcGISMap{
-        val baseMap = ArcGISMap(Basemap.createTopographic())
-        val initialExtent = Envelope(-99.999999999999929, 40.000000000000057, -99.999999999999929, 40.000000000000057, SpatialReference.create(102100))
-        val viewPoint = Viewpoint(initialExtent)
-        baseMap.initialViewpoint = viewPoint
-        return baseMap
-    }
 
     override fun onCleared() {
         super.onCleared()
