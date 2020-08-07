@@ -14,10 +14,10 @@ import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 
 @RunWith(MockitoJUnitRunner::class)
-class ArcgisApiServiceExceptionTest {
+class ArcgisMapServiceExceptionTest {
 
     @Mock
-    lateinit var service: ArcgisApiService
+    lateinit var mapService: ArcgisMapService
 
     @Before
     fun setup() {
@@ -26,18 +26,18 @@ class ArcgisApiServiceExceptionTest {
             .build()
 
         val retrofit = Retrofit.Builder()
-            .baseUrl(COUNTRY_LAYER)
-            .client(OkHttpClient.Builder().addInterceptor(MockApiInterceptor()).build())
+            .baseUrl(CASES_LAYER)
+            .client(OkHttpClient.Builder().addInterceptor(MockMapInterceptor()).build())
             .addConverterFactory(MoshiConverterFactory.create(moshi))
             .addCallAdapterFactory(CoroutineCallAdapterFactory())
             .build()
-        service = retrofit.create(ArcgisApiService::class.java)
+        mapService = retrofit.create(ArcgisMapService::class.java)
     }
 
     @Test(expected = retrofit2.HttpException::class)
     fun `Throw HttpException when 404 occurs`(){
         runBlocking {
-            service.getArcgisData().await()
+            mapService.getArcgisMapData().await()
         }
     }
 }

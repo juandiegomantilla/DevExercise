@@ -14,7 +14,7 @@ const val COUNTRY_LAYER = "https://services1.arcgis.com/0MSEUqKaxRlEPj5g/ArcGIS/
 
 //QUERIES
 private const val QUERY_COUNTRY_LAYER = "query?where=1%3D1&outFields=*&f=json"
-private const val QUERY_CASES_LAYER = "query?where=1%3D1&outFields=OBJECTID%2CProvince_State%2CCountry_Region%2CLast_Update%2CLat%2CLong_%2CConfirmed%2CRecovered%2CDeaths%2CActive&returnGeometry=false&f=pjson"
+private const val QUERY_CASES_LAYER = "query?where=1%3D1&outFields=OBJECTID%2CProvince_State%2CCountry_Region%2CLast_Update%2CLat%2CLong_%2CConfirmed%2CRecovered%2CDeaths%2CActive&returnGeometry=false&f=json"
 
 
 //Cases by Country Query:
