@@ -22,11 +22,14 @@ object ArcgisAuthentication {
                         val licenceInfo = licenseFuture.get()
                         val licenceJson = licenceInfo.toJson()
                         ArcGISRuntimeEnvironment.setLicense(licenceInfo)
-                        println("ArcGIS Runtime Environment Successfully Licenced for user: $username")
+                        println("ArcGIS Runtime Environment Successfully Licenced for user: ${portal.user.fullName}")
+                        println("Status: ${portal.loadStatus}")
                     } catch (e: Exception){
                         println("Error: $e")
                     }
                 }
+            } else {
+                println("Status: ${portal.loadStatus}")
             }
         }
     }
