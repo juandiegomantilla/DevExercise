@@ -29,3 +29,8 @@ data class MapPointModel(
     val Deaths: Int?,
     val Active: Int?
 ) : Parcelable{}
+
+data class LoggedUser(
+    val userId: String,
+    val displayName: String
+)

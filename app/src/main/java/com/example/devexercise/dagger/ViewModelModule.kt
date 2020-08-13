@@ -1,8 +1,10 @@
 package com.example.devexercise.dagger
 
 import com.example.devexercise.repository.CountryRepository
+import com.example.devexercise.repository.LoginRepository
 import com.example.devexercise.repository.MapRepository
 import com.example.devexercise.viewmodel.HomeViewModel
+import com.example.devexercise.viewmodel.LoginViewModel
 import com.example.devexercise.viewmodel.MapViewModel
 import com.example.devexercise.viewmodel.impl.HomeViewModelImpl
 import dagger.Module

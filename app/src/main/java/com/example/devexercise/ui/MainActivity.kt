@@ -5,7 +5,6 @@ import android.os.Bundle
 import androidx.navigation.findNavController
 import androidx.navigation.ui.NavigationUI
 import com.example.devexercise.R
-import com.example.devexercise.network.ArcgisAuthentication
 
 class MainActivity : AppCompatActivity() {
 

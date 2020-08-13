@@ -28,7 +28,7 @@ class HomeViewModelFactory(val repository: CountryRepository): ViewModelProvider
     }
 }
 
-    class MapViewModelFactory(val repository: MapRepository): ViewModelProvider.Factory{
+class MapViewModelFactory(val repository: MapRepository): ViewModelProvider.Factory{
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         if(modelClass.isAssignableFrom(MapViewModel::class.java)){
             @Suppress("UNCHECKED_CAST")

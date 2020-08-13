@@ -4,7 +4,6 @@ import android.app.Application
 import com.example.devexercise.dagger.AppComponent
 import com.example.devexercise.dagger.AppModule
 import com.example.devexercise.dagger.DaggerAppComponent
-import com.example.devexercise.network.ArcgisAuthentication
 
 class DevExerciseApp: Application(){
 
