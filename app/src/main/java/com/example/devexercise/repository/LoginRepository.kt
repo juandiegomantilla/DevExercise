@@ -1,15 +1,9 @@
 package com.example.devexercise.repository
 
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.Observer
+import androidx.lifecycle.*
 import com.esri.arcgisruntime.loadable.LoadStatus
-import com.esri.arcgisruntime.portal.Portal
 import com.example.devexercise.database.LoginLocalDataSource
 import com.example.devexercise.network.LoginRemoteDataSource
-import com.example.devexercise.network.Results
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 
 class LoginRepository (private val localDataSource: LoginLocalDataSource, private val remoteDataSource: LoginRemoteDataSource){
     var user: LoggedUser? = null
@@ -27,11 +21,17 @@ class LoginRepository (private val localDataSource: LoginLocalDataSource, privat
         localDataSource.logout()
     }
 
-    fun setResults(user: String, name: String) = Results.Success(LoggedUser(user, name))
-
     fun login(username: String, password: String): LiveData<LoadStatus> {
 
         remoteDataSource.login(username, password)
+
+        val userInfo = remoteDataSource.userInfo
+
+        val nameObserver = Observer<LoggedUser> {
+            setLoggedInUser(it)
+        }
+
+        userInfo.observeForever(nameObserver)
 
         return remoteDataSource.status
     }
@@ -39,5 +39,6 @@ class LoginRepository (private val localDataSource: LoginLocalDataSource, privat
     fun setLoggedInUser(loggedInUser: LoggedUser){
         user = loggedInUser
         localDataSource.user = user
+        println("HERE IS TE USER SAVED: " + localDataSource.user?.userId)
     }
 }

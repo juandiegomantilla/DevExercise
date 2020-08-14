@@ -41,13 +41,14 @@ class LoginActivity : AppCompatActivity() {
                 val status = viewModel.login("jmantilla", "unclesam123")
 
                 status.observe(this, Observer { loginStatus ->
-                    println("LOGIN STATUS!! ${loginStatus.name}")
+                    println("Status: ${loginStatus.name}")
                     if(loginStatus.name == "LOADED"){
                         val homeIntent = Intent(this, MainActivity::class.java)
                         startActivity(homeIntent)
                         finish()
                     }
                 })
+
             }catch(e: Exception){
                 println(e)
             }

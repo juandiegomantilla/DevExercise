@@ -11,11 +11,15 @@ import kotlinx.coroutines.*
 
 class LoginRemoteDataSource {
 
+    private val _userInfo = MutableLiveData<LoggedUser>()
+    val userInfo: LiveData<LoggedUser>
+        get() = _userInfo
+
     private val _status = MutableLiveData<LoadStatus>()
     val status: LiveData<LoadStatus>
-    get() = _status
+        get() = _status
 
-    fun login(username: String, password: String){
+    fun login(username: String, password: String) {
 
         _status.value = LoadStatus.NOT_LOADED
 
@@ -26,7 +30,6 @@ class LoginRemoteDataSource {
 
         portal.addDoneLoadingListener {
             if(portal.loadStatus == LoadStatus.LOADED){
-                _status.value = LoadStatus.LOADED
                 setLicense(portal)
             }
         }
@@ -39,7 +42,11 @@ class LoginRemoteDataSource {
                 val licenceInfo = licenseFuture.get()
                 val licenceJson = licenceInfo.toJson()
                 ArcGISRuntimeEnvironment.setLicense(licenceInfo)
-                println("JSON: $licenceJson")
+
+                _status.value = LoadStatus.LOADED
+                _userInfo.value = LoggedUser(portal.user.username, portal.user.fullName, licenceJson)
+
+                //println("JSON: $licenceJson")
             } catch (e: Exception) {
                 println("Error: $e")
             }

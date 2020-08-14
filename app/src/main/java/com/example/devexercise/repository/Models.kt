@@ -31,6 +31,7 @@ data class MapPointModel(
 ) : Parcelable{}
 
 data class LoggedUser(
-    val userId: String,
-    val displayName: String
+    val userId: String = "",
+    val displayName: String = "",
+    val license: String = ""
 )
