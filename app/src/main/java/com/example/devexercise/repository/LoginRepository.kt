@@ -39,6 +39,5 @@ class LoginRepository (private val localDataSource: LoginLocalDataSource, privat
     fun setLoggedInUser(loggedInUser: LoggedUser){
         user = loggedInUser
         localDataSource.user = user
-        println("HERE IS TE USER SAVED: " + localDataSource.user?.userId)
     }
 }

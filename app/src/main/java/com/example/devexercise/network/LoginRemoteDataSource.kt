@@ -1,5 +1,8 @@
 package com.example.devexercise.network
 
+import android.content.Context
+import android.net.ConnectivityManager
+import androidx.core.net.ConnectivityManagerCompat
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.esri.arcgisruntime.ArcGISRuntimeEnvironment
@@ -19,19 +22,38 @@ class LoginRemoteDataSource {
     val status: LiveData<LoadStatus>
         get() = _status
 
+    private val portal = Portal("https://www.arcgis.com")
+    private lateinit var cred: UserCredential
+
     fun login(username: String, password: String) {
 
-        _status.value = LoadStatus.NOT_LOADED
+        try{
+            cred = UserCredential(username, password)
 
-        val portal = Portal("https://www.arcgis.com")
-        val cred = UserCredential(username, password)
-        portal.credential = cred
-        portal.loadAsync()
+            if(portal.loadStatus == LoadStatus.NOT_LOADED){
 
-        portal.addDoneLoadingListener {
-            if(portal.loadStatus == LoadStatus.LOADED){
-                setLicense(portal)
+                portal.credential = cred
+                //println(portal.loadStatus)
+                portal.loadAsync()
+                //println(portal.loadStatus)
+
+                portal.addDoneLoadingListener {
+                    if(portal.loadStatus == LoadStatus.LOADED){
+                        _status.value = portal.loadStatus
+                        setLicense(portal)
+                    }else{
+                        _status.value = portal.loadStatus
+                    }
+                }
+            } else {
+
+                portal.credential = cred
+                //println(portal.loadStatus)
+                portal.retryLoadAsync()
+                //println(portal.loadStatus)
             }
+        }catch (parameterEx: IllegalArgumentException){
+            _status.value = LoadStatus.NOT_LOADED
         }
     }
 
@@ -43,9 +65,7 @@ class LoginRemoteDataSource {
                 val licenceJson = licenceInfo.toJson()
                 ArcGISRuntimeEnvironment.setLicense(licenceInfo)
 
-                _status.value = LoadStatus.LOADED
                 _userInfo.value = LoggedUser(portal.user.username, portal.user.fullName, licenceJson)
-
                 //println("JSON: $licenceJson")
             } catch (e: Exception) {
                 println("Error: $e")
