@@ -18,8 +18,8 @@ class LoginRemoteDataSource {
     val userInfo: LiveData<LoggedUser>
         get() = _userInfo
 
-    private val _status = MutableLiveData<LoadStatus>()
-    val status: LiveData<LoadStatus>
+    private val _status = MutableLiveData<String>()
+    val status: LiveData<String>
         get() = _status
 
     private val portal = Portal("https://www.arcgis.com")
@@ -39,10 +39,11 @@ class LoginRemoteDataSource {
 
                 portal.addDoneLoadingListener {
                     if(portal.loadStatus == LoadStatus.LOADED){
-                        _status.value = portal.loadStatus
+                        _status.value = "Success"
                         setLicense(portal)
                     }else{
-                        _status.value = portal.loadStatus
+                        _status.value = "Not_Success"
+                        _status.value = ""
                     }
                 }
             } else {
@@ -53,7 +54,8 @@ class LoginRemoteDataSource {
                 //println(portal.loadStatus)
             }
         }catch (parameterEx: IllegalArgumentException){
-            _status.value = LoadStatus.NOT_LOADED
+            _status.value = "Not_Started"
+            _status.value = ""
         }
     }
 

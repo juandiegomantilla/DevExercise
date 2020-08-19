@@ -21,7 +21,7 @@ class LoginRepository (private val localDataSource: LoginLocalDataSource, privat
         localDataSource.logout()
     }
 
-    fun login(username: String, password: String): LiveData<LoadStatus> {
+    fun login(username: String, password: String): LiveData<String> {
 
         remoteDataSource.login(username, password)
 
