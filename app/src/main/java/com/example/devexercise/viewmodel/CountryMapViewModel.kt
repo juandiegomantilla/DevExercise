@@ -53,7 +53,7 @@ class CountryMapViewModel @Inject constructor(private val mapRepository: MapRepo
 
             addMapLayers(countryMap)
 
-            _mapStatus.value = "${country.Country_Region} successfully founded in map"
+            _mapStatus.value = "${country.Country_Region} successfully found in map"
 
             controlMap = countryMap
 
@@ -66,7 +66,7 @@ class CountryMapViewModel @Inject constructor(private val mapRepository: MapRepo
 
             addMapLayers(baseMap)
 
-            _mapStatus.value = "Country not founded in map"
+            _mapStatus.value = "Country not found in map"
 
             controlMap = baseMap
 

@@ -52,7 +52,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"
                     android:layout_toEndOf="@+id/username_icon"
-                    android:hint="Username"
+                    android:hint="@string/username"
                     android:singleLine="true" />
 
             </RelativeLayout>
@@ -79,7 +79,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"
                     android:layout_toEndOf="@+id/password_icon"
-                    android:hint="Password"
+                    android:hint="@string/password"
                     android:inputType="textPassword"
                     android:selectAllOnFocus="true"
                     android:singleLine="true" />
@@ -98,7 +98,7 @@
                     android:id="@+id/login_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="SIGN IN"
+                    android:text="@string/sign_in"
                     android:layout_centerHorizontal="true"
                     android:enabled="false"/>
 
@@ -117,7 +117,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="15sp"
-                    android:text="Remember me" />
+                    android:text="@string/remember_me" />
 
                 <androidx.appcompat.widget.SwitchCompat
                     android:id="@+id/remember_me_switch"

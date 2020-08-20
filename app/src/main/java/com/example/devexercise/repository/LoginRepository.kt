@@ -14,6 +14,7 @@ class LoginRepository (private val localDataSource: LoginLocalDataSource, privat
 
     init {
         user = localDataSource.user
+        //logout()
     }
 
     fun logout(){
@@ -21,17 +22,17 @@ class LoginRepository (private val localDataSource: LoginLocalDataSource, privat
         localDataSource.logout()
     }
 
-    fun login(username: String, password: String): LiveData<String> {
+    fun login(username: String, password: String, remember: Boolean): LiveData<String> {
 
-        remoteDataSource.login(username, password)
+        remoteDataSource.login(username, password, remember)
 
         val userInfo = remoteDataSource.userInfo
-
         val nameObserver = Observer<LoggedUser> {
             setLoggedInUser(it)
         }
-
         userInfo.observeForever(nameObserver)
+
+        if(!remember) logout()
 
         return remoteDataSource.status
     }

@@ -29,7 +29,7 @@ class LoginViewModel(private var sharedPreferences: SharedPreferences): ViewMode
     private var loginRepository = LoginRepository(localDataSource, remoteDataSource)
 
 
-    fun login(username: String, password: String): LiveData<String> {
-        return loginRepository.login(username, password)
+    fun login(username: String, password: String, remember: Boolean): LiveData<String> {
+        return loginRepository.login(username, password, remember)
     }
 }

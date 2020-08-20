@@ -44,10 +44,11 @@ class LoginActivity : AppCompatActivity() {
             try{
                 val username = input_username.text.toString()
                 val password = input_password.text.toString()
+                val remember = binding.rememberMeSwitch.isChecked
                 //val username = "boooo"
                 //val password = "fuuuu"
 
-                val status = viewModel.login(username, password)
+                val status = viewModel.login(username, password, remember)
 
                 status.observe(this, Observer { loginStatus ->
                     //println("Status: $loginStatus")
