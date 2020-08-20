@@ -1,11 +1,11 @@
 package com.example.devexercise.repository
 
 import androidx.lifecycle.*
-import com.esri.arcgisruntime.loadable.LoadStatus
 import com.example.devexercise.database.LoginLocalDataSource
 import com.example.devexercise.network.LoginRemoteDataSource
+import javax.inject.Inject
 
-class LoginRepository (private val localDataSource: LoginLocalDataSource, private val remoteDataSource: LoginRemoteDataSource){
+class LoginRepository @Inject constructor(private val localDataSource: LoginLocalDataSource, private val remoteDataSource: LoginRemoteDataSource){
     var user: LoggedUser? = null
         private set
 

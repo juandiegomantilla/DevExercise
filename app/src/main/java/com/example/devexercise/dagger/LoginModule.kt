@@ -16,5 +16,5 @@ class LoginModule {
 
     @Provides
     @Singleton
-    fun provideLoginRepository(localSource: LoginLocalDataSource, remoteSource: LoginRemoteDataSource): LoginRepository = LoginRepository(localSource, remoteSource)
+    fun provideLoginRemoteDataSource(): LoginRemoteDataSource = LoginRemoteDataSource()
 }

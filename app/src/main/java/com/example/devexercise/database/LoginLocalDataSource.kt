@@ -2,8 +2,9 @@ package com.example.devexercise.database
 
 import android.content.SharedPreferences
 import com.example.devexercise.repository.LoggedUser
+import javax.inject.Inject
 
-class LoginLocalDataSource (private val prefs: SharedPreferences){
+class LoginLocalDataSource @Inject constructor(private val prefs: SharedPreferences){
     var user: LoggedUser?
         get() {
             val username = prefs.getString(KEY_USER_NAME, null) ?: return null

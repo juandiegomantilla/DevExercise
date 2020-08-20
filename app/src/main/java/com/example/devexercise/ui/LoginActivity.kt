@@ -9,17 +9,19 @@ import android.text.TextWatcher
 import android.widget.CompoundButton
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
+import com.example.devexercise.DevExerciseApp
 import com.example.devexercise.R
 import com.example.devexercise.databinding.ActivityLoginBinding
 import com.example.devexercise.viewmodel.LoginViewModel
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_login.*
 import java.lang.Exception
+import javax.inject.Inject
 
 class LoginActivity : AppCompatActivity() {
 
-    //@Inject
-    private lateinit var viewModel: LoginViewModel
+    @Inject
+    lateinit var viewModel: LoginViewModel
 
     private lateinit var binding: ActivityLoginBinding
 
@@ -29,11 +31,9 @@ class LoginActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_login)
 
-        //(applicationContext as DevExerciseApp).appComp().inject(this)
+        (applicationContext as DevExerciseApp).appComp().inject(this)
 
         val sharedPreferences = getSharedPreferences("LOGIN", Context.MODE_PRIVATE)
-
-        viewModel = LoginViewModel(sharedPreferences)
 
         binding.viewModel = viewModel
 

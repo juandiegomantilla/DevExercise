@@ -20,4 +20,8 @@ class ViewModelModule {
     @Provides
     @Singleton
     fun provideMapViewModel(mapRepository: MapRepository): MapViewModel = MapViewModel(mapRepository)
+
+    @Provides
+    @Singleton
+    fun provideLoginViewModel(loginRepository: LoginRepository): LoginViewModel = LoginViewModel(loginRepository)
 }

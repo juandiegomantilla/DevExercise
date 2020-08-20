@@ -1,8 +1,5 @@
 package com.example.devexercise.network
 
-import android.content.Context
-import android.net.ConnectivityManager
-import androidx.core.net.ConnectivityManagerCompat
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.esri.arcgisruntime.ArcGISRuntimeEnvironment
@@ -10,7 +7,6 @@ import com.esri.arcgisruntime.loadable.LoadStatus
 import com.esri.arcgisruntime.portal.Portal
 import com.esri.arcgisruntime.security.UserCredential
 import com.example.devexercise.repository.LoggedUser
-import kotlinx.coroutines.*
 
 class LoginRemoteDataSource {
 
@@ -69,7 +65,6 @@ class LoginRemoteDataSource {
 
                 if(remember) _userInfo.value = LoggedUser(portal.user.username, portal.user.fullName, licenceJson)
 
-                //println("JSON: $licenceJson")
             } catch (e: Exception) {
                 println("Error: $e")
             }
