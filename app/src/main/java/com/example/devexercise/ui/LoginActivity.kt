@@ -45,13 +45,10 @@ class LoginActivity : AppCompatActivity() {
                 val username = input_username.text.toString()
                 val password = input_password.text.toString()
                 val remember = binding.rememberMeSwitch.isChecked
-                //val username = "boooo"
-                //val password = "fuuuu"
 
                 val status = viewModel.login(username, password, remember)
 
                 status.observe(this, Observer { loginStatus ->
-                    //println("Status: $loginStatus")
                     when(loginStatus){
                         "Success" -> goToHomeScreen()
                         "Not_Success" -> Snackbar.make(it, "Incorrect Credentials", Snackbar.LENGTH_LONG).show()
@@ -68,7 +65,7 @@ class LoginActivity : AppCompatActivity() {
                 sharedPreferences.all.map { println(it.key + " - " + it.value) }
                 println(sharedPreferences.all.values.count())
             } else {
-                button?.isChecked = false
+                button.isChecked = false
                 println("not checked!")
             }
         }

@@ -1,11 +1,9 @@
 package com.example.devexercise.ui
 
-import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.TextView
-import androidx.core.view.get
 import androidx.databinding.DataBindingUtil
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.Observer
@@ -14,12 +12,9 @@ import androidx.navigation.NavDestination
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
-import com.esri.arcgisruntime.ArcGISRuntimeEnvironment
-import com.esri.arcgisruntime.LicenseInfo
 import com.example.devexercise.DevExerciseApp
 import com.example.devexercise.R
 import com.example.devexercise.databinding.ActivityMainBinding
-import com.example.devexercise.repository.LoginRepository
 import com.example.devexercise.viewmodel.LoginViewModel
 import javax.inject.Inject
 

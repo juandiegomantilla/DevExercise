@@ -18,7 +18,6 @@ class LoginRepository @Inject constructor(private val localDataSource: LoginLoca
 
     init {
         user = localDataSource.user
-        //logout()
     }
 
     fun logout(){

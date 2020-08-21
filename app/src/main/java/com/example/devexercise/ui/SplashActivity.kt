@@ -8,7 +8,6 @@ import com.esri.arcgisruntime.LicenseInfo
 import com.example.devexercise.DevExerciseApp
 import com.example.devexercise.R
 import com.example.devexercise.repository.LoginRepository
-import com.example.devexercise.viewmodel.LoginViewModel
 import javax.inject.Inject
 
 class SplashActivity : AppCompatActivity() {
