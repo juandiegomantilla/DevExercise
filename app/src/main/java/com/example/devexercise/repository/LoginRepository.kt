@@ -9,8 +9,12 @@ class LoginRepository @Inject constructor(private val localDataSource: LoginLoca
     var user: LoggedUser? = null
         private set
 
+    var rememberActive = false
+
     val isLoggedIn: Boolean
         get() = user != null
+
+    lateinit var userInfo: LiveData<LoggedUser>
 
     init {
         user = localDataSource.user
@@ -26,13 +30,13 @@ class LoginRepository @Inject constructor(private val localDataSource: LoginLoca
 
         remoteDataSource.login(username, password, remember)
 
-        val userInfo = remoteDataSource.userInfo
+        userInfo = remoteDataSource.userInfo
         val nameObserver = Observer<LoggedUser> {
             setLoggedInUser(it)
         }
         userInfo.observeForever(nameObserver)
 
-        if(!remember) logout()
+        rememberActive = remember
 
         return remoteDataSource.status
     }

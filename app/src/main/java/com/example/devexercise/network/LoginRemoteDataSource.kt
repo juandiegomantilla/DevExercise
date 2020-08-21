@@ -29,9 +29,7 @@ class LoginRemoteDataSource {
             if(portal.loadStatus == LoadStatus.NOT_LOADED){
 
                 portal.credential = cred
-                //println(portal.loadStatus)
                 portal.loadAsync()
-                //println(portal.loadStatus)
 
                 portal.addDoneLoadingListener {
                     if(portal.loadStatus == LoadStatus.LOADED){
@@ -43,11 +41,8 @@ class LoginRemoteDataSource {
                     }
                 }
             } else {
-
                 portal.credential = cred
-                //println(portal.loadStatus)
                 portal.retryLoadAsync()
-                //println(portal.loadStatus)
             }
         }catch (parameterEx: IllegalArgumentException){
             _status.value = "Not_Started"
@@ -63,7 +58,7 @@ class LoginRemoteDataSource {
                 val licenceJson = licenceInfo.toJson()
                 ArcGISRuntimeEnvironment.setLicense(licenceInfo)
 
-                if(remember) _userInfo.value = LoggedUser(portal.user.username, portal.user.fullName, licenceJson)
+                _userInfo.value = LoggedUser(portal.user.username, portal.user.fullName, licenceJson)
 
             } catch (e: Exception) {
                 println("Error: $e")
