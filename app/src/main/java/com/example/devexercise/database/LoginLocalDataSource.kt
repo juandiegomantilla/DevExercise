@@ -28,6 +28,7 @@ class LoginLocalDataSource @Inject constructor(private val prefs: SharedPreferen
         editor.putString(KEY_DISPLAY_NAME, null)
         editor.putString(KEY_LICENSE, null)
         editor.apply()
+        editor.clear()
     }
 
     companion object {

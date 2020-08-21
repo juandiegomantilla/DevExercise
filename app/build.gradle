@@ -87,6 +87,7 @@ dependencies {
     testImplementation "org.mockito:mockito-core:$version_mockito"
     testImplementation "androidx.arch.core:core-testing:$version_arch"
     testImplementation "io.mockk:mockk:$version_mockk"
+    testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.1.0"
 
     //Interceptor & OkHttp3
     implementation "com.squareup.okhttp3:okhttp:$version_okhttp3"

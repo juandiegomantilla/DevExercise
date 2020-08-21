@@ -4,28 +4,24 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import com.example.devexercise.repository.LoggedUser
 import com.example.devexercise.repository.LoginRepository
+import com.example.devexercise.viewmodel.impl.LoginViewModelImpl
 import javax.inject.Inject
 
-class LoginViewModel @Inject constructor(private val loginRepository: LoginRepository): ViewModel(){
+class LoginViewModel @Inject constructor(private val loginRepository: LoginRepository): ViewModel(), LoginViewModelImpl{
 
-    fun login(username: String, password: String, remember: Boolean): LiveData<String> {
+    override fun login(username: String, password: String, remember: Boolean): LiveData<String> {
         return loginRepository.login(username, password, remember)
     }
 
-    fun getUserInfo(): LiveData<LoggedUser>{
-        return loginRepository.userInfo
-    }
+    override fun getUserInfo(): LiveData<LoggedUser> = loginRepository.userInfo
 
-    fun getDataStored(): LoggedUser? {
-        return loginRepository.user
-    }
+    override fun getDataStored(): LoggedUser? = loginRepository.user
 
-    fun logout(){
+    override fun logout(){
         loginRepository.logout()
-        println("Logged out!!!!")
     }
 
-    fun rememberAction(){
+    override fun rememberAction(){
         if(loginRepository.rememberActive) {
             println("Remembered")
         }else{

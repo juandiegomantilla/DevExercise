@@ -21,7 +21,7 @@ class LoginRemoteDataSource {
     private val portal = Portal("https://www.arcgis.com")
     private lateinit var cred: UserCredential
 
-    fun login(username: String, password: String, remember: Boolean) {
+    fun login(username: String, password: String) {
 
         try{
             cred = UserCredential(username, password)
@@ -34,7 +34,7 @@ class LoginRemoteDataSource {
                 portal.addDoneLoadingListener {
                     if(portal.loadStatus == LoadStatus.LOADED){
                         _status.value = "Success"
-                        setLicense(portal, remember)
+                        setLicense(portal)
                     }else{
                         _status.value = "Not_Success"
                         _status.value = ""
@@ -50,7 +50,7 @@ class LoginRemoteDataSource {
         }
     }
 
-    private fun setLicense(portal: Portal, remember: Boolean) {
+    private fun setLicense(portal: Portal) {
         val licenseFuture = portal.fetchLicenseInfoAsync()
         licenseFuture.addDoneListener {
             try {

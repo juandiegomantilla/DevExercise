@@ -3,9 +3,11 @@ package com.example.devexercise.repository
 import androidx.lifecycle.*
 import com.example.devexercise.database.LoginLocalDataSource
 import com.example.devexercise.network.LoginRemoteDataSource
+import com.example.devexercise.repository.impl.*
 import javax.inject.Inject
 
-class LoginRepository @Inject constructor(private val localDataSource: LoginLocalDataSource, private val remoteDataSource: LoginRemoteDataSource){
+class LoginRepository @Inject constructor(private val localDataSource: LoginLocalDataSource, private val remoteDataSource: LoginRemoteDataSource):
+Logout, Login, StoreUser, SetUser, UserIsRemembered {
     var user: LoggedUser? = null
         private set
 
@@ -20,14 +22,14 @@ class LoginRepository @Inject constructor(private val localDataSource: LoginLoca
         user = localDataSource.user
     }
 
-    fun logout(){
+    override fun logout(){
         user = null
         localDataSource.logout()
     }
 
-    fun login(username: String, password: String, remember: Boolean): LiveData<String> {
+    override fun login(username: String, password: String, remember: Boolean): LiveData<String> {
 
-        remoteDataSource.login(username, password, remember)
+        remoteDataSource.login(username, password)
 
         storeUserInfo()
 
@@ -36,7 +38,7 @@ class LoginRepository @Inject constructor(private val localDataSource: LoginLoca
         return remoteDataSource.status
     }
 
-    private fun storeUserInfo(): LiveData<LoggedUser> {
+    override fun storeUserInfo(): LiveData<LoggedUser> {
         val userInfo = remoteDataSource.userInfo
         val nameObserver = Observer<LoggedUser> {
             setLoggedInUser(it)
@@ -45,12 +47,12 @@ class LoginRepository @Inject constructor(private val localDataSource: LoginLoca
         return userInfo
     }
 
-    fun setLoggedInUser(loggedInUser: LoggedUser){
+    override fun setLoggedInUser(loggedInUser: LoggedUser){
         user = loggedInUser
         localDataSource.user = user
     }
 
-    fun userRemembered(valid: Boolean) {
+    override fun userRemembered(valid: Boolean) {
         rememberActive = valid
     }
 }

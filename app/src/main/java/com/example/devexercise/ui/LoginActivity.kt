@@ -33,8 +33,6 @@ class LoginActivity : AppCompatActivity() {
 
         (applicationContext as DevExerciseApp).appComp().inject(this)
 
-        val sharedPreferences = getSharedPreferences("LOGIN", Context.MODE_PRIVATE)
-
         binding.viewModel = viewModel
 
         binding.inputUsername.addTextChangedListener(loginTextWatcher)
@@ -52,21 +50,10 @@ class LoginActivity : AppCompatActivity() {
                     when(loginStatus){
                         "Success" -> goToHomeScreen()
                         "Not_Success" -> Snackbar.make(it, "Incorrect Credentials", Snackbar.LENGTH_LONG).show()
-                        "Not_Started" -> Snackbar.make(it, "Connection Error", Snackbar.LENGTH_LONG).show()
                     }
                 })
             }catch(e: Exception){
                 println(e)
-            }
-        }
-
-        binding.rememberMeSwitch.setOnCheckedChangeListener { button: CompoundButton, isChecked: Boolean ->
-            if(isChecked){
-                sharedPreferences.all.map { println(it.key + " - " + it.value) }
-                println(sharedPreferences.all.values.count())
-            } else {
-                button.isChecked = false
-                println("not checked!")
             }
         }
     }
