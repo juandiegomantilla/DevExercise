@@ -15,6 +15,8 @@ class LoginViewModel @Inject constructor(private val loginRepository: LoginRepos
     var username = ""
     var password = ""
 
+    val isUserLogged = loginRepository.isLoggedIn
+
     fun login(username: String, password: String, remember: Boolean): LiveData<String> {
         return loginRepository.login(username, password, remember)
     }
@@ -25,6 +27,7 @@ class LoginViewModel @Inject constructor(private val loginRepository: LoginRepos
 
     fun logout(){
         loginRepository.logout()
+        println("Logged out!!!!")
     }
 
     fun rememberAction(){

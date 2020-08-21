@@ -14,7 +14,7 @@ class LoginRepository @Inject constructor(private val localDataSource: LoginLoca
     val isLoggedIn: Boolean
         get() = user != null
 
-    lateinit var userInfo: LiveData<LoggedUser>
+    val userInfo = storeUserInfo()
 
     init {
         user = localDataSource.user
@@ -30,19 +30,28 @@ class LoginRepository @Inject constructor(private val localDataSource: LoginLoca
 
         remoteDataSource.login(username, password, remember)
 
-        userInfo = remoteDataSource.userInfo
-        val nameObserver = Observer<LoggedUser> {
-            setLoggedInUser(it)
-        }
-        userInfo.observeForever(nameObserver)
+        storeUserInfo()
 
         rememberActive = remember
 
         return remoteDataSource.status
     }
 
+    private fun storeUserInfo(): LiveData<LoggedUser> {
+        val userInfo = remoteDataSource.userInfo
+        val nameObserver = Observer<LoggedUser> {
+            setLoggedInUser(it)
+        }
+        userInfo.observeForever(nameObserver)
+        return userInfo
+    }
+
     fun setLoggedInUser(loggedInUser: LoggedUser){
         user = loggedInUser
         localDataSource.user = user
+    }
+
+    fun userRemembered(valid: Boolean) {
+        rememberActive = valid
     }
 }

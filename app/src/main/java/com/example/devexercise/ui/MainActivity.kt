@@ -1,9 +1,11 @@
 package com.example.devexercise.ui
 
-import android.content.SharedPreferences
+import android.content.Context
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.TextView
+import androidx.core.view.get
 import androidx.databinding.DataBindingUtil
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.Observer
@@ -41,6 +43,19 @@ class MainActivity : AppCompatActivity() {
         val displayName = navheader.findViewById<TextView>(R.id.display_name_text)
         val userInfo = viewModel.getUserInfo()
         userInfo.observe(this, Observer { displayName.text = it.userId })
+
+        val buttonLogout = binding.navView.menu.getItem(0)
+        buttonLogout.setOnMenuItemClickListener { item ->
+            when(item!!.itemId){
+                R.id.loginActivity -> {
+                    viewModel.logout()
+                    val loginIntent = Intent(this, LoginActivity::class.java)
+                    startActivity(loginIntent)
+                    finish()
+                }
+            }
+            true
+        }
 
         val navController = this.findNavController(R.id.navHostFragment)
         NavigationUI.setupActionBarWithNavController(this, navController, drawerLayout)

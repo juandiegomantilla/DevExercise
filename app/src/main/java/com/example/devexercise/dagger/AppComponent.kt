@@ -12,4 +12,5 @@ interface AppComponent{
     fun inject(target: CountryMapFragment)
     fun inject(target: LoginActivity)
     fun inject(target: MainActivity)
+    fun inject(target: SplashActivity)
 }
