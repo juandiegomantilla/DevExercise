@@ -25,6 +25,10 @@ class LoginViewModel @Inject constructor(private val loginRepository: LoginRepos
         return loginRepository.userInfo
     }
 
+    fun getDataStored(): LoggedUser? {
+        return loginRepository.user
+    }
+
     fun logout(){
         loginRepository.logout()
         println("Logged out!!!!")

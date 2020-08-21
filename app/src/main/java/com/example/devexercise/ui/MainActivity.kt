@@ -14,6 +14,8 @@ import androidx.navigation.NavDestination
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
+import com.esri.arcgisruntime.ArcGISRuntimeEnvironment
+import com.esri.arcgisruntime.LicenseInfo
 import com.example.devexercise.DevExerciseApp
 import com.example.devexercise.R
 import com.example.devexercise.databinding.ActivityMainBinding
@@ -41,8 +43,13 @@ class MainActivity : AppCompatActivity() {
         val navheader = binding.navView.getHeaderView(0)
 
         val displayName = navheader.findViewById<TextView>(R.id.display_name_text)
-        val userInfo = viewModel.getUserInfo()
-        userInfo.observe(this, Observer { displayName.text = it.userId })
+        val dataStored = viewModel.getDataStored()
+        if(dataStored?.userId != null){
+            displayName.text = dataStored.userId
+        }else{
+            val userInfo = viewModel.getUserInfo()
+            userInfo.observe(this, Observer { displayName.text = it.userId })
+        }
 
         val buttonLogout = binding.navView.menu.getItem(0)
         buttonLogout.setOnMenuItemClickListener { item ->

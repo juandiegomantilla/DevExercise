@@ -3,6 +3,8 @@ package com.example.devexercise.ui
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import com.esri.arcgisruntime.ArcGISRuntimeEnvironment
+import com.esri.arcgisruntime.LicenseInfo
 import com.example.devexercise.DevExerciseApp
 import com.example.devexercise.R
 import com.example.devexercise.repository.LoginRepository
@@ -24,6 +26,11 @@ class SplashActivity : AppCompatActivity() {
     private fun checkUser(){
         if(userLogin.isLoggedIn){
             val homeIntent = Intent(this, MainActivity::class.java)
+
+            val storedLicense = userLogin.user?.license
+            val licenseInfo = LicenseInfo.fromJson(storedLicense)
+            ArcGISRuntimeEnvironment.setLicense(licenseInfo)
+
             startActivity(homeIntent)
             userLogin.userRemembered(true)
         }else{

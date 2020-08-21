@@ -14,7 +14,6 @@ class DevExerciseApp: Application(){
 
         appComponent = initDagger(this)
 
-        //ArcgisAuthentication.setLicence("jmantilla","unclesam123")
     }
 
     private fun initDagger(app: DevExerciseApp): AppComponent =
