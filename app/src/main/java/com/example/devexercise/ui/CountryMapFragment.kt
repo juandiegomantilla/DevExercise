@@ -1,52 +1,116 @@
 package com.example.devexercise.ui
 
+import android.app.Dialog
+import android.content.Context
+import android.graphics.Color
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
-import com.esri.arcgisruntime.mapping.view.MapView
+import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.esri.arcgisruntime.geometry.Envelope
+import com.esri.arcgisruntime.mapping.view.DefaultMapViewOnTouchListener
 
 import com.example.devexercise.R
+import com.example.devexercise.dagger.Injectable
 import com.example.devexercise.databinding.FragmentCountryMapBinding
+import com.example.devexercise.util.MapPointAdapter
 import com.example.devexercise.viewmodel.CountryMapViewModel
-import com.example.devexercise.viewmodel.CountryMapViewModelFactory
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_country_map.*
+import javax.inject.Inject
+import kotlin.math.roundToInt
 
 
-class CountryMapFragment : Fragment() {
+class CountryMapFragment : Fragment(), Injectable {
 
-    private val viewModel: CountryMapViewModel by lazy {
-        val activity = requireNotNull(this.activity) {
-            "Unable to access the ViewModel"
-        }
-        val country = CountryMapFragmentArgs.fromBundle(arguments!!).selectedCountry
-        ViewModelProviders.of(this, CountryMapViewModelFactory(country, activity.application)).get(CountryMapViewModel::class.java)
-    }
+    @Inject
+    lateinit var viewModelFactory: ViewModelProvider.Factory
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,  savedInstanceState: Bundle?): View? {
+    val viewModel: CountryMapViewModel by viewModels { viewModelFactory }
+
+    private var viewModelAdapter: MapPointAdapter? = null
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val binding = FragmentCountryMapBinding.inflate(inflater)
 
         binding.setLifecycleOwner(this)
 
         binding.viewModel = viewModel
 
-        binding.root.findViewById<MapView>(R.id.mapView).apply {
-            map = viewModel.countryMap
-        }
+        viewModelAdapter = MapPointAdapter()
 
-        return binding.root
+        val country = CountryMapFragmentArgs.fromBundle(requireArguments()).selectedCountry
+
+        binding.mapView.let {
+            it.map = viewModel.createMap(country)
+            it.selectionProperties.color = Color.BLUE
+            it.onTouchListener = object : DefaultMapViewOnTouchListener(context, it) {
+                override fun onSingleTapConfirmed(motionEvent: MotionEvent): Boolean {
+
+                    val tappedPoint = it.screenToLocation(android.graphics.Point(motionEvent.x.roundToInt(), motionEvent.y.roundToInt()))
+                    val tolerance = 25
+                    val mapTolerance = tolerance * it.unitsPerDensityIndependentPixel
+                    val envelope = Envelope(tappedPoint.x - mapTolerance, tappedPoint.y - mapTolerance, tappedPoint.x + mapTolerance, tappedPoint.y + mapTolerance, it.spatialReference)
+                    val pointSelectedOnMap = viewModel.getPointOnMap(envelope)
+
+                    pointSelectedOnMap.addDoneListener {
+                        try {
+                            val pointRequested = viewModel.getMapPointInfo(pointSelectedOnMap.get())
+                            pointRequested.observe(viewLifecycleOwner, Observer { point ->
+                                point?.apply {
+                                    viewModelAdapter?.pointDetails = point
+                                    //println(point)
+                                }
+                            })
+                            showPointDetails()
+                        } catch (e: Exception) {
+                            Snackbar.make(activity!!.findViewById(android.R.id.content), "Point selected failed: " + e.message, Snackbar.LENGTH_LONG).show()
+                        }
+                    }
+
+                    return super.onSingleTapConfirmed(motionEvent)
+                }
+            }
+
+            binding.updateMap.setOnClickListener {
+                viewModel.refreshMap()
+            }
+
+            return binding.root
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.mapStatus.observe(this, Observer { message ->
-            Snackbar.make(activity!!.findViewById(android.R.id.content), message, Snackbar.LENGTH_LONG).show()
+
+        viewModel.mapStatus.observe(viewLifecycleOwner, Observer { message ->
+            Snackbar.make(requireActivity().findViewById(android.R.id.content), message, Snackbar.LENGTH_LONG).show()
         })
+
+        viewModel.lastUpdate.observe(viewLifecycleOwner, Observer {lastUpdate ->
+            Snackbar.make(requireActivity().findViewById(android.R.id.content), "Last map server update: $lastUpdate", Snackbar.LENGTH_LONG).show()
+        })
+    }
+
+    private fun showPointDetails(){
+        val dialog = Dialog(requireContext())
+        dialog.setCanceledOnTouchOutside(true)
+        dialog.setContentView(R.layout.fragment_point_details)
+        dialog.findViewById<RecyclerView>(R.id.point_recycler_view).apply {
+            adapter = viewModelAdapter
+            layoutManager = LinearLayoutManager(context)
+        }
+        if(dialog.isShowing){
+            dialog.dismiss()
+        }
+        dialog.show()
     }
 
     override fun onPause() {
@@ -63,4 +127,5 @@ class CountryMapFragment : Fragment() {
         super.onDestroyView()
         mapView.dispose()
     }
+
 }

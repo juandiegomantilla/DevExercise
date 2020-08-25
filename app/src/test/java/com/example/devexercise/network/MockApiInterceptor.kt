@@ -3,7 +3,7 @@ package com.example.devexercise.network
 import com.example.devexercise.BuildConfig
 import okhttp3.*
 
-class MockInterceptor : Interceptor {
+class MockApiInterceptor : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
         if (BuildConfig.DEBUG) {
             val uri = chain.request().url().uri().toString()

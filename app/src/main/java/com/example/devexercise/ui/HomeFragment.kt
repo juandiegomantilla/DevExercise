@@ -1,40 +1,37 @@
 package com.example.devexercise.ui
 
-import android.content.Context
 import android.os.Bundle
 import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.NavigationUI
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import com.example.devexercise.DevExerciseApp
 import com.example.devexercise.R
+import com.example.devexercise.dagger.Injectable
 import com.example.devexercise.databinding.FragmentHomeBinding
 import com.example.devexercise.util.CountryClick
 import com.example.devexercise.util.HomeAdapter
 import com.example.devexercise.viewmodel.HomeViewModel
-import com.example.devexercise.viewmodel.HomeViewModelFactory
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_home.*
 import javax.inject.Inject
 
 
-class HomeFragment : Fragment() {
+class HomeFragment : Fragment(), Injectable {
 
     @Inject
-    lateinit var viewModel: HomeViewModel
+    lateinit var viewModelFactory: ViewModelProvider.Factory
+
+    val viewModel: HomeViewModel by viewModels { viewModelFactory }
 
     private var viewModelAdapter: HomeAdapter? = null
-    override fun onAttach(context: Context) {
-        (context.applicationContext as DevExerciseApp).appComp().inject(this)
-        super.onAttach(context)
-    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val binding: FragmentHomeBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_home, container, false)
@@ -72,11 +69,11 @@ class HomeFragment : Fragment() {
             }
         })
 
-        viewModel.lastUpdate.observe(this, Observer {lastUpdate ->
-            Snackbar.make(activity!!.findViewById(android.R.id.content), "Last server update: $lastUpdate", Snackbar.LENGTH_LONG).show()
+        viewModel.lastUpdate.observe(viewLifecycleOwner, Observer {lastUpdate ->
+            Snackbar.make(requireActivity().findViewById(android.R.id.content), "Last server update: $lastUpdate", Snackbar.LENGTH_LONG).show()
         })
 
-        viewModel.navigateToSelectedCountry.observe(this, Observer {
+        viewModel.navigateToSelectedCountry.observe(viewLifecycleOwner, Observer {
             if(null != it){
                 this.findNavController().navigate(HomeFragmentDirections.showCountryInMap(it))
                 viewModel.displayCountryOnMapComplete()
@@ -92,7 +89,7 @@ class HomeFragment : Fragment() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return NavigationUI.onNavDestinationSelected(
             item,
-            view!!.findNavController())
+            requireView().findNavController())
                 || super.onOptionsItemSelected(item)
     }
 }

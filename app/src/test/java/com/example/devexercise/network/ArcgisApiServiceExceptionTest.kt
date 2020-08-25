@@ -27,7 +27,7 @@ class ArcgisApiServiceExceptionTest {
 
         val retrofit = Retrofit.Builder()
             .baseUrl(COUNTRY_LAYER)
-            .client(OkHttpClient.Builder().addInterceptor(MockInterceptor()).build())
+            .client(OkHttpClient.Builder().addInterceptor(MockApiInterceptor()).build())
             .addConverterFactory(MoshiConverterFactory.create(moshi))
             .addCallAdapterFactory(CoroutineCallAdapterFactory())
             .build()

@@ -7,10 +7,8 @@ import okhttp3.OkHttpClient
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.InjectMocks
 import org.mockito.Mock
 import org.mockito.junit.MockitoJUnitRunner
-import retrofit2.HttpException
 
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
@@ -34,7 +32,7 @@ class ArcgisApiServiceTest {
         //Retrofit with interceptor
         val retrofitWithInterceptor = Retrofit.Builder()
             .baseUrl(COUNTRY_LAYER)
-            .client(OkHttpClient.Builder().addInterceptor(MockInterceptor()).build())
+            .client(OkHttpClient.Builder().addInterceptor(MockApiInterceptor()).build())
             .addConverterFactory(MoshiConverterFactory.create(moshi))
             .addCallAdapterFactory(CoroutineCallAdapterFactory())
             .build()
@@ -55,17 +53,17 @@ class ArcgisApiServiceTest {
     fun `Data Should Be Received From The Arcgis Server`(){
         runBlocking {
             val data = serviceArcgis.getArcgisData().await()
-            assert(data.countryContainer.count() >= 180)
             println("Arcgis server: $data")
+            assert(data.countryContainer.count() >= 180)
         }
     }
 
     @Test
-    fun `Data Should Be Received From The MockInterceptor`(){
+    fun `Data Should Be Received From The MockApiInterceptor`(){
         runBlocking {
             val interceptedData = serviceIntercepted.getArcgisData().await()
-            assert(interceptedData.countryContainer.count() == 188)
             println("Interceptor: $interceptedData")
+            assert(interceptedData.countryContainer.count() == 188)
         }
     }
 

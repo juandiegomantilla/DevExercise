@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="point"
+            type="com.example.devexercise.repository.MapPointModel" />
+    </data>
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="5dp">
+
+
+            <TextView
+                android:id="@+id/province_state"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingBottom="5dp"
+                android:text="@string/province_state"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                tools:layout_editor_absoluteY="5dp"
+                tools:text="Province State" />
+
+            <TextView
+                android:id="@+id/value_province_state"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginStart="145dp"
+                android:paddingBottom="5dp"
+                android:text="@{point.province_State}"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toStartOf="parent"
+                tools:layout_editor_absoluteY="5dp"
+                tools:text="Value Province State" />
+
+            <TextView
+                android:id="@+id/country_region"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingBottom="5dp"
+                android:text="@string/country_region"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/province_state"
+                tools:text="Country Region" />
+
+            <TextView
+                android:id="@+id/value_country_region"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginStart="145dp"
+                android:paddingBottom="5dp"
+                android:text="@{point.country_Region}"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/value_province_state"
+                tools:text="Value Country Region" />
+
+            <TextView
+                android:id="@+id/latitude"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingBottom="5dp"
+                android:text="@string/latitude"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/country_region"
+                tools:text="Latitude" />
+
+            <TextView
+                android:id="@+id/value_lat"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginStart="145dp"
+                android:paddingBottom="5dp"
+                android:text="@{point.lat.toString()}"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/value_country_region"
+                tools:text="Value Latitude" />
+
+            <TextView
+                android:id="@+id/longitude"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingBottom="5dp"
+                android:text="@string/longitude"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/latitude"
+                tools:text="Longitude" />
+
+            <TextView
+                android:id="@+id/value_long_"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginStart="145dp"
+                android:paddingBottom="5dp"
+                android:text="@{point.long_.toString()}"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/value_lat"
+                tools:text="Value Longitude" />
+
+            <TextView
+                android:id="@+id/confirmed"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingBottom="5dp"
+                android:text="@string/confirmed"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/longitude"
+                tools:text="Confirmed" />
+
+            <TextView
+                android:id="@+id/value_confirmed"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginStart="145dp"
+                android:paddingBottom="5dp"
+                android:text="@{point.confirmed.toString()}"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/value_long_"
+                tools:text="Value Confirmed" />
+
+            <TextView
+                android:id="@+id/recovered"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingBottom="5dp"
+                android:text="@string/recovered"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/confirmed"
+                tools:text="Recovered" />
+
+            <TextView
+                android:id="@+id/value_recovered"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginStart="145dp"
+                android:paddingBottom="5dp"
+                android:text="@{point.recovered.toString()}"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/value_confirmed"
+                tools:text="Value Recovered" />
+
+            <TextView
+                android:id="@+id/deaths"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingBottom="5dp"
+                android:text="@string/deaths"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/recovered"
+                tools:text="Deaths" />
+
+            <TextView
+                android:id="@+id/value_deaths"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginStart="145dp"
+                android:paddingBottom="5dp"
+                android:text="@{point.deaths.toString()}"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/value_recovered"
+                tools:text="Value Deaths" />
+
+            <TextView
+                android:id="@+id/active"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingBottom="5dp"
+                android:text="@string/active"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/deaths"
+                tools:text="Active" />
+
+            <TextView
+                android:id="@+id/value_active"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginStart="145dp"
+                android:paddingBottom="5dp"
+                android:text="@{point.active.toString()}"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/value_deaths"
+                tools:text="Value Active" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.cardview.widget.CardView>
+</layout>

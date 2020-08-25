@@ -34,6 +34,10 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_1_8.toString()
+    }
+
     testOptions {
         unitTests.returnDefaultValues = true
     }
@@ -87,6 +91,7 @@ dependencies {
     testImplementation "org.mockito:mockito-core:$version_mockito"
     testImplementation "androidx.arch.core:core-testing:$version_arch"
     testImplementation "io.mockk:mockk:$version_mockk"
+    testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:$version_mockito_kotlin"
 
     //Interceptor & OkHttp3
     implementation "com.squareup.okhttp3:okhttp:$version_okhttp3"
@@ -94,6 +99,14 @@ dependencies {
 
     //Dagger
     implementation "com.google.dagger:dagger:$version_dagger"
+    implementation "com.google.dagger:dagger-android:$version_dagger"
+    implementation "com.google.dagger:dagger-android-support:$version_dagger"
+    kapt "com.google.dagger:dagger-android-processor:$version_dagger"
     kapt "com.google.dagger:dagger-compiler:$version_dagger"
     compileOnly "javax.annotation:jsr250-api:$version_annotation"
+
+    //Fragments and Activities
+    implementation "androidx.activity:activity-ktx:$version_activity"
+    implementation "androidx.fragment:fragment:$version_fragment"
+    implementation "androidx.fragment:fragment-ktx:$version_fragment"
 }

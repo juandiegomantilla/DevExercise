@@ -27,4 +27,9 @@
             android:name="selectedCountry"
             app:argType="com.example.devexercise.repository.CountryModel" />
     </fragment>
+    <activity
+        android:id="@+id/loginActivity"
+        android:name="com.example.devexercise.ui.LoginActivity"
+        android:label="activity_login"
+        tools:layout="@layout/activity_login" />
 </navigation>

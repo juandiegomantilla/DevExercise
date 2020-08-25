@@ -1,6 +1,8 @@
 package com.example.devexercise.dagger
 
 import com.example.devexercise.network.ArcgisApiService
+import com.example.devexercise.network.ArcgisMapService
+import com.example.devexercise.network.CASES_LAYER
 import com.example.devexercise.network.COUNTRY_LAYER
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import com.squareup.moshi.Moshi
@@ -14,22 +16,29 @@ import javax.inject.Singleton
 @Module
 class ArcgisApiServiceModule {
     @Provides
-    @Singleton
     fun provideMoshi(): Moshi = Moshi.Builder()
                                 .add(KotlinJsonAdapterFactory())
                                 .build()
 
     @Provides
-    @Singleton
-    fun provideRetrofit(moshi: Moshi): Retrofit {
-        return Retrofit.Builder()
+    fun provideArcgisApiService(moshi: Moshi): ArcgisApiService {
+        val retrofit = Retrofit.Builder()
             .baseUrl(COUNTRY_LAYER)
             .addConverterFactory(MoshiConverterFactory.create(moshi))
             .addCallAdapterFactory(CoroutineCallAdapterFactory())
             .build()
+
+        return retrofit.create(ArcgisApiService::class.java)
     }
 
     @Provides
-    @Singleton
-    fun provideRetrofitService(retrofit: Retrofit): ArcgisApiService = retrofit.create(ArcgisApiService::class.java)
+    fun provideArcgisMapService(moshi: Moshi): ArcgisMapService {
+        val retrofit = Retrofit.Builder()
+            .baseUrl(CASES_LAYER)
+            .addConverterFactory(MoshiConverterFactory.create(moshi))
+            .addCallAdapterFactory(CoroutineCallAdapterFactory())
+            .build()
+
+        return retrofit.create(ArcgisMapService::class.java)
+    }
 }
