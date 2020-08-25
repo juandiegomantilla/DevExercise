@@ -10,10 +10,8 @@ import javax.inject.Singleton
 @Module
 class LoginModule {
     @Provides
-    @Singleton
     fun provideLoginLocalDataSource(sharedPreferences: SharedPreferences): LoginLocalDataSource = LoginLocalDataSource.getInstance(sharedPreferences)
 
     @Provides
-    @Singleton
     fun provideLoginRemoteDataSource(): LoginRemoteDataSource = LoginRemoteDataSource()
 }

@@ -1,19 +1,20 @@
 package com.example.devexercise.ui
 
 import android.app.Dialog
-import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
 import android.view.*
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.esri.arcgisruntime.geometry.Envelope
 import com.esri.arcgisruntime.mapping.view.DefaultMapViewOnTouchListener
-import com.example.devexercise.DevExerciseApp
 import com.example.devexercise.R
+import com.example.devexercise.dagger.Injectable
 import com.example.devexercise.databinding.FragmentMapBinding
 import com.example.devexercise.util.MapPointAdapter
 import com.example.devexercise.viewmodel.MapViewModel
@@ -22,16 +23,14 @@ import kotlinx.android.synthetic.main.fragment_map.*
 import javax.inject.Inject
 import kotlin.math.roundToInt
 
-class MapFragment : Fragment() {
+class MapFragment : Fragment(), Injectable {
 
     @Inject
-    lateinit var viewModel: MapViewModel
+    lateinit var viewModelFactory: ViewModelProvider.Factory
+
+    val viewModel: MapViewModel by viewModels { viewModelFactory }
 
     private var viewModelAdapter: MapPointAdapter? = null
-    override fun onAttach(context: Context) {
-        (context.applicationContext as DevExerciseApp).appComp().inject(this)
-        super.onAttach(context)
-    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val binding: FragmentMapBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_map, container, false)
@@ -83,8 +82,8 @@ class MapFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        viewModel.lastUpdate.observe(this, Observer {lastUpdate ->
-            Snackbar.make(activity!!.findViewById(android.R.id.content), "Last map server update: $lastUpdate", Snackbar.LENGTH_LONG).show()
+        viewModel.lastUpdate.observe(viewLifecycleOwner, Observer {lastUpdate ->
+            Snackbar.make(requireActivity().findViewById(android.R.id.content), "Last map server update: $lastUpdate", Snackbar.LENGTH_LONG).show()
         })
     }
 

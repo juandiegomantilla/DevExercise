@@ -1,27 +1,33 @@
 package com.example.devexercise.ui
 
-import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.widget.CompoundButton
+import androidx.activity.viewModels
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
-import com.example.devexercise.DevExerciseApp
+import androidx.lifecycle.ViewModelProvider
 import com.example.devexercise.R
 import com.example.devexercise.databinding.ActivityLoginBinding
 import com.example.devexercise.viewmodel.LoginViewModel
 import com.google.android.material.snackbar.Snackbar
+import dagger.android.AndroidInjector
+import dagger.android.DispatchingAndroidInjector
+import dagger.android.HasAndroidInjector
 import kotlinx.android.synthetic.main.activity_login.*
 import java.lang.Exception
 import javax.inject.Inject
 
-class LoginActivity : AppCompatActivity() {
+class LoginActivity : AppCompatActivity(), HasAndroidInjector {
 
     @Inject
-    lateinit var viewModel: LoginViewModel
+    lateinit var dispatchingAndroidInjector: DispatchingAndroidInjector<Any>
+
+    @Inject
+    lateinit var viewModelFactory: ViewModelProvider.Factory
+    private val viewModel: LoginViewModel by viewModels { viewModelFactory }
 
     private lateinit var binding: ActivityLoginBinding
 
@@ -30,8 +36,6 @@ class LoginActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_login)
-
-        (applicationContext as DevExerciseApp).appComp().inject(this)
 
         binding.viewModel = viewModel
 
@@ -79,4 +83,6 @@ class LoginActivity : AppCompatActivity() {
             binding.rememberMeSwitch.isEnabled = (userInput.isNotEmpty() && passInput.isNotEmpty())
         }
     }
+
+    override fun androidInjector(): AndroidInjector<Any> = dispatchingAndroidInjector
 }

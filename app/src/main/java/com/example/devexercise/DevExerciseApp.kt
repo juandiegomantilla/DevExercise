@@ -2,24 +2,24 @@ package com.example.devexercise
 
 import android.app.Application
 import com.example.devexercise.dagger.AppComponent
+import com.example.devexercise.dagger.AppInjector
 import com.example.devexercise.dagger.AppModule
-import com.example.devexercise.dagger.DaggerAppComponent
+import dagger.android.AndroidInjector
+import dagger.android.DispatchingAndroidInjector
+import dagger.android.HasAndroidInjector
+import javax.inject.Inject
 
-class DevExerciseApp: Application(){
+class DevExerciseApp: Application(), HasAndroidInjector {
 
-    lateinit var appComponent: AppComponent
+    @Inject
+    lateinit var dispatchingAndroidInjector: DispatchingAndroidInjector<Any>
 
     override fun onCreate() {
         super.onCreate()
 
-        appComponent = initDagger(this)
+        AppInjector.init(this)
 
     }
 
-    private fun initDagger(app: DevExerciseApp): AppComponent =
-        DaggerAppComponent.builder()
-            .appModule(AppModule(app))
-            .build()
-
-    fun appComp() = appComponent
+    override fun androidInjector(): AndroidInjector<Any> = dispatchingAndroidInjector
 }

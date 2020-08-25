@@ -9,14 +9,16 @@ import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.esri.arcgisruntime.geometry.Envelope
 import com.esri.arcgisruntime.mapping.view.DefaultMapViewOnTouchListener
-import com.example.devexercise.DevExerciseApp
 
 import com.example.devexercise.R
+import com.example.devexercise.dagger.Injectable
 import com.example.devexercise.databinding.FragmentCountryMapBinding
 import com.example.devexercise.util.MapPointAdapter
 import com.example.devexercise.viewmodel.CountryMapViewModel
@@ -26,16 +28,14 @@ import javax.inject.Inject
 import kotlin.math.roundToInt
 
 
-class CountryMapFragment : Fragment() {
+class CountryMapFragment : Fragment(), Injectable {
 
     @Inject
-    lateinit var viewModel: CountryMapViewModel
+    lateinit var viewModelFactory: ViewModelProvider.Factory
+
+    val viewModel: CountryMapViewModel by viewModels { viewModelFactory }
 
     private var viewModelAdapter: MapPointAdapter? = null
-    override fun onAttach(context: Context) {
-        (context.applicationContext as DevExerciseApp).appComp().inject(this)
-        super.onAttach(context)
-    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val binding = FragmentCountryMapBinding.inflate(inflater)
@@ -46,7 +46,7 @@ class CountryMapFragment : Fragment() {
 
         viewModelAdapter = MapPointAdapter()
 
-        val country = CountryMapFragmentArgs.fromBundle(arguments!!).selectedCountry
+        val country = CountryMapFragmentArgs.fromBundle(requireArguments()).selectedCountry
 
         binding.mapView.let {
             it.map = viewModel.createMap(country)
@@ -90,12 +90,12 @@ class CountryMapFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel.mapStatus.observe(this, Observer { message ->
-            Snackbar.make(activity!!.findViewById(android.R.id.content), message, Snackbar.LENGTH_LONG).show()
+        viewModel.mapStatus.observe(viewLifecycleOwner, Observer { message ->
+            Snackbar.make(requireActivity().findViewById(android.R.id.content), message, Snackbar.LENGTH_LONG).show()
         })
 
-        viewModel.lastUpdate.observe(this, Observer {lastUpdate ->
-            Snackbar.make(activity!!.findViewById(android.R.id.content), "Last map server update: $lastUpdate", Snackbar.LENGTH_LONG).show()
+        viewModel.lastUpdate.observe(viewLifecycleOwner, Observer {lastUpdate ->
+            Snackbar.make(requireActivity().findViewById(android.R.id.content), "Last map server update: $lastUpdate", Snackbar.LENGTH_LONG).show()
         })
     }
 

@@ -9,17 +9,14 @@ import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton
 
-@Module
-class AppModule(private val app: Application) {
-    @Provides
-    @Singleton
-    fun provideContext(): Context = app
+@Module(includes = [ViewModelModule::class, ArcgisApiServiceModule::class, LoginModule::class, RepositoryModule::class])
+class AppModule {
 
     @Provides
     @Singleton
-    fun provideDatabase(): LocalDatabase = getDatabase(app)
+    fun provideDatabase(application: Application): LocalDatabase = getDatabase(application)
 
     @Provides
     @Singleton
-    fun provideSharedPreferences(): SharedPreferences = app.getSharedPreferences("LOGIN", Context.MODE_PRIVATE)
+    fun provideSharedPreferences(application: Application): SharedPreferences = application.getSharedPreferences("LOGIN", Context.MODE_PRIVATE)
 }

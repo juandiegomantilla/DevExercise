@@ -8,6 +8,7 @@ import com.esri.arcgisruntime.LicenseInfo
 import com.example.devexercise.DevExerciseApp
 import com.example.devexercise.R
 import com.example.devexercise.repository.LoginRepository
+import dagger.android.AndroidInjection
 import javax.inject.Inject
 
 class SplashActivity : AppCompatActivity() {
@@ -17,7 +18,7 @@ class SplashActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        (applicationContext as DevExerciseApp).appComp().inject(this)
+        AndroidInjection.inject(this)
         setContentView(R.layout.activity_splash)
         checkUser()
     }

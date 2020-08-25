@@ -16,13 +16,11 @@ import javax.inject.Singleton
 @Module
 class ArcgisApiServiceModule {
     @Provides
-    @Singleton
     fun provideMoshi(): Moshi = Moshi.Builder()
                                 .add(KotlinJsonAdapterFactory())
                                 .build()
 
     @Provides
-    @Singleton
     fun provideArcgisApiService(moshi: Moshi): ArcgisApiService {
         val retrofit = Retrofit.Builder()
             .baseUrl(COUNTRY_LAYER)
@@ -34,7 +32,6 @@ class ArcgisApiServiceModule {
     }
 
     @Provides
-    @Singleton
     fun provideArcgisMapService(moshi: Moshi): ArcgisMapService {
         val retrofit = Retrofit.Builder()
             .baseUrl(CASES_LAYER)

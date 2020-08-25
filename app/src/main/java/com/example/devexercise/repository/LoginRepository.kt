@@ -55,4 +55,14 @@ Logout, Login, StoreUser, SetUser, UserIsRemembered {
     override fun userRemembered(valid: Boolean) {
         rememberActive = valid
     }
+
+    companion object {
+        @Volatile
+        private var INSTANCE: LoginRepository? = null
+        fun getInstance(localDataSource: LoginLocalDataSource, remoteDataSource: LoginRemoteDataSource): LoginRepository{
+            return INSTANCE ?: synchronized(this) {
+                INSTANCE ?: LoginRepository(localDataSource, remoteDataSource).also { INSTANCE = it }
+            }
+        }
+    }
 }

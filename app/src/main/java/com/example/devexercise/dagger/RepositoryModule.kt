@@ -15,14 +15,11 @@ import javax.inject.Singleton
 @Module
 class RepositoryModule {
     @Provides
-    @Singleton
     fun provideCountryRepository(database: LocalDatabase, service: ArcgisApiService): CountryRepository = CountryRepository(database, service)
 
     @Provides
-    @Singleton
     fun provideMapRepository(database: LocalDatabase, service: ArcgisMapService): MapRepository = MapRepository(database, service)
 
     @Provides
-    @Singleton
-    fun provideLoginRepository(localSource: LoginLocalDataSource, remoteSource: LoginRemoteDataSource): LoginRepository = LoginRepository(localSource, remoteSource)
+    fun provideLoginRepository(localSource: LoginLocalDataSource, remoteSource: LoginRemoteDataSource): LoginRepository = LoginRepository.getInstance(localSource, remoteSource)
 }
