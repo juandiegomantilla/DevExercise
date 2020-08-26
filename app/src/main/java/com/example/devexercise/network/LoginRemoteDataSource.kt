@@ -2,13 +2,22 @@ package com.example.devexercise.network
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
 import com.esri.arcgisruntime.ArcGISRuntimeEnvironment
 import com.esri.arcgisruntime.loadable.LoadStatus
 import com.esri.arcgisruntime.portal.Portal
 import com.esri.arcgisruntime.security.UserCredential
+import com.example.devexercise.network.connection.ConnectionLiveData
 import com.example.devexercise.repository.LoggedUser
+import javax.inject.Inject
 
-class LoginRemoteDataSource {
+class LoginRemoteDataSource @Inject constructor(private val connectionLiveData: ConnectionLiveData) {
+
+    private var isOnline = false
+
+    init {
+        checkConnection()
+    }
 
     private val _userInfo = MutableLiveData<LoggedUser>()
     val userInfo: LiveData<LoggedUser>
@@ -22,8 +31,7 @@ class LoginRemoteDataSource {
     private lateinit var cred: UserCredential
 
     fun login(username: String, password: String) {
-
-        try{
+        if(isOnline){
             cred = UserCredential(username, password)
 
             if(portal.loadStatus == LoadStatus.NOT_LOADED){
@@ -44,8 +52,8 @@ class LoginRemoteDataSource {
                 portal.credential = cred
                 portal.retryLoadAsync()
             }
-        }catch (parameterEx: IllegalArgumentException){
-            _status.value = "Not_Started"
+        }else{
+            _status.value = "Not_Connected"
             _status.value = ""
         }
     }
@@ -64,5 +72,12 @@ class LoginRemoteDataSource {
                 println("Error: $e")
             }
         }
+    }
+
+    private fun checkConnection() {
+        val connectionObserver = Observer<Boolean> {
+            isOnline = it
+        }
+        connectionLiveData.observeForever(connectionObserver)
     }
 }

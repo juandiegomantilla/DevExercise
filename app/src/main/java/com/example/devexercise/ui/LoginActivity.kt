@@ -54,6 +54,7 @@ class LoginActivity : AppCompatActivity(), HasAndroidInjector {
                     when(loginStatus){
                         "Success" -> goToHomeScreen()
                         "Not_Success" -> Snackbar.make(it, "Incorrect Credentials", Snackbar.LENGTH_LONG).show()
+                        "Not_Connected" -> Snackbar.make(it, "Not Connected to the Internet", Snackbar.LENGTH_LONG).show()
                     }
                 })
             }catch(e: Exception){

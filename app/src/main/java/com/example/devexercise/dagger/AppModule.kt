@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import com.example.devexercise.database.LocalDatabase
 import com.example.devexercise.database.getDatabase
+import com.example.devexercise.network.connection.ConnectionLiveData
 import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton
@@ -19,4 +20,8 @@ class AppModule {
     @Provides
     @Singleton
     fun provideSharedPreferences(application: Application): SharedPreferences = application.getSharedPreferences("LOGIN", Context.MODE_PRIVATE)
+
+    @Provides
+    @Singleton
+    fun provideConnectionLiveData(application: Application): ConnectionLiveData = ConnectionLiveData(application)
 }
