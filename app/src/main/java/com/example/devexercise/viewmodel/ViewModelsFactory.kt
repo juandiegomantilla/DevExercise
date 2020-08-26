@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.devexercise.database.LocalDatabase
+import com.example.devexercise.network.connection.ConnectionLiveData
 import com.example.devexercise.repository.CountryModel
 import com.example.devexercise.repository.CountryRepository
 import com.example.devexercise.repository.MapRepository
@@ -18,11 +19,11 @@ class CountryMapViewModelFactory(private val repository: MapRepository) : ViewMo
     }
 }
 
-class HomeViewModelFactory(val repository: CountryRepository): ViewModelProvider.Factory{
+class HomeViewModelFactory(val repository: CountryRepository, val connectionLiveData: ConnectionLiveData): ViewModelProvider.Factory{
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         if(modelClass.isAssignableFrom(HomeViewModel::class.java)){
             @Suppress("UNCHECKED_CAST")
-            return HomeViewModel(repository) as T
+            return HomeViewModel(repository, connectionLiveData) as T
         }
         throw IllegalArgumentException("Unable to construct HomeViewModelFactory")
     }

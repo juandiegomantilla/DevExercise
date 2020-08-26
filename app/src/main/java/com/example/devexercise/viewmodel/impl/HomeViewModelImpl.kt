@@ -6,4 +6,5 @@ interface HomeViewModelImpl {
     fun getData()
     fun displayCountryOnMap(country: CountryModel)
     fun displayCountryOnMapComplete()
+    fun checkConnection()
 }

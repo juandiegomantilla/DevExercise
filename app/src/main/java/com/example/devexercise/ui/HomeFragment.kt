@@ -49,7 +49,7 @@ class HomeFragment : Fragment(), Injectable {
             adapter = viewModelAdapter
         }
 
-        binding.root.findViewById<SwipeRefreshLayout>(R.id.swipe_refresh_layout).setOnRefreshListener {
+        binding.swipeRefreshLayout.setOnRefreshListener {
             swipe_refresh_layout.isRefreshing = true
             viewModel.getData()
             swipe_refresh_layout.isRefreshing = false
@@ -70,13 +70,19 @@ class HomeFragment : Fragment(), Injectable {
         })
 
         viewModel.lastUpdate.observe(viewLifecycleOwner, Observer {lastUpdate ->
-            Snackbar.make(requireActivity().findViewById(android.R.id.content), "Last server update: $lastUpdate", Snackbar.LENGTH_LONG).show()
+            Snackbar.make(requireActivity().findViewById(android.R.id.content), lastUpdate, Snackbar.LENGTH_LONG).show()
         })
 
         viewModel.navigateToSelectedCountry.observe(viewLifecycleOwner, Observer {
             if(null != it){
                 this.findNavController().navigate(HomeFragmentDirections.showCountryInMap(it))
                 viewModel.displayCountryOnMapComplete()
+            }
+        })
+
+        viewModel.isOnline.observe(viewLifecycleOwner, Observer { isOnline ->
+            if(!isOnline){
+                Snackbar.make(requireActivity().findViewById(android.R.id.content), "You are offline now.", Snackbar.LENGTH_LONG).show()
             }
         })
     }
