@@ -29,11 +29,11 @@ class HomeViewModelFactory(val repository: CountryRepository, val connectionLive
     }
 }
 
-class MapViewModelFactory(val repository: MapRepository): ViewModelProvider.Factory{
+class MapViewModelFactory(val repository: MapRepository, val connectionLiveData: ConnectionLiveData, val application: Application): ViewModelProvider.Factory{
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         if(modelClass.isAssignableFrom(MapViewModel::class.java)){
             @Suppress("UNCHECKED_CAST")
-            return MapViewModel(repository) as T
+            return MapViewModel(repository, connectionLiveData, application) as T
         }
         throw IllegalArgumentException("Unable to construct MapViewModelFactory")
     }

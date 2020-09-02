@@ -85,6 +85,12 @@ class MapFragment : Fragment(), Injectable {
         viewModel.lastUpdate.observe(viewLifecycleOwner, Observer {lastUpdate ->
             Snackbar.make(requireActivity().findViewById(android.R.id.content), "Last map server update: $lastUpdate", Snackbar.LENGTH_LONG).show()
         })
+
+        viewModel.isOnline.observe(viewLifecycleOwner, Observer { isOnline ->
+            if(!isOnline){
+                Snackbar.make(requireActivity().findViewById(android.R.id.content), "You are offline now.", Snackbar.LENGTH_LONG).show()
+            }
+        })
     }
 
     private fun showPointDetails(){
