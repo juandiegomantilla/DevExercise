@@ -28,6 +28,8 @@ class MapViewModel @Inject constructor(private val mapRepository: MapRepository,
     val tiledMap = mapRepository.tileMapToDisplay
     //private val worldEnvelope = Envelope(-2.0037507067161843E7, -1.99718688804086E7, 2.0037507067161843E7, 1.9971868880408484E7, SpatialReference.create(3857))
     private val nyEnvelope = Envelope(-8259221.806896, 4727458.643225, -7957943.689966, 5230770.320920, SpatialReference.create(3857))
+    val downloadProgress = mapRepository.progress
+
     private val viewModelJob = SupervisorJob()
     private val viewModelScope = CoroutineScope(viewModelJob + Dispatchers.Main)
 

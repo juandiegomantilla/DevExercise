@@ -1,6 +1,7 @@
 package com.example.devexercise.ui
 
 import android.app.Dialog
+import android.app.ProgressDialog
 import android.graphics.Color
 import android.os.Bundle
 import android.view.*
@@ -42,6 +43,8 @@ class MapFragment : Fragment(), Injectable {
 
         viewModelAdapter = MapPointAdapter()
 
+        val downloadDialog = createProgressDialog()
+
         if(viewModel.tiledMap == null){
             binding.mapView.visibility = View.INVISIBLE
             binding.mapMessage.visibility = View.VISIBLE
@@ -50,6 +53,12 @@ class MapFragment : Fragment(), Injectable {
             binding.mapView.visibility = View.VISIBLE
             binding.mapMessage.visibility = View.INVISIBLE
             binding.updateMap.visibility = View.VISIBLE
+
+            viewModel.downloadProgress.observe(viewLifecycleOwner, Observer {
+                downloadDialog.show()
+                downloadDialog.progress = it
+                if(downloadDialog.progress == 100) downloadDialog.dismiss()
+            })
 
             binding.mapView.let {
                 it.map = viewModel.map
@@ -117,6 +126,16 @@ class MapFragment : Fragment(), Injectable {
             dialog.dismiss()
         }
         dialog.show()
+    }
+
+    private fun createProgressDialog(): ProgressDialog{
+        val progressDialog = ProgressDialog(requireContext())
+        progressDialog.setTitle("Please wait")
+        progressDialog.setMessage("Downloading the latest map for offline mode")
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL)
+        progressDialog.isIndeterminate = false
+        progressDialog.progress = 0
+        return progressDialog
     }
 
     override fun onPause() {

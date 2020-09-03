@@ -1,14 +1,13 @@
 package com.example.devexercise.repository
 
-import android.app.Application
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import com.esri.arcgisruntime.concurrent.Job
 import com.esri.arcgisruntime.geometry.Envelope
 import com.esri.arcgisruntime.geometry.SpatialReference
 import com.esri.arcgisruntime.layers.ArcGISTiledLayer
 import com.esri.arcgisruntime.loadable.LoadStatus
-import com.esri.arcgisruntime.mapping.ArcGISMap
 import com.esri.arcgisruntime.tasks.tilecache.ExportTileCacheParameters
 import com.esri.arcgisruntime.tasks.tilecache.ExportTileCacheTask
 import com.example.devexercise.database.LocalDatabase
@@ -22,7 +21,7 @@ import kotlinx.coroutines.withContext
 import java.io.File
 import javax.inject.Inject
 
-class MapRepository @Inject constructor(private val database: LocalDatabase, private val service: ArcgisMapService, private val map: MapRemoteDataSource, private val cachePath: String): MapRepositoryImpl{
+class MapRepository @Inject constructor(private val database: LocalDatabase, private val service: ArcgisMapService, private val map: MapRemoteDataSource, private val localPath: String): MapRepositoryImpl{
 
     lateinit var updatedTime: String
 
@@ -30,6 +29,9 @@ class MapRepository @Inject constructor(private val database: LocalDatabase, pri
     var offlineMapToDisplay: ArcGISTiledLayer? = null
     private var offlineMapPath = ""
     private val nyEnvelope = Envelope(-8259221.806896, 4727458.643225, -7957943.689966, 5230770.320920, SpatialReference.create(3857))
+    private val _progress = MutableLiveData<Int>()
+    val progress: LiveData<Int>
+        get() = _progress
 
     override fun getPointDetails(pointId: Long): LiveData<List<MapPointModel>>{
         return Transformations.map(database.databaseDao.getMapPointFromDatabase(pointId)){
@@ -54,7 +56,7 @@ class MapRepository @Inject constructor(private val database: LocalDatabase, pri
 
     private fun getRemoteMapToLocalMap(): ArcGISTiledLayer? {
         return if (map.remoteTiledMap == null){
-            val mapFile = "$cachePath/offlineMap/offlineMap.tpk"
+            val mapFile = "$localPath/offlineMap/offlineMap.tpk"
             val file = File(mapFile)
             if(file.exists()){
                 offlineMapToDisplay = ArcGISTiledLayer(file.absolutePath)
@@ -68,7 +70,7 @@ class MapRepository @Inject constructor(private val database: LocalDatabase, pri
     }
 
     private fun prepareDownloadPath(){
-        val mapDirectory = "$cachePath/offlineMap"
+        val mapDirectory = "$localPath/offlineMap"
         val mapFile = "offlineMap.tpk"
         val directory = File(mapDirectory)
         if (!directory.exists()){
@@ -104,14 +106,13 @@ class MapRepository @Inject constructor(private val database: LocalDatabase, pri
     private fun downloadMap(exportTileCacheTask: ExportTileCacheTask, parameters: ExportTileCacheParameters){
         val exportTileCacheJob = exportTileCacheTask.exportTileCacheAsync(parameters, offlineMapPath)
         exportTileCacheJob.addJobChangedListener {
-            if(exportTileCacheJob.status == Job.Status.SUCCEEDED){
-                println("Map successfully downloaded")
-            }else if(exportTileCacheJob.status == Job.Status.FAILED){
+            if(exportTileCacheJob.status == Job.Status.FAILED){
                 println("Download error: ${exportTileCacheJob.error}")
             }
         }
+        exportTileCacheJob.addProgressChangedListener {
+            _progress.value = exportTileCacheJob.progress
+        }
         exportTileCacheJob.start()
     }
-
-    private fun getLocalMap(): ArcGISTiledLayer = ArcGISTiledLayer(offlineMapPath)
 }

@@ -1,6 +1,9 @@
 package com.example.devexercise.ui
 
+import android.content.Context
 import android.content.Intent
+import android.net.ConnectivityManager
+import android.net.NetworkInfo
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.TextView
@@ -47,6 +50,12 @@ class MainActivity : AppCompatActivity(), HasAndroidInjector {
         val dataStored = viewModel.getDataStored()
         if(dataStored?.userId != null){
             displayName.text = dataStored.userId
+            val isConnected = checkStartConnection()
+            if(isConnected){
+                val user = dataStored.userId
+                val pass = dataStored.pass
+                viewModel.login(user, pass, true)
+            }
         }else{
             val userInfo = viewModel.getUserInfo()
             userInfo.observe(this, Observer { displayName.text = it.userId })
@@ -77,6 +86,13 @@ class MainActivity : AppCompatActivity(), HasAndroidInjector {
                 drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
             }
         }
+    }
+
+
+    private fun checkStartConnection(): Boolean {
+        val connectionManager: ConnectivityManager = this.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val activeNetwork: NetworkInfo? = connectionManager.activeNetworkInfo
+        return activeNetwork?.isConnectedOrConnecting == true
     }
 
     override fun onSupportNavigateUp(): Boolean {
