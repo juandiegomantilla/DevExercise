@@ -1,6 +1,5 @@
 package com.example.devexercise.viewmodel
 
-import android.app.Application
 import android.text.format.DateUtils
 import androidx.lifecycle.*
 import com.esri.arcgisruntime.concurrent.ListenableFuture
@@ -8,7 +7,6 @@ import com.esri.arcgisruntime.data.FeatureQueryResult
 import com.esri.arcgisruntime.data.QueryParameters
 import com.esri.arcgisruntime.geometry.Envelope
 import com.esri.arcgisruntime.geometry.SpatialReference
-import com.esri.arcgisruntime.layers.ArcGISTiledLayer
 import com.esri.arcgisruntime.layers.FeatureLayer
 import com.esri.arcgisruntime.mapping.ArcGISMap
 import com.esri.arcgisruntime.mapping.Basemap
@@ -24,12 +22,12 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class MapViewModel @Inject constructor(private val mapRepository: MapRepository, private val connectionLiveData: ConnectionLiveData, private val application: Application): ViewModel(),
+class MapViewModel @Inject constructor(private val mapRepository: MapRepository, private val connectionLiveData: ConnectionLiveData): ViewModel(),
     CreateWorldMap, RefreshMap, AddMapLayers, GetPointOnMap, GetMapPointInfo{
 
-    private val tiledMap = ArcGISTiledLayer("https://tiledbasemaps.arcgis.com/arcgis/rest/services/World_Street_Map/MapServer")
-    private val worldEnvelope = Envelope(-2.0037507067161843E7, -1.99718688804086E7, 2.0037507067161843E7, 1.9971868880408484E7, SpatialReference.create(3857))
-
+    val tiledMap = mapRepository.tileMapToDisplay
+    //private val worldEnvelope = Envelope(-2.0037507067161843E7, -1.99718688804086E7, 2.0037507067161843E7, 1.9971868880408484E7, SpatialReference.create(3857))
+    private val nyEnvelope = Envelope(-8259221.806896, 4727458.643225, -7957943.689966, 5230770.320920, SpatialReference.create(3857))
     private val viewModelJob = SupervisorJob()
     private val viewModelScope = CoroutineScope(viewModelJob + Dispatchers.Main)
 
@@ -48,16 +46,18 @@ class MapViewModel @Inject constructor(private val mapRepository: MapRepository,
 
     init{
         checkConnection()
-        addMapLayers(map)
-        viewModelScope.launch {
-            mapRepository.refreshData()
+        if(_isOnline.value == true){
+            addMapLayers(map)
+            viewModelScope.launch {
+                mapRepository.refreshData()
+            }
         }
     }
 
     override fun createMap(): ArcGISMap{
         //val baseMap = ArcGISMap(Basemap.createTopographic())
         val baseMap = ArcGISMap().apply { basemap = Basemap(tiledMap) }
-        val initialExtent = worldEnvelope
+        val initialExtent = nyEnvelope
         val viewPoint = Viewpoint(initialExtent)
         baseMap.initialViewpoint = viewPoint
         return baseMap
@@ -96,8 +96,10 @@ class MapViewModel @Inject constructor(private val mapRepository: MapRepository,
 
     override fun onCleared() {
         super.onCleared()
-        map.operationalLayers.clear()
-        viewModelJob.cancel()
+        if(tiledMap != null){
+            map.operationalLayers.clear()
+            viewModelJob.cancel()
+        }
     }
 
     private fun checkConnection() {

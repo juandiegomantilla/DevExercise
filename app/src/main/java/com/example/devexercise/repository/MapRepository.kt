@@ -1,19 +1,35 @@
 package com.example.devexercise.repository
 
+import android.app.Application
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Transformations
+import com.esri.arcgisruntime.concurrent.Job
+import com.esri.arcgisruntime.geometry.Envelope
+import com.esri.arcgisruntime.geometry.SpatialReference
+import com.esri.arcgisruntime.layers.ArcGISTiledLayer
+import com.esri.arcgisruntime.loadable.LoadStatus
+import com.esri.arcgisruntime.mapping.ArcGISMap
+import com.esri.arcgisruntime.tasks.tilecache.ExportTileCacheParameters
+import com.esri.arcgisruntime.tasks.tilecache.ExportTileCacheTask
 import com.example.devexercise.database.LocalDatabase
 import com.example.devexercise.database.asMapRepositoryDomainModel
 import com.example.devexercise.network.ArcgisMapService
+import com.example.devexercise.network.MapRemoteDataSource
 import com.example.devexercise.network.asDatabaseModel
 import com.example.devexercise.repository.impl.MapRepositoryImpl
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.io.File
 import javax.inject.Inject
 
-class MapRepository @Inject constructor(private val database: LocalDatabase, private val service: ArcgisMapService): MapRepositoryImpl{
+class MapRepository @Inject constructor(private val database: LocalDatabase, private val service: ArcgisMapService, private val map: MapRemoteDataSource, private val cachePath: String): MapRepositoryImpl{
 
     lateinit var updatedTime: String
+
+    var tileMapToDisplay: ArcGISTiledLayer? = getRemoteMapToLocalMap()
+    var offlineMapToDisplay: ArcGISTiledLayer? = null
+    private var offlineMapPath = ""
+    private val nyEnvelope = Envelope(-8259221.806896, 4727458.643225, -7957943.689966, 5230770.320920, SpatialReference.create(3857))
 
     override fun getPointDetails(pointId: Long): LiveData<List<MapPointModel>>{
         return Transformations.map(database.databaseDao.getMapPointFromDatabase(pointId)){
@@ -28,4 +44,74 @@ class MapRepository @Inject constructor(private val database: LocalDatabase, pri
             updatedTime = dataList.pointsContainer[1].pointDetails.Last_Update.toString()
         }
     }
+
+    init {
+        if(map.remoteTiledMap != null){
+            prepareDownloadPath()
+            prepareMapForDownload()
+        }
+    }
+
+    private fun getRemoteMapToLocalMap(): ArcGISTiledLayer? {
+        return if (map.remoteTiledMap == null){
+            val mapFile = "$cachePath/offlineMap/offlineMap.tpk"
+            val file = File(mapFile)
+            if(file.exists()){
+                offlineMapToDisplay = ArcGISTiledLayer(file.absolutePath)
+                offlineMapToDisplay
+            }else{
+                null
+            }
+        }else{
+            map.remoteTiledMap
+        }
+    }
+
+    private fun prepareDownloadPath(){
+        val mapDirectory = "$cachePath/offlineMap"
+        val mapFile = "offlineMap.tpk"
+        val directory = File(mapDirectory)
+        if (!directory.exists()){
+            directory.mkdir()
+        }
+        val file = File("$mapDirectory/$mapFile")
+        offlineMapPath = file.absolutePath
+        println(offlineMapPath)
+    }
+
+    private fun prepareMapForDownload(){
+        val downloadArea = nyEnvelope
+        val exportTileCacheTask =  ExportTileCacheTask(map.remoteTiledMap!!.uri)
+        exportTileCacheTask.loadAsync()
+
+        exportTileCacheTask.addDoneLoadingListener {
+            if(exportTileCacheTask.loadStatus == LoadStatus.LOADED){
+                val parametersFuture = exportTileCacheTask.createDefaultExportTileCacheParametersAsync(downloadArea, 2000000.0, 1000000.0)
+                parametersFuture.addDoneListener {
+                    try {
+                        val parameters= parametersFuture.get()
+                        downloadMap(exportTileCacheTask, parameters)
+                    } catch (e: Exception){
+                        println("Error while preparing for download: $e")
+                    }
+                }
+            }else if(exportTileCacheTask.loadStatus == LoadStatus.FAILED_TO_LOAD){
+                println("Load error: ${exportTileCacheTask.loadError}")
+            }
+        }
+    }
+
+    private fun downloadMap(exportTileCacheTask: ExportTileCacheTask, parameters: ExportTileCacheParameters){
+        val exportTileCacheJob = exportTileCacheTask.exportTileCacheAsync(parameters, offlineMapPath)
+        exportTileCacheJob.addJobChangedListener {
+            if(exportTileCacheJob.status == Job.Status.SUCCEEDED){
+                println("Map successfully downloaded")
+            }else if(exportTileCacheJob.status == Job.Status.FAILED){
+                println("Download error: ${exportTileCacheJob.error}")
+            }
+        }
+        exportTileCacheJob.start()
+    }
+
+    private fun getLocalMap(): ArcGISTiledLayer = ArcGISTiledLayer(offlineMapPath)
 }

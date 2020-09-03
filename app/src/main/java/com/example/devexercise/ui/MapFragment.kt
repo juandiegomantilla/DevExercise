@@ -4,6 +4,7 @@ import android.app.Dialog
 import android.graphics.Color
 import android.os.Bundle
 import android.view.*
+import androidx.core.view.isInvisible
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -41,34 +42,44 @@ class MapFragment : Fragment(), Injectable {
 
         viewModelAdapter = MapPointAdapter()
 
-        binding.mapView.let {
-            it.map = viewModel.map
-            it.selectionProperties.color = Color.BLUE
-            it.onTouchListener = object : DefaultMapViewOnTouchListener(context, it){
-                override fun onSingleTapConfirmed(motionEvent: MotionEvent): Boolean {
+        if(viewModel.tiledMap == null){
+            binding.mapView.visibility = View.INVISIBLE
+            binding.mapMessage.visibility = View.VISIBLE
+            binding.updateMap.visibility = View.INVISIBLE
+        }else{
+            binding.mapView.visibility = View.VISIBLE
+            binding.mapMessage.visibility = View.INVISIBLE
+            binding.updateMap.visibility = View.VISIBLE
 
-                    val tappedPoint = it.screenToLocation(android.graphics.Point(motionEvent.x.roundToInt(), motionEvent.y.roundToInt()))
-                    val tolerance = 25
-                    val mapTolerance = tolerance * it.unitsPerDensityIndependentPixel
-                    val envelope = Envelope(tappedPoint.x - mapTolerance, tappedPoint.y - mapTolerance, tappedPoint.x + mapTolerance, tappedPoint.y + mapTolerance, it.spatialReference)
-                    val pointSelectedOnMap = viewModel.getPointOnMap(envelope)
+            binding.mapView.let {
+                it.map = viewModel.map
+                it.selectionProperties.color = Color.BLUE
+                it.onTouchListener = object : DefaultMapViewOnTouchListener(context, it){
+                    override fun onSingleTapConfirmed(motionEvent: MotionEvent): Boolean {
 
-                    pointSelectedOnMap.addDoneListener {
-                        try {
-                            val pointRequested = viewModel.getMapPointInfo(pointSelectedOnMap.get())
-                            pointRequested.observe(viewLifecycleOwner, Observer { point ->
-                                point?.apply {
-                                    viewModelAdapter?.pointDetails = point
-                                    //println(point)
-                                }
-                            })
-                            showPointDetails()
-                        } catch (e: Exception) {
-                            Snackbar.make(activity!!.findViewById(android.R.id.content), "Point selected failed: " + e.message, Snackbar.LENGTH_LONG).show()
+                        val tappedPoint = it.screenToLocation(android.graphics.Point(motionEvent.x.roundToInt(), motionEvent.y.roundToInt()))
+                        val tolerance = 25
+                        val mapTolerance = tolerance * it.unitsPerDensityIndependentPixel
+                        val envelope = Envelope(tappedPoint.x - mapTolerance, tappedPoint.y - mapTolerance, tappedPoint.x + mapTolerance, tappedPoint.y + mapTolerance, it.spatialReference)
+                        val pointSelectedOnMap = viewModel.getPointOnMap(envelope)
+
+                        pointSelectedOnMap.addDoneListener {
+                            try {
+                                val pointRequested = viewModel.getMapPointInfo(pointSelectedOnMap.get())
+                                pointRequested.observe(viewLifecycleOwner, Observer { point ->
+                                    point?.apply {
+                                        viewModelAdapter?.pointDetails = point
+                                        //println(point)
+                                    }
+                                })
+                                showPointDetails()
+                            } catch (e: Exception) {
+                                Snackbar.make(activity!!.findViewById(android.R.id.content), "Point selected failed: " + e.message, Snackbar.LENGTH_LONG).show()
+                            }
                         }
-                    }
 
-                    return super.onSingleTapConfirmed(motionEvent)
+                        return super.onSingleTapConfirmed(motionEvent)
+                    }
                 }
             }
         }
@@ -77,6 +88,13 @@ class MapFragment : Fragment(), Injectable {
             viewModel.refreshMap()
         }
 
+        viewModel.isOnline.observe(viewLifecycleOwner, Observer { isOnline ->
+            if(!isOnline){
+                Snackbar.make(requireActivity().findViewById(android.R.id.content), "You are offline now.", Snackbar.LENGTH_LONG).show()
+                binding.updateMap.visibility = View.INVISIBLE
+            }
+        })
+
         return binding.root
     }
 
@@ -84,12 +102,6 @@ class MapFragment : Fragment(), Injectable {
         super.onActivityCreated(savedInstanceState)
         viewModel.lastUpdate.observe(viewLifecycleOwner, Observer {lastUpdate ->
             Snackbar.make(requireActivity().findViewById(android.R.id.content), "Last map server update: $lastUpdate", Snackbar.LENGTH_LONG).show()
-        })
-
-        viewModel.isOnline.observe(viewLifecycleOwner, Observer { isOnline ->
-            if(!isOnline){
-                Snackbar.make(requireActivity().findViewById(android.R.id.content), "You are offline now.", Snackbar.LENGTH_LONG).show()
-            }
         })
     }
 
@@ -109,16 +121,22 @@ class MapFragment : Fragment(), Injectable {
 
     override fun onPause() {
         super.onPause()
-        mapView.pause()
+        if(viewModel.tiledMap != null){
+            mapView.pause()
+        }
     }
 
     override fun onResume() {
         super.onResume()
-        mapView.resume()
+        if(viewModel.tiledMap != null){
+            mapView.resume()
+        }
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
-        mapView.dispose()
+        if(viewModel.tiledMap != null){
+            mapView.dispose()
+        }
     }
 }
