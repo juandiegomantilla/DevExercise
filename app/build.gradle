@@ -10,7 +10,7 @@ android {
 
     defaultConfig {
         applicationId "com.example.devexercise"
-        minSdkVersion 21
+        minSdkVersion 23
         targetSdkVersion 29
         versionCode 1
         versionName "1.0"
@@ -109,4 +109,7 @@ dependencies {
     implementation "androidx.activity:activity-ktx:$version_activity"
     implementation "androidx.fragment:fragment:$version_fragment"
     implementation "androidx.fragment:fragment-ktx:$version_fragment"
+
+    //Encrypted Shared Preferences
+    implementation "androidx.security:security-crypto:$version_encrypted_shared_preferences"
 }

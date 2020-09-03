@@ -32,6 +32,7 @@ data class MapPointModel(
 
 data class LoggedUser(
     val userId: String = "",
+    val pass: String = "",
     val displayName: String = "",
     val license: String = ""
 )

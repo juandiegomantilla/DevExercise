@@ -42,7 +42,7 @@ class LoginRemoteDataSource @Inject constructor(private val connectionLiveData: 
                 portal.addDoneLoadingListener {
                     if(portal.loadStatus == LoadStatus.LOADED){
                         _status.value = "Success"
-                        setLicense(portal)
+                        setLicense(portal, password)
                     }else{
                         _status.value = "Not_Success"
                         _status.value = ""
@@ -58,7 +58,7 @@ class LoginRemoteDataSource @Inject constructor(private val connectionLiveData: 
         }
     }
 
-    private fun setLicense(portal: Portal) {
+    private fun setLicense(portal: Portal, pass: String) {
         val licenseFuture = portal.fetchLicenseInfoAsync()
         licenseFuture.addDoneListener {
             try {
@@ -66,7 +66,7 @@ class LoginRemoteDataSource @Inject constructor(private val connectionLiveData: 
                 val licenceJson = licenceInfo.toJson()
                 ArcGISRuntimeEnvironment.setLicense(licenceInfo)
 
-                _userInfo.value = LoggedUser(portal.user.username, portal.user.fullName, licenceJson)
+                _userInfo.value = LoggedUser(portal.user.username, pass, portal.user.fullName, licenceJson)
 
             } catch (e: Exception) {
                 println("Error: $e")
