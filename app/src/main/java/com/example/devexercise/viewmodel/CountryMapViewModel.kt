@@ -52,9 +52,9 @@ class CountryMapViewModel @Inject constructor(private val mapRepository: MapRepo
 
     init{
         checkConnection()
+        val baseMap = ArcGISMap().apply { basemap = Basemap(tiledMap) }
+        controlMap = baseMap
         if(_isOnline.value == true){
-            val baseMap = ArcGISMap().apply { basemap = Basemap(tiledMap) }
-            controlMap = baseMap
             viewModelScope.launch {
                 mapRepository.refreshData()
             }
