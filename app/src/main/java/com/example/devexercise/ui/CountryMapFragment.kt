@@ -49,7 +49,7 @@ class CountryMapFragment : Fragment(), Injectable {
         val country = CountryMapFragmentArgs.fromBundle(requireArguments()).selectedCountry
 
         binding.mapView.let {
-            it.map = viewModel.createMap(country)
+            it.map = viewModel.createMapCountry(country)
             it.selectionProperties.color = Color.BLUE
             it.onTouchListener = object : DefaultMapViewOnTouchListener(context, it) {
                 override fun onSingleTapConfirmed(motionEvent: MotionEvent): Boolean {

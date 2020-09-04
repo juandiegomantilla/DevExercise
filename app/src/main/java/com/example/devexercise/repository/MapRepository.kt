@@ -4,10 +4,13 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import com.esri.arcgisruntime.concurrent.Job
+import com.esri.arcgisruntime.data.SyncModel
 import com.esri.arcgisruntime.geometry.Envelope
 import com.esri.arcgisruntime.geometry.SpatialReference
 import com.esri.arcgisruntime.layers.ArcGISTiledLayer
 import com.esri.arcgisruntime.loadable.LoadStatus
+import com.esri.arcgisruntime.tasks.geodatabase.GenerateGeodatabaseParameters
+import com.esri.arcgisruntime.tasks.geodatabase.GenerateLayerOption
 import com.esri.arcgisruntime.tasks.tilecache.ExportTileCacheParameters
 import com.esri.arcgisruntime.tasks.tilecache.ExportTileCacheTask
 import com.example.devexercise.database.LocalDatabase
@@ -28,6 +31,7 @@ class MapRepository @Inject constructor(private val database: LocalDatabase, pri
     var tileMapToDisplay: ArcGISTiledLayer? = getRemoteMapToLocalMap()
     var offlineMapToDisplay: ArcGISTiledLayer? = null
     private var offlineMapPath = ""
+    //private var offlineLayerPath = ""
     private val nyEnvelope = Envelope(-8259221.806896, 4727458.643225, -7957943.689966, 5230770.320920, SpatialReference.create(3857))
     private val _progress = MutableLiveData<Int>()
     val progress: LiveData<Int>
@@ -52,6 +56,10 @@ class MapRepository @Inject constructor(private val database: LocalDatabase, pri
             prepareDownloadPath()
             prepareMapForDownload()
         }
+        /*if(map.remoteGeodatabase != null){
+            prepareLayerDownloadPath()
+            prepareLayersForDownload()
+        }*/
     }
 
     private fun getRemoteMapToLocalMap(): ArcGISTiledLayer? {
@@ -115,4 +123,59 @@ class MapRepository @Inject constructor(private val database: LocalDatabase, pri
         }
         exportTileCacheJob.start()
     }
+
+    /*private fun prepareLayerDownloadPath(){
+        val layerDirectory = "$localPath/offlineLayers"
+        val layerFile = ".geodatabase"
+        val directory = File(layerDirectory)
+        if (!directory.exists()){
+            directory.mkdir()
+        }
+        val file = File("$layerDirectory/$layerFile")
+        offlineLayerPath = file.absolutePath
+        println(offlineLayerPath)
+    }
+
+    private fun prepareLayersForDownload(){
+        val downloadArea = nyEnvelope
+        val geoDatabaseParametersFuture = map.remoteGeodatabase!!.createDefaultGenerateGeodatabaseParametersAsync(downloadArea)
+        geoDatabaseParametersFuture.addDoneListener {
+            try{
+                val generateGdbParams = geoDatabaseParametersFuture.get()
+                generateGdbParams.syncModel = SyncModel.PER_LAYER
+                val deathLayer: Long = 0
+                val casesLayer: Long = 1
+                generateGdbParams.layerOptions.clear()
+                generateGdbParams.layerOptions.add(GenerateLayerOption(deathLayer))
+                generateGdbParams.layerOptions.add(GenerateLayerOption(casesLayer))
+                generateGdbParams.isReturnAttachments = false
+                downloadLayers(generateGdbParams)
+            }catch (e: Exception){
+                println("Error while preparing for download: $e")
+            }
+        }
+    }
+
+    private fun downloadLayers(generateGdbParams: GenerateGeodatabaseParameters){
+        val generateGdbJob = map.remoteGeodatabase!!.generateGeodatabase(generateGdbParams, offlineLayerPath)
+        generateGdbJob.addJobChangedListener {
+            println("Layers download status: " + generateGdbJob.status.name)
+            if(generateGdbJob.error != null){
+                println("Error downloading layers: " + generateGdbJob.error.message)
+            }
+            when (generateGdbJob.status) {
+                Job.Status.SUCCEEDED -> {
+                    println("I DID IT AGAIN!!")
+                }
+                Job.Status.FAILED -> {
+                    println("OH NOT AGAIN!!")
+                }
+                else -> {
+                    println(generateGdbJob.messages[generateGdbJob.messages.size - 1])
+                }
+            }
+        }
+        generateGdbJob.start()
+        println("Submitted job #" + generateGdbJob.serverJobId + "to create local geodatabase")
+    }*/
 }

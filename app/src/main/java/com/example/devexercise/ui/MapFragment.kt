@@ -5,7 +5,6 @@ import android.app.ProgressDialog
 import android.graphics.Color
 import android.os.Bundle
 import android.view.*
-import androidx.core.view.isInvisible
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -19,7 +18,7 @@ import com.example.devexercise.R
 import com.example.devexercise.dagger.Injectable
 import com.example.devexercise.databinding.FragmentMapBinding
 import com.example.devexercise.util.MapPointAdapter
-import com.example.devexercise.viewmodel.MapViewModel
+import com.example.devexercise.viewmodel.CountryMapViewModel
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_map.*
 import javax.inject.Inject
@@ -30,7 +29,7 @@ class MapFragment : Fragment(), Injectable {
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
 
-    val viewModel: MapViewModel by viewModels { viewModelFactory }
+    val viewModel: CountryMapViewModel by viewModels { viewModelFactory }
 
     private var viewModelAdapter: MapPointAdapter? = null
 
@@ -54,14 +53,8 @@ class MapFragment : Fragment(), Injectable {
             binding.mapMessage.visibility = View.INVISIBLE
             binding.updateMap.visibility = View.VISIBLE
 
-            viewModel.downloadProgress.observe(viewLifecycleOwner, Observer {
-                downloadDialog.show()
-                downloadDialog.progress = it
-                if(downloadDialog.progress == 100) downloadDialog.dismiss()
-            })
-
             binding.mapView.let {
-                it.map = viewModel.map
+                it.map = viewModel.createMapCountry()
                 it.selectionProperties.color = Color.BLUE
                 it.onTouchListener = object : DefaultMapViewOnTouchListener(context, it){
                     override fun onSingleTapConfirmed(motionEvent: MotionEvent): Boolean {
@@ -96,13 +89,6 @@ class MapFragment : Fragment(), Injectable {
         binding.updateMap.setOnClickListener {
             viewModel.refreshMap()
         }
-
-        viewModel.isOnline.observe(viewLifecycleOwner, Observer { isOnline ->
-            if(!isOnline){
-                Snackbar.make(requireActivity().findViewById(android.R.id.content), "You are offline now.", Snackbar.LENGTH_LONG).show()
-                binding.updateMap.visibility = View.INVISIBLE
-            }
-        })
 
         return binding.root
     }

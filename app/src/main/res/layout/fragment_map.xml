@@ -6,7 +6,7 @@
     <data>
         <variable
             name="viewModel"
-            type="com.example.devexercise.viewmodel.MapViewModel" />
+            type="com.example.devexercise.viewmodel.CountryMapViewModel" />
     </data>
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout

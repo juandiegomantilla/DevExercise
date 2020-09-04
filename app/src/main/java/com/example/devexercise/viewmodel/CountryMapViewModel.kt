@@ -25,6 +25,8 @@ import javax.inject.Inject
 class CountryMapViewModel @Inject constructor(private val mapRepository: MapRepository): ViewModel(),
     CreateMapCountry, RefreshMap, AddMapLayers, GetPointOnMap, GetMapPointInfo{
 
+    val tiledMap = mapRepository.tileMapToDisplay
+
     private val viewModelJob = SupervisorJob()
     private val viewModelScope = CoroutineScope(viewModelJob + Dispatchers.Main)
 
@@ -47,9 +49,9 @@ class CountryMapViewModel @Inject constructor(private val mapRepository: MapRepo
         }
     }
 
-    override fun createMap(country: CountryModel): ArcGISMap{
+    override fun createMapCountry(country: CountryModel?): ArcGISMap {
         return try{
-            val countryMap = ArcGISMap(Basemap.Type.TOPOGRAPHIC, country.Lat!!, country.Long_!!, 16)
+            val countryMap = ArcGISMap(Basemap.Type.TOPOGRAPHIC, country!!.Lat!!, country.Long_!!, 16)
 
             addMapLayers(countryMap)
 
