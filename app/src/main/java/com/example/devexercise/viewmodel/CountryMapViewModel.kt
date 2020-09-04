@@ -6,7 +6,7 @@ import com.esri.arcgisruntime.concurrent.ListenableFuture
 import com.esri.arcgisruntime.data.FeatureQueryResult
 import com.esri.arcgisruntime.data.QueryParameters
 import com.esri.arcgisruntime.geometry.Envelope
-import com.esri.arcgisruntime.geometry.Point
+import com.esri.arcgisruntime.geometry.Geometry
 import com.esri.arcgisruntime.geometry.SpatialReference
 import com.esri.arcgisruntime.layers.FeatureLayer
 import com.esri.arcgisruntime.mapping.ArcGISMap
@@ -33,7 +33,7 @@ class CountryMapViewModel @Inject constructor(private val mapRepository: MapRepo
     private val viewModelJob = SupervisorJob()
     private val viewModelScope = CoroutineScope(viewModelJob + Dispatchers.Main)
 
-    private lateinit var controlMap: ArcGISMap
+    private var controlMap: ArcGISMap
 
     private val deathLayer = ArcgisLayer.deathLayer
     private val casesLayer = ArcgisLayer.casesLayer
@@ -76,6 +76,14 @@ class CountryMapViewModel @Inject constructor(private val mapRepository: MapRepo
             _mapStatus.value = "Country not found in map"
             controlMap
         }
+    }
+
+    fun sendAreaToDownload(downloadArea: Geometry, minScale: Double, maxScale: Double){
+        var downloadMinScale = minScale
+        if(downloadMinScale <= maxScale){
+            downloadMinScale = maxScale + 1
+        }
+        mapRepository.prepareMapForDownload(downloadArea, downloadMinScale, maxScale)
     }
 
     override fun refreshMap(){

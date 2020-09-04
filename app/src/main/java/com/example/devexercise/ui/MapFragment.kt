@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.observe
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.esri.arcgisruntime.geometry.Envelope
@@ -59,10 +60,12 @@ class MapFragment : Fragment(), Injectable {
             binding.mapView.visibility = View.INVISIBLE
             binding.mapMessage.visibility = View.VISIBLE
             binding.updateMap.visibility = View.INVISIBLE
+            binding.downloadMap.visibility = View.INVISIBLE
         }else{
             binding.mapView.visibility = View.VISIBLE
             binding.mapMessage.visibility = View.INVISIBLE
             binding.updateMap.visibility = View.VISIBLE
+            binding.downloadMap.visibility = View.VISIBLE
 
             binding.mapView.let {
                 it.map = viewModel.createMapCountry()
@@ -70,7 +73,7 @@ class MapFragment : Fragment(), Injectable {
                 it.onTouchListener = object : DefaultMapViewOnTouchListener(context, it){
                     override fun onSingleTapConfirmed(motionEvent: MotionEvent): Boolean {
 
-                        val tappedPoint = it.screenToLocation(android.graphics.Point(motionEvent.x.roundToInt(), motionEvent.y.roundToInt()))
+                        val tappedPoint = it.screenToLocation(Point(motionEvent.x.roundToInt(), motionEvent.y.roundToInt()))
                         val tolerance = 25
                         val mapTolerance = tolerance * it.unitsPerDensityIndependentPixel
                         val envelope = Envelope(tappedPoint.x - mapTolerance, tappedPoint.y - mapTolerance, tappedPoint.x + mapTolerance, tappedPoint.y + mapTolerance, it.spatialReference)
@@ -103,7 +106,6 @@ class MapFragment : Fragment(), Injectable {
                     if(minPoint != null && maxPoint != null){
                         val envelope = Envelope(minPoint, maxPoint)
                         downloadArea?.geometry = envelope
-                        println(envelope)
                     }
                 }
             }
@@ -112,6 +114,24 @@ class MapFragment : Fragment(), Injectable {
         binding.updateMap.setOnClickListener {
             viewModel.refreshMap()
         }
+
+        binding.downloadMap.setOnClickListener {
+            try{
+                val minScale = binding.mapView.mapScale
+                val maxScale = binding.mapView.map.maxScale
+                viewModel.sendAreaToDownload(downloadArea!!.geometry, minScale, maxScale)
+            }catch(e: Exception){
+                println("Download error, please try again.")
+            }
+        }
+
+        viewModel.isOnline.observe(viewLifecycleOwner, Observer { isOnline ->
+            if(!isOnline){
+                Snackbar.make(requireActivity().findViewById(android.R.id.content), "You are offline now.", Snackbar.LENGTH_LONG).show()
+                binding.updateMap.visibility =  View.INVISIBLE
+                binding.downloadMap.visibility =  View.INVISIBLE
+            }
+        })
 
         return binding.root
     }

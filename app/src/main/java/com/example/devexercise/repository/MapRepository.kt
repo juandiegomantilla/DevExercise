@@ -4,13 +4,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import com.esri.arcgisruntime.concurrent.Job
-import com.esri.arcgisruntime.data.SyncModel
-import com.esri.arcgisruntime.geometry.Envelope
-import com.esri.arcgisruntime.geometry.SpatialReference
+import com.esri.arcgisruntime.geometry.Geometry
 import com.esri.arcgisruntime.layers.ArcGISTiledLayer
 import com.esri.arcgisruntime.loadable.LoadStatus
-import com.esri.arcgisruntime.tasks.geodatabase.GenerateGeodatabaseParameters
-import com.esri.arcgisruntime.tasks.geodatabase.GenerateLayerOption
 import com.esri.arcgisruntime.tasks.tilecache.ExportTileCacheParameters
 import com.esri.arcgisruntime.tasks.tilecache.ExportTileCacheTask
 import com.example.devexercise.database.LocalDatabase
@@ -32,7 +28,6 @@ class MapRepository @Inject constructor(private val database: LocalDatabase, pri
     var offlineMapToDisplay: ArcGISTiledLayer? = null
     private var offlineMapPath = ""
     //private var offlineLayerPath = ""
-    private val nyEnvelope = Envelope(-8259221.806896, 4727458.643225, -7957943.689966, 5230770.320920, SpatialReference.create(3857))
     private val _progress = MutableLiveData<Int>()
     val progress: LiveData<Int>
         get() = _progress
@@ -54,7 +49,6 @@ class MapRepository @Inject constructor(private val database: LocalDatabase, pri
     init {
         if(map.remoteTiledMap != null){
             prepareDownloadPath()
-            prepareMapForDownload()
         }
         /*if(map.remoteGeodatabase != null){
             prepareLayerDownloadPath()
@@ -89,14 +83,13 @@ class MapRepository @Inject constructor(private val database: LocalDatabase, pri
         println(offlineMapPath)
     }
 
-    private fun prepareMapForDownload(){
-        val downloadArea = nyEnvelope
+    fun prepareMapForDownload(downloadArea: Geometry, minScale: Double, maxScale: Double){
         val exportTileCacheTask =  ExportTileCacheTask(map.remoteTiledMap!!.uri)
         exportTileCacheTask.loadAsync()
 
         exportTileCacheTask.addDoneLoadingListener {
             if(exportTileCacheTask.loadStatus == LoadStatus.LOADED){
-                val parametersFuture = exportTileCacheTask.createDefaultExportTileCacheParametersAsync(downloadArea, 2000000.0, 1000000.0)
+                val parametersFuture = exportTileCacheTask.createDefaultExportTileCacheParametersAsync(downloadArea, minScale, maxScale)
                 parametersFuture.addDoneListener {
                     try {
                         val parameters= parametersFuture.get()
