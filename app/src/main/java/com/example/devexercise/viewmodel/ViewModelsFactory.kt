@@ -9,11 +9,11 @@ import com.example.devexercise.repository.CountryModel
 import com.example.devexercise.repository.CountryRepository
 import com.example.devexercise.repository.MapRepository
 
-class CountryMapViewModelFactory(private val repository: MapRepository) : ViewModelProvider.Factory {
+class CountryMapViewModelFactory(private val repository: MapRepository, val connectionLiveData: ConnectionLiveData) : ViewModelProvider.Factory {
     @Suppress("unchecked_cast")
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(CountryMapViewModel::class.java)) {
-            return CountryMapViewModel(repository) as T
+            return CountryMapViewModel(repository,  connectionLiveData) as T
         }
         throw IllegalArgumentException("Unable to construct CountryMapViewModel")
     }

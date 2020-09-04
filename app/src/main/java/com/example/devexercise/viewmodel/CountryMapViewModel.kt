@@ -6,12 +6,14 @@ import com.esri.arcgisruntime.concurrent.ListenableFuture
 import com.esri.arcgisruntime.data.FeatureQueryResult
 import com.esri.arcgisruntime.data.QueryParameters
 import com.esri.arcgisruntime.geometry.Envelope
+import com.esri.arcgisruntime.geometry.Point
 import com.esri.arcgisruntime.geometry.SpatialReference
 import com.esri.arcgisruntime.layers.FeatureLayer
 import com.esri.arcgisruntime.mapping.ArcGISMap
 import com.esri.arcgisruntime.mapping.Basemap
 import com.esri.arcgisruntime.mapping.Viewpoint
 import com.example.devexercise.network.ArcgisLayer
+import com.example.devexercise.network.connection.ConnectionLiveData
 import com.example.devexercise.repository.CountryModel
 import com.example.devexercise.repository.MapPointModel
 import com.example.devexercise.repository.MapRepository
@@ -22,10 +24,11 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class CountryMapViewModel @Inject constructor(private val mapRepository: MapRepository): ViewModel(),
+class CountryMapViewModel @Inject constructor(private val mapRepository: MapRepository,  private val connectionLiveData: ConnectionLiveData): ViewModel(),
     CreateMapCountry, RefreshMap, AddMapLayers, GetPointOnMap, GetMapPointInfo{
 
     val tiledMap = mapRepository.tileMapToDisplay
+    val worldEnvelope = Envelope(-2.0037507067161843E7, -1.99718688804086E7, 2.0037507067161843E7, 1.9971868880408484E7, SpatialReference.create(3857))
 
     private val viewModelJob = SupervisorJob()
     private val viewModelScope = CoroutineScope(viewModelJob + Dispatchers.Main)
@@ -43,36 +46,35 @@ class CountryMapViewModel @Inject constructor(private val mapRepository: MapRepo
     val lastUpdate: LiveData<CharSequence>
         get() = _lastUpdate
 
+    private val _isOnline = MutableLiveData<Boolean>()
+    val isOnline: LiveData<Boolean>
+        get() = _isOnline
+
     init{
-        viewModelScope.launch {
-            mapRepository.refreshData()
+        checkConnection()
+        if(_isOnline.value == true){
+            val baseMap = ArcGISMap().apply { basemap = Basemap(tiledMap) }
+            controlMap = baseMap
+            viewModelScope.launch {
+                mapRepository.refreshData()
+            }
         }
     }
 
     override fun createMapCountry(country: CountryModel?): ArcGISMap {
         return try{
-            val countryMap = ArcGISMap(Basemap.Type.TOPOGRAPHIC, country!!.Lat!!, country.Long_!!, 16)
-
-            addMapLayers(countryMap)
-
+            val viewPoint = Viewpoint(country!!.Lat!!, country.Long_!!, 3000000.0)
+            controlMap.initialViewpoint = viewPoint
+            addMapLayers(controlMap)
             _mapStatus.value = "${country.Country_Region} successfully found in map"
-
-            controlMap = countryMap
-
-            countryMap
+            controlMap
         }catch (e: Exception){
-            val baseMap = ArcGISMap(Basemap.createTopographic())
-            val initialExtent = Envelope(-157.498337, -41.4544999999999, 174.886, 64.9631000000001, SpatialReference.create(4326))
+            val initialExtent = worldEnvelope
             val viewPoint = Viewpoint(initialExtent)
-            baseMap.initialViewpoint = viewPoint
-
-            addMapLayers(baseMap)
-
+            controlMap.initialViewpoint = viewPoint
+            addMapLayers(controlMap)
             _mapStatus.value = "Country not found in map"
-
-            controlMap = baseMap
-
-            baseMap
+            controlMap
         }
     }
 
@@ -109,6 +111,16 @@ class CountryMapViewModel @Inject constructor(private val mapRepository: MapRepo
 
     override fun onCleared() {
         super.onCleared()
-        controlMap.operationalLayers.clear()
+        if(tiledMap != null){
+            controlMap.operationalLayers.clear()
+            viewModelJob.cancel()
+        }
+    }
+
+    private fun checkConnection() {
+        val connectionObserver = Observer<Boolean> {
+            _isOnline.value = it
+        }
+        connectionLiveData.observeForever(connectionObserver)
     }
 }
