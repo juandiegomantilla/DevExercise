@@ -3,6 +3,7 @@ package com.example.devexercise.ui
 import android.app.Dialog
 import android.app.ProgressDialog
 import android.graphics.Color
+import android.graphics.Point
 import android.os.Bundle
 import android.view.*
 import androidx.databinding.DataBindingUtil
@@ -14,13 +15,16 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.esri.arcgisruntime.geometry.Envelope
 import com.esri.arcgisruntime.mapping.view.DefaultMapViewOnTouchListener
+import com.esri.arcgisruntime.mapping.view.Graphic
+import com.esri.arcgisruntime.mapping.view.GraphicsOverlay
+import com.esri.arcgisruntime.symbology.SimpleLineSymbol
 import com.example.devexercise.R
 import com.example.devexercise.dagger.Injectable
 import com.example.devexercise.databinding.FragmentMapBinding
 import com.example.devexercise.util.MapPointAdapter
 import com.example.devexercise.viewmodel.CountryMapViewModel
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.android.synthetic.main.fragment_map.*
+import kotlinx.android.synthetic.main.fragment_map.mapView
 import javax.inject.Inject
 import kotlin.math.roundToInt
 
@@ -33,6 +37,9 @@ class MapFragment : Fragment(), Injectable {
 
     private var viewModelAdapter: MapPointAdapter? = null
 
+    private val graphicsOverlay: GraphicsOverlay by lazy { GraphicsOverlay() }
+    private var downloadArea: Graphic? = null
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val binding: FragmentMapBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_map, container, false)
 
@@ -43,6 +50,10 @@ class MapFragment : Fragment(), Injectable {
         viewModelAdapter = MapPointAdapter()
 
         val downloadDialog = createProgressDialog()
+
+        downloadArea = Graphic()
+        downloadArea?.symbol = SimpleLineSymbol(SimpleLineSymbol.Style.SOLID, Color.BLACK, 2f)
+        graphicsOverlay.graphics.add(downloadArea)
 
         if(viewModel.tiledMap == null){
             binding.mapView.visibility = View.INVISIBLE
@@ -55,7 +66,7 @@ class MapFragment : Fragment(), Injectable {
 
             binding.mapView.let {
                 it.map = viewModel.createMapCountry()
-                it.selectionProperties.color = Color.BLUE
+                it.graphicsOverlays.add(graphicsOverlay)
                 it.onTouchListener = object : DefaultMapViewOnTouchListener(context, it){
                     override fun onSingleTapConfirmed(motionEvent: MotionEvent): Boolean {
 
@@ -81,6 +92,18 @@ class MapFragment : Fragment(), Injectable {
                         }
 
                         return super.onSingleTapConfirmed(motionEvent)
+                    }
+                }
+
+                it.addViewpointChangedListener {
+                    val minScreenPoint =  Point(200,200)
+                    val maxScreenPoint = Point(mapView.width - 200, mapView.height - 200)
+                    val minPoint = mapView.screenToLocation(minScreenPoint)
+                    val maxPoint = mapView.screenToLocation(maxScreenPoint)
+                    if(minPoint != null && maxPoint != null){
+                        val envelope = Envelope(minPoint, maxPoint)
+                        downloadArea?.geometry = envelope
+                        println(envelope)
                     }
                 }
             }

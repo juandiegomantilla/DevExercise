@@ -63,7 +63,7 @@ class CountryMapViewModel @Inject constructor(private val mapRepository: MapRepo
 
     override fun createMapCountry(country: CountryModel?): ArcGISMap {
         return try{
-            val viewPoint = Viewpoint(country!!.Lat!!, country.Long_!!, 3000000.0)
+            val viewPoint = Viewpoint(country!!.Lat!!, country.Long_!!, 6000000.0)
             controlMap.initialViewpoint = viewPoint
             addMapLayers(controlMap)
             _mapStatus.value = "${country.Country_Region} successfully found in map"

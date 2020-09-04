@@ -3,6 +3,7 @@ package com.example.devexercise.ui
 import android.app.Dialog
 import android.content.Context
 import android.graphics.Color
+import android.graphics.Point
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -16,6 +17,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.esri.arcgisruntime.geometry.Envelope
 import com.esri.arcgisruntime.mapping.view.DefaultMapViewOnTouchListener
+import com.esri.arcgisruntime.mapping.view.Graphic
+import com.esri.arcgisruntime.mapping.view.GraphicsOverlay
+import com.esri.arcgisruntime.symbology.SimpleLineSymbol
 
 import com.example.devexercise.R
 import com.example.devexercise.dagger.Injectable
@@ -37,6 +41,9 @@ class CountryMapFragment : Fragment(), Injectable {
 
     private var viewModelAdapter: MapPointAdapter? = null
 
+    private val graphicsOverlay: GraphicsOverlay by lazy { GraphicsOverlay() }
+    private var downloadArea: Graphic? = null
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val binding = FragmentCountryMapBinding.inflate(inflater)
 
@@ -48,9 +55,13 @@ class CountryMapFragment : Fragment(), Injectable {
 
         val country = CountryMapFragmentArgs.fromBundle(requireArguments()).selectedCountry
 
+        downloadArea = Graphic()
+        downloadArea?.symbol = SimpleLineSymbol(SimpleLineSymbol.Style.SOLID, Color.BLACK, 2f)
+        graphicsOverlay.graphics.add(downloadArea)
+
         binding.mapView.let {
             it.map = viewModel.createMapCountry(country)
-            it.selectionProperties.color = Color.BLUE
+            it.graphicsOverlays.add(graphicsOverlay)
             it.onTouchListener = object : DefaultMapViewOnTouchListener(context, it) {
                 override fun onSingleTapConfirmed(motionEvent: MotionEvent): Boolean {
 
@@ -76,6 +87,18 @@ class CountryMapFragment : Fragment(), Injectable {
                     }
 
                     return super.onSingleTapConfirmed(motionEvent)
+                }
+            }
+
+            it.addViewpointChangedListener {
+                val minScreenPoint =  Point(200,200)
+                val maxScreenPoint = Point(mapView.width - 200, mapView.height - 200)
+                val minPoint = mapView.screenToLocation(minScreenPoint)
+                val maxPoint = mapView.screenToLocation(maxScreenPoint)
+                if(minPoint != null && maxPoint != null){
+                    val envelope = Envelope(minPoint, maxPoint)
+                    downloadArea?.geometry = envelope
+                    println(envelope)
                 }
             }
 
