@@ -30,6 +30,9 @@ class CountryMapViewModel @Inject constructor(private val mapRepository: MapRepo
     val tiledMap = mapRepository.tileMapToDisplay
     private val worldEnvelope = Envelope(-2.0037507067161843E7, -1.99718688804086E7, 2.0037507067161843E7, 1.9971868880408484E7, SpatialReference.create(3857))
 
+    val downloadStatus = mapRepository.downloadStatus
+    val downloadProgress = mapRepository.progress
+
     private val viewModelJob = SupervisorJob()
     private val viewModelScope = CoroutineScope(viewModelJob + Dispatchers.Main)
 

@@ -14,6 +14,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.observe
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.esri.arcgisruntime.concurrent.Job
 import com.esri.arcgisruntime.geometry.Envelope
 import com.esri.arcgisruntime.mapping.view.DefaultMapViewOnTouchListener
 import com.esri.arcgisruntime.mapping.view.Graphic
@@ -120,6 +121,18 @@ class MapFragment : Fragment(), Injectable {
                 val minScale = binding.mapView.mapScale
                 val maxScale = binding.mapView.map.maxScale
                 viewModel.sendAreaToDownload(downloadArea!!.geometry, minScale, maxScale)
+                viewModel.downloadStatus.observe(viewLifecycleOwner, Observer { downloadStatus ->
+                    when(downloadStatus){
+                        "PREPARED" -> Snackbar.make(requireActivity().findViewById(android.R.id.content), "Preparing download.", Snackbar.LENGTH_LONG).show()
+                        "SUCCEEDED" -> Snackbar.make(requireActivity().findViewById(android.R.id.content), "Area successfully downloaded.", Snackbar.LENGTH_LONG).show()
+                        "FAILED" -> Snackbar.make(requireActivity().findViewById(android.R.id.content), "The area selected exceeds the limits allowed. Please zoom in the area on the map.", Snackbar.LENGTH_LONG).show()
+                    }
+                })
+                viewModel.downloadProgress.observe(viewLifecycleOwner, Observer {
+                    downloadDialog.show()
+                    downloadDialog.progress = it
+                    if(downloadDialog.progress == 100) downloadDialog.dismiss()
+                })
             }catch(e: Exception){
                 println("Download error, please try again.")
             }
@@ -159,8 +172,7 @@ class MapFragment : Fragment(), Injectable {
 
     private fun createProgressDialog(): ProgressDialog{
         val progressDialog = ProgressDialog(requireContext())
-        progressDialog.setTitle("Please wait")
-        progressDialog.setMessage("Downloading the latest map for offline mode")
+        progressDialog.setTitle("Downloading")
         progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL)
         progressDialog.isIndeterminate = false
         progressDialog.progress = 0

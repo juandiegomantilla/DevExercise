@@ -31,6 +31,9 @@ class MapRepository @Inject constructor(private val database: LocalDatabase, pri
     private val _progress = MutableLiveData<Int>()
     val progress: LiveData<Int>
         get() = _progress
+    private val _downloadStatus = MutableLiveData<String>()
+    val downloadStatus: LiveData<String>
+        get() = _downloadStatus
 
     override fun getPointDetails(pointId: Long): LiveData<List<MapPointModel>>{
         return Transformations.map(database.databaseDao.getMapPointFromDatabase(pointId)){
@@ -94,6 +97,8 @@ class MapRepository @Inject constructor(private val database: LocalDatabase, pri
                     try {
                         val parameters= parametersFuture.get()
                         downloadMap(exportTileCacheTask, parameters)
+                        _downloadStatus.value = "PREPARED"
+                        _downloadStatus.value = ""
                     } catch (e: Exception){
                         println("Error while preparing for download: $e")
                     }
@@ -109,10 +114,18 @@ class MapRepository @Inject constructor(private val database: LocalDatabase, pri
         exportTileCacheJob.addJobChangedListener {
             if(exportTileCacheJob.status == Job.Status.FAILED){
                 println("Download error: ${exportTileCacheJob.error}")
+                _downloadStatus.value = "FAILED"
+                _downloadStatus.value = ""
+            }
+            if(exportTileCacheJob.status == Job.Status.SUCCEEDED){
+                _downloadStatus.value = "SUCCEEDED"
+                _downloadStatus.value = ""
             }
         }
         exportTileCacheJob.addProgressChangedListener {
-            _progress.value = exportTileCacheJob.progress
+            if(exportTileCacheJob.progress > 3){
+                _progress.value = exportTileCacheJob.progress
+            }
         }
         exportTileCacheJob.start()
     }
