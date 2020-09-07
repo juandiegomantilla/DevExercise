@@ -24,6 +24,18 @@
                 android:layout_height="match_parent">
             </com.esri.arcgisruntime.mapping.view.MapView>
 
+            <TextView
+                android:id="@+id/map_message"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="15sp"
+                android:text="No area downloaded."
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:visibility="invisible"/>
+
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -32,10 +44,21 @@
             android:layout_height="wrap_content"
             android:layout_gravity="top|end"
             android:layout_margin="16dp"
-            app:fabSize="normal"
+            app:fabSize="mini"
             app:backgroundTint="@color/colorPrimary"
             app:elevation="6dp"
             android:src="@drawable/ic_refresh_black_24dp" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/download_map"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top|start"
+            android:layout_margin="16dp"
+            android:src="@drawable/ic_file_download_black_24dp"
+            app:backgroundTint="@color/colorPrimary"
+            app:elevation="6dp"
+            app:fabSize="mini" />
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </layout>
