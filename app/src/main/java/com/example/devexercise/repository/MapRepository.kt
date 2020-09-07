@@ -4,9 +4,12 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import com.esri.arcgisruntime.concurrent.Job
+import com.esri.arcgisruntime.data.SyncModel
 import com.esri.arcgisruntime.geometry.Geometry
 import com.esri.arcgisruntime.layers.ArcGISTiledLayer
 import com.esri.arcgisruntime.loadable.LoadStatus
+import com.esri.arcgisruntime.tasks.geodatabase.GenerateGeodatabaseParameters
+import com.esri.arcgisruntime.tasks.geodatabase.GenerateLayerOption
 import com.esri.arcgisruntime.tasks.tilecache.ExportTileCacheParameters
 import com.esri.arcgisruntime.tasks.tilecache.ExportTileCacheTask
 import com.example.devexercise.database.LocalDatabase
@@ -27,10 +30,13 @@ class MapRepository @Inject constructor(private val database: LocalDatabase, pri
     var tileMapToDisplay: ArcGISTiledLayer? = getRemoteMapToLocalMap()
     var offlineMapToDisplay: ArcGISTiledLayer? = null
     private var offlineMapPath = ""
-    //private var offlineLayerPath = ""
+
+    private var offlineLayerPath = ""
+
     private val _progress = MutableLiveData<Int>()
     val progress: LiveData<Int>
         get() = _progress
+
     private val _downloadStatus = MutableLiveData<String>()
     val downloadStatus: LiveData<String>
         get() = _downloadStatus
@@ -53,10 +59,7 @@ class MapRepository @Inject constructor(private val database: LocalDatabase, pri
         if(map.remoteTiledMap != null){
             prepareDownloadPath()
         }
-        /*if(map.remoteGeodatabase != null){
-            prepareLayerDownloadPath()
-            prepareLayersForDownload()
-        }*/
+        //if(map.remoteGeodatabase != null){ prepareLayerDownloadPath() }
     }
 
     private fun getRemoteMapToLocalMap(): ArcGISTiledLayer? {
@@ -130,7 +133,7 @@ class MapRepository @Inject constructor(private val database: LocalDatabase, pri
         exportTileCacheJob.start()
     }
 
-    /*private fun prepareLayerDownloadPath(){
+    private fun prepareLayerDownloadPath(){
         val layerDirectory = "$localPath/offlineLayers"
         val layerFile = ".geodatabase"
         val directory = File(layerDirectory)
@@ -142,9 +145,9 @@ class MapRepository @Inject constructor(private val database: LocalDatabase, pri
         println(offlineLayerPath)
     }
 
-    private fun prepareLayersForDownload(){
-        val downloadArea = nyEnvelope
-        val geoDatabaseParametersFuture = map.remoteGeodatabase!!.createDefaultGenerateGeodatabaseParametersAsync(downloadArea)
+    fun prepareLayersForDownload(downloadArea: Geometry){
+        val layerArea = downloadArea
+        val geoDatabaseParametersFuture = map.remoteGeodatabase!!.createDefaultGenerateGeodatabaseParametersAsync(layerArea)
         geoDatabaseParametersFuture.addDoneListener {
             try{
                 val generateGdbParams = geoDatabaseParametersFuture.get()
@@ -158,6 +161,7 @@ class MapRepository @Inject constructor(private val database: LocalDatabase, pri
                 downloadLayers(generateGdbParams)
             }catch (e: Exception){
                 println("Error while preparing for download: $e")
+                //com.esri.arcgisruntime.ArcGISRuntimeException: Invalid response: The feature service does not support geodatabase sync.
             }
         }
     }
@@ -166,22 +170,13 @@ class MapRepository @Inject constructor(private val database: LocalDatabase, pri
         val generateGdbJob = map.remoteGeodatabase!!.generateGeodatabase(generateGdbParams, offlineLayerPath)
         generateGdbJob.addJobChangedListener {
             println("Layers download status: " + generateGdbJob.status.name)
-            if(generateGdbJob.error != null){
-                println("Error downloading layers: " + generateGdbJob.error.message)
-            }
+            if(generateGdbJob.error != null){ println("Error downloading layers: " + generateGdbJob.error.message) }
             when (generateGdbJob.status) {
-                Job.Status.SUCCEEDED -> {
-                    println("I DID IT AGAIN!!")
-                }
-                Job.Status.FAILED -> {
-                    println("OH NOT AGAIN!!")
-                }
-                else -> {
-                    println(generateGdbJob.messages[generateGdbJob.messages.size - 1])
-                }
+                Job.Status.SUCCEEDED -> println("Download success")
+                Job.Status.FAILED -> println("Download failed")
+                else -> println(generateGdbJob.messages[generateGdbJob.messages.size - 1])
             }
         }
         generateGdbJob.start()
-        println("Submitted job #" + generateGdbJob.serverJobId + "to create local geodatabase")
-    }*/
+    }
 }

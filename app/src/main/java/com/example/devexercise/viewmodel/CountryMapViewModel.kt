@@ -87,6 +87,7 @@ class CountryMapViewModel @Inject constructor(private val mapRepository: MapRepo
             downloadMinScale = maxScale + 1
         }
         mapRepository.prepareMapForDownload(downloadArea, downloadMinScale, maxScale)
+        //mapRepository.prepareLayersForDownload(downloadArea)
     }
 
     override fun refreshMap(){
