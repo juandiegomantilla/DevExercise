@@ -83,12 +83,13 @@ class CountryMapViewModel @Inject constructor(private val mapRepository: MapRepo
         }
     }
 
-    fun sendAreaToDownload(downloadArea: Geometry, minScale: Double, maxScale: Double){
+    fun sendAreaToDownload(country: String?, downloadArea: Geometry, minScale: Double, maxScale: Double){
         var downloadMinScale = minScale
         if(downloadMinScale <= maxScale){
             downloadMinScale = maxScale + 1
         }
-        mapRepository.prepareMapForDownload(downloadArea, downloadMinScale, maxScale)
+        val countryName = country ?: "offlineMap"
+        mapRepository.prepareMapForDownload(countryName, downloadArea, downloadMinScale, maxScale)
         //mapRepository.prepareLayersForDownload(downloadArea)
     }
 

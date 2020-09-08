@@ -124,7 +124,7 @@ class CountryMapFragment : Fragment(), Injectable {
             try{
                 val minScale = binding.mapView.mapScale
                 val maxScale = binding.mapView.map.maxScale
-                viewModel.sendAreaToDownload(downloadArea!!.geometry, minScale, maxScale)
+                viewModel.sendAreaToDownload(country.Country_Region, downloadArea!!.geometry, minScale, maxScale)
                 viewModel.downloadStatus.observe(viewLifecycleOwner, Observer { downloadStatus ->
                     when(downloadStatus){
                         "PREPARED" -> Snackbar.make(requireActivity().findViewById(android.R.id.content), "Preparing download.", Snackbar.LENGTH_LONG).show()

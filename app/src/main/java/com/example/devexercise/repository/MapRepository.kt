@@ -56,9 +56,6 @@ class MapRepository @Inject constructor(private val database: LocalDatabase, pri
     }
 
     init {
-        if(map.remoteTiledMap != null){
-            prepareDownloadPath()
-        }
         //if(map.remoteGeodatabase != null){ prepareLayerDownloadPath() }
     }
 
@@ -77,9 +74,9 @@ class MapRepository @Inject constructor(private val database: LocalDatabase, pri
         }
     }
 
-    private fun prepareDownloadPath(){
+    private fun prepareDownloadPath(fileName: String){
         val mapDirectory = "$localPath/offlineMap"
-        val mapFile = "offlineMap.tpk"
+        val mapFile = "$fileName.tpk"
         val directory = File(mapDirectory)
         if (!directory.exists()){
             directory.mkdir()
@@ -89,7 +86,8 @@ class MapRepository @Inject constructor(private val database: LocalDatabase, pri
         println(offlineMapPath)
     }
 
-    fun prepareMapForDownload(downloadArea: Geometry, minScale: Double, maxScale: Double){
+    fun prepareMapForDownload(countryName: String, downloadArea: Geometry, minScale: Double, maxScale: Double){
+        prepareDownloadPath(countryName)
         val exportTileCacheTask =  ExportTileCacheTask(map.remoteTiledMap!!.uri)
         exportTileCacheTask.loadAsync()
 
