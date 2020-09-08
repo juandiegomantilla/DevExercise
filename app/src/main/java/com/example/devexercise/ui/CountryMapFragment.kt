@@ -73,7 +73,6 @@ class CountryMapFragment : Fragment(), Injectable {
             binding.downloadMap.visibility = View.VISIBLE
 
             binding.mapView.let {
-                it.map = viewModel.createMapCountry(country)
                 it.graphicsOverlays.add(graphicsOverlay)
                 it.onTouchListener = object : DefaultMapViewOnTouchListener(context, it) {
                     override fun onSingleTapConfirmed(motionEvent: MotionEvent): Boolean {
@@ -98,7 +97,6 @@ class CountryMapFragment : Fragment(), Injectable {
                                 Snackbar.make(activity!!.findViewById(android.R.id.content), "Point selected failed: " + e.message, Snackbar.LENGTH_LONG).show()
                             }
                         }
-
                         return super.onSingleTapConfirmed(motionEvent)
                     }
                 }
@@ -145,8 +143,12 @@ class CountryMapFragment : Fragment(), Injectable {
         viewModel.isOnline.observe(viewLifecycleOwner, Observer { isOnline ->
             if(!isOnline){
                 Snackbar.make(requireActivity().findViewById(android.R.id.content), "You are offline now.", Snackbar.LENGTH_LONG).show()
+                binding.mapView.map = viewModel.createOfflineMapCountry(country.Country_Region)
                 binding.updateMap.visibility =  View.INVISIBLE
                 binding.downloadMap.visibility =  View.INVISIBLE
+            }
+            if(isOnline){
+                binding.mapView.map = viewModel.createMapCountry(country)
             }
         })
 

@@ -28,7 +28,6 @@ class MapRepository @Inject constructor(private val database: LocalDatabase, pri
     lateinit var updatedTime: String
 
     var tileMapToDisplay: ArcGISTiledLayer? = getRemoteMapToLocalMap()
-    var offlineMapToDisplay: ArcGISTiledLayer? = null
     private var offlineMapPath = ""
 
     private var offlineLayerPath = ""
@@ -55,22 +54,33 @@ class MapRepository @Inject constructor(private val database: LocalDatabase, pri
         }
     }
 
-    init {
-        //if(map.remoteGeodatabase != null){ prepareLayerDownloadPath() }
-    }
+    /*init {
+        if(map.remoteGeodatabase != null){ prepareLayerDownloadPath() }
+    }*/
 
     private fun getRemoteMapToLocalMap(): ArcGISTiledLayer? {
         return if (map.remoteTiledMap == null){
             val mapFile = "$localPath/offlineMap/offlineMap.tpk"
             val file = File(mapFile)
             if(file.exists()){
-                offlineMapToDisplay = ArcGISTiledLayer(file.absolutePath)
+                val offlineMapToDisplay = ArcGISTiledLayer(file.absolutePath)
                 offlineMapToDisplay
             }else{
                 null
             }
         }else{
             map.remoteTiledMap
+        }
+    }
+
+    fun offlineMapToDisplay(countryName: String): ArcGISTiledLayer?{
+        val mapFile = "$localPath/offlineMap/$countryName.tpk"
+        val file = File(mapFile)
+        return if(file.exists()){
+            val offlineMapToDisplay = ArcGISTiledLayer(file.absolutePath)
+            offlineMapToDisplay
+        }else{
+            null
         }
     }
 

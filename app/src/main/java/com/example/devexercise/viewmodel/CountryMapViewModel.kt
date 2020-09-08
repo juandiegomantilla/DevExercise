@@ -8,6 +8,7 @@ import com.esri.arcgisruntime.data.QueryParameters
 import com.esri.arcgisruntime.geometry.Envelope
 import com.esri.arcgisruntime.geometry.Geometry
 import com.esri.arcgisruntime.geometry.SpatialReference
+import com.esri.arcgisruntime.layers.ArcGISTiledLayer
 import com.esri.arcgisruntime.layers.FeatureLayer
 import com.esri.arcgisruntime.mapping.ArcGISMap
 import com.esri.arcgisruntime.mapping.Basemap
@@ -27,7 +28,8 @@ import javax.inject.Inject
 class CountryMapViewModel @Inject constructor(private val mapRepository: MapRepository,  private val connectionLiveData: ConnectionLiveData): ViewModel(),
     CreateMapCountry, RefreshMap, AddMapLayers, GetPointOnMap, GetMapPointInfo{
 
-    val tiledMap = mapRepository.tileMapToDisplay
+    var tiledMap = mapRepository.tileMapToDisplay
+    private var offlineTiledMap: ArcGISTiledLayer? = null
     private val worldEnvelope = Envelope(-2.0037507067161843E7, -1.99718688804086E7, 2.0037507067161843E7, 1.9971868880408484E7, SpatialReference.create(3857))
 
     val downloadStatus = mapRepository.downloadStatus
@@ -66,10 +68,8 @@ class CountryMapViewModel @Inject constructor(private val mapRepository: MapRepo
 
     override fun createMapCountry(country: CountryModel?): ArcGISMap {
         return try{
-            if(_isOnline.value == true){
-                val viewPoint = Viewpoint(country!!.Lat!!, country.Long_!!, 6000000.0)
-                controlMap.initialViewpoint = viewPoint
-            }
+            val viewPoint = Viewpoint(country!!.Lat!!, country.Long_!!, 6000000.0)
+            controlMap.initialViewpoint = viewPoint
             addMapLayers(controlMap)
             _mapStatus.value = "${country!!.Country_Region} successfully found in map"
             controlMap
@@ -79,6 +79,25 @@ class CountryMapViewModel @Inject constructor(private val mapRepository: MapRepo
             }
             addMapLayers(controlMap)
             _mapStatus.value = "Country not found in map"
+            controlMap
+        }
+    }
+
+    fun createOfflineMapCountry(countryName: String?): ArcGISMap{
+        return try{
+            offlineTiledMap = mapRepository.offlineMapToDisplay(countryName!!)
+            if(offlineTiledMap != null){
+                val baseMap = ArcGISMap().apply { basemap = Basemap(offlineTiledMap) }
+                controlMap = baseMap
+                _mapStatus.value = "Area from $countryName restored from local storage."
+                addMapLayers(controlMap)
+            }else{
+                _mapStatus.value = "Area from $countryName not stored in local storage. Displaying world map offline area."
+            }
+            controlMap
+        }catch (e: Exception){
+            addMapLayers(controlMap)
+            _mapStatus.value = "Error restoring area from $countryName."
             controlMap
         }
     }
