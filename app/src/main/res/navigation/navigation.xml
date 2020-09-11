@@ -16,7 +16,7 @@
     <fragment
         android:id="@+id/countryMapFragment"
         android:name="com.example.devexercise.ui.CountryMapFragment"
-        android:label="Country Selected"
+        android:label="ArcGIS Map"
         tools:layout="@layout/fragment_country_map" >
         <argument
             android:name="selectedCountry"

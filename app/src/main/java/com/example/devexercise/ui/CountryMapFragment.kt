@@ -96,7 +96,7 @@ class CountryMapFragment : Fragment(), Injectable {
                                 })
                                 showPointDetails()
                             } catch (e: Exception) {
-                                Snackbar.make(activity!!.findViewById(android.R.id.content), "Point selected failed: " + e.message, Snackbar.LENGTH_LONG).show()
+                                Snackbar.make(activity!!.findViewById(android.R.id.content), "Point selected not valid", Snackbar.LENGTH_LONG).show()
                             }
                         }
 

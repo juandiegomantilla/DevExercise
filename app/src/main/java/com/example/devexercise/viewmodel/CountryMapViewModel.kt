@@ -7,14 +7,12 @@ import com.esri.arcgisruntime.data.FeatureQueryResult
 import com.esri.arcgisruntime.data.QueryParameters
 import com.esri.arcgisruntime.geometry.Envelope
 import com.esri.arcgisruntime.geometry.Geometry
-import com.esri.arcgisruntime.geometry.SpatialReference
 import com.esri.arcgisruntime.layers.ArcGISTiledLayer
 import com.esri.arcgisruntime.layers.FeatureLayer
 import com.esri.arcgisruntime.mapping.ArcGISMap
 import com.esri.arcgisruntime.mapping.Basemap
 import com.esri.arcgisruntime.mapping.Viewpoint
 import com.example.devexercise.network.ArcgisLayer
-import com.example.devexercise.network.connection.ConnectionLiveData
 import com.example.devexercise.repository.CountryModel
 import com.example.devexercise.repository.MapPointModel
 import com.example.devexercise.repository.MapRepository
@@ -29,9 +27,6 @@ class CountryMapViewModel @Inject constructor(private val mapRepository: MapRepo
     CreateMapCountry, RefreshMap, AddMapLayers, GetPointOnMap, GetMapPointInfo{
 
     var isOnline = mapRepository.isOnline
-    var tiledMap: ArcGISTiledLayer? = null
-    var offlineTiledMap: ArcGISTiledLayer? = null
-    private val worldEnvelope = Envelope(-2.0037507067161843E7, -1.99718688804086E7, 2.0037507067161843E7, 1.9971868880408484E7, SpatialReference.create(3857))
 
     val downloadStatus = mapRepository.downloadStatus
     val downloadProgress = mapRepository.progress
@@ -62,25 +57,16 @@ class CountryMapViewModel @Inject constructor(private val mapRepository: MapRepo
 
     override fun createMapCountry(country: CountryModel?): ArcGISMap? {
 
-        tiledMap = mapRepository.getRemoteMapToLocalMap(country?.Country_Region)
+        controlMap = mapRepository.getRemoteMapToLocalMap(country?.Country_Region, country?.Lat, country?.Long_)
 
-        if(tiledMap != null){
-            val baseMap = ArcGISMap().apply { basemap = Basemap(tiledMap) }
-            controlMap = baseMap
-            return try{
-                val viewPoint = Viewpoint(country!!.Lat!!, country.Long_!!, 6000000.0)
-                controlMap?.initialViewpoint = viewPoint
-                addMapLayers(controlMap!!)
+        return if(controlMap != null){
+            if((country?.Lat != null) && (country.Long_ != null)){
                 _mapStatus.value = "${country.Country_Region} successfully found in map"
-                controlMap
-            }catch (e: Exception){
-                controlMap?.initialViewpoint = Viewpoint(worldEnvelope)
-                addMapLayers(controlMap!!)
-                _mapStatus.value = "Country not found in map"
-                controlMap
             }
+            addMapLayers(controlMap!!)
+            controlMap
         }else{
-            return null
+            null
         }
     }
 
@@ -127,9 +113,6 @@ class CountryMapViewModel @Inject constructor(private val mapRepository: MapRepo
 
     override fun onCleared() {
         super.onCleared()
-        if(tiledMap != null){
-            controlMap?.operationalLayers?.clear()
-            viewModelJob.cancel()
-        }
+        viewModelJob.cancel()
     }
 }

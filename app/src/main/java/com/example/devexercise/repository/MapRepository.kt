@@ -5,9 +5,14 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import com.esri.arcgisruntime.concurrent.Job
 import com.esri.arcgisruntime.data.SyncModel
+import com.esri.arcgisruntime.geometry.Envelope
 import com.esri.arcgisruntime.geometry.Geometry
+import com.esri.arcgisruntime.geometry.SpatialReference
 import com.esri.arcgisruntime.layers.ArcGISTiledLayer
 import com.esri.arcgisruntime.loadable.LoadStatus
+import com.esri.arcgisruntime.mapping.ArcGISMap
+import com.esri.arcgisruntime.mapping.Basemap
+import com.esri.arcgisruntime.mapping.Viewpoint
 import com.esri.arcgisruntime.tasks.geodatabase.GenerateGeodatabaseParameters
 import com.esri.arcgisruntime.tasks.geodatabase.GenerateLayerOption
 import com.esri.arcgisruntime.tasks.tilecache.ExportTileCacheParameters
@@ -26,6 +31,7 @@ import javax.inject.Inject
 class MapRepository @Inject constructor(private val database: LocalDatabase, private val service: ArcgisMapService, private val map: MapRemoteDataSource, private val localPath: String): MapRepositoryImpl{
 
     var isOnline = map.isOnline
+    private val worldEnvelope = Envelope(-2.0037507067161843E7, -1.99718688804086E7, 2.0037507067161843E7, 1.9971868880408484E7, SpatialReference.create(3857))
 
     lateinit var updatedTime: String
 
@@ -58,30 +64,26 @@ class MapRepository @Inject constructor(private val database: LocalDatabase, pri
         if(map.remoteGeodatabase != null){ prepareLayerDownloadPath() }
     }*/
 
-    fun getRemoteMapToLocalMap(mapArea: String?): ArcGISTiledLayer? {
+    fun getRemoteMapToLocalMap(mapArea: String?, latitude: Double?, longitude: Double?): ArcGISMap? {
         return if (map.remoteTiledMap == null){
             val mapAreaStored: String = mapArea ?: "offlineMap"
             val mapFile = "$localPath/offlineMap/$mapAreaStored.tpk"
             val file = File(mapFile)
             if(file.exists()){
                 val offlineMapToDisplay = ArcGISTiledLayer(file.absolutePath)
-                offlineMapToDisplay
+                ArcGISMap().apply { basemap = Basemap(offlineMapToDisplay) }
             }else{
                 null
             }
         }else{
-            map.remoteTiledMap
-        }
-    }
-
-    fun offlineMapToDisplay(countryName: String): ArcGISTiledLayer?{
-        val mapFile = "$localPath/offlineMap/$countryName.tpk"
-        val file = File(mapFile)
-        return if(file.exists()){
-            val offlineMapToDisplay = ArcGISTiledLayer(file.absolutePath)
-            offlineMapToDisplay
-        }else{
-            null
+            val mapToDisplay = ArcGISMap().apply { basemap = Basemap(map.remoteTiledMap) }
+            if((latitude != null) && (longitude != null)){
+                val viewPoint = Viewpoint(latitude, longitude, 6000000.0)
+                mapToDisplay.initialViewpoint = viewPoint
+            }else{
+                mapToDisplay.initialViewpoint = Viewpoint(worldEnvelope)
+            }
+            return mapToDisplay
         }
     }
 
