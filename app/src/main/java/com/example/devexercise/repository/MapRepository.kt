@@ -25,11 +25,11 @@ import javax.inject.Inject
 
 class MapRepository @Inject constructor(private val database: LocalDatabase, private val service: ArcgisMapService, private val map: MapRemoteDataSource, private val localPath: String): MapRepositoryImpl{
 
+    var isOnline = map.isOnline
+
     lateinit var updatedTime: String
 
-    var tileMapToDisplay: ArcGISTiledLayer? = getRemoteMapToLocalMap()
     private var offlineMapPath = ""
-
     private var offlineLayerPath = ""
 
     private val _progress = MutableLiveData<Int>()
@@ -58,9 +58,10 @@ class MapRepository @Inject constructor(private val database: LocalDatabase, pri
         if(map.remoteGeodatabase != null){ prepareLayerDownloadPath() }
     }*/
 
-    private fun getRemoteMapToLocalMap(): ArcGISTiledLayer? {
+    fun getRemoteMapToLocalMap(mapArea: String?): ArcGISTiledLayer? {
         return if (map.remoteTiledMap == null){
-            val mapFile = "$localPath/offlineMap/offlineMap.tpk"
+            val mapAreaStored: String = mapArea ?: "offlineMap"
+            val mapFile = "$localPath/offlineMap/$mapAreaStored.tpk"
             val file = File(mapFile)
             if(file.exists()){
                 val offlineMapToDisplay = ArcGISTiledLayer(file.absolutePath)

@@ -2,6 +2,7 @@ package com.example.devexercise.ui
 
 import android.app.Dialog
 import android.app.ProgressDialog
+import android.content.Context
 import android.graphics.Color
 import android.graphics.Point
 import android.os.Bundle
@@ -16,6 +17,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.esri.arcgisruntime.geometry.Envelope
+import com.esri.arcgisruntime.mapping.ArcGISMap
 import com.esri.arcgisruntime.mapping.view.DefaultMapViewOnTouchListener
 import com.esri.arcgisruntime.mapping.view.Graphic
 import com.esri.arcgisruntime.mapping.view.GraphicsOverlay
@@ -24,6 +26,7 @@ import com.esri.arcgisruntime.symbology.SimpleLineSymbol
 import com.example.devexercise.R
 import com.example.devexercise.dagger.Injectable
 import com.example.devexercise.databinding.FragmentCountryMapBinding
+import com.example.devexercise.repository.CountryModel
 import com.example.devexercise.util.MapPointAdapter
 import com.example.devexercise.viewmodel.CountryMapViewModel
 import com.google.android.material.snackbar.Snackbar
@@ -43,38 +46,37 @@ class CountryMapFragment : Fragment(), Injectable {
 
     private val graphicsOverlay: GraphicsOverlay by lazy { GraphicsOverlay() }
     private var downloadArea: Graphic? = null
+    private var country: CountryModel? = null
+    private var map: ArcGISMap? = null
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        if(arguments != null){
+            country = CountryMapFragmentArgs.fromBundle(requireArguments()).selectedCountry
+        }
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val binding = FragmentCountryMapBinding.inflate(inflater)
 
-        binding.setLifecycleOwner(this)
+        binding.lifecycleOwner = this
 
         binding.viewModel = viewModel
 
         viewModelAdapter = MapPointAdapter()
 
         val downloadDialog = createProgressDialog()
-
-        val country = CountryMapFragmentArgs.fromBundle(requireArguments()).selectedCountry
-
         downloadArea = Graphic()
         downloadArea?.symbol = SimpleLineSymbol(SimpleLineSymbol.Style.SOLID, Color.BLACK, 2f)
         graphicsOverlay.graphics.add(downloadArea)
 
-        if(viewModel.tiledMap == null){
-            binding.mapView.visibility = View.INVISIBLE
-            binding.mapMessage.visibility = View.VISIBLE
-            binding.updateMap.visibility = View.INVISIBLE
-            binding.downloadMap.visibility = View.INVISIBLE
-        }else{
-            binding.mapView.visibility = View.VISIBLE
-            binding.mapMessage.visibility = View.INVISIBLE
-            binding.updateMap.visibility = View.VISIBLE
-            binding.downloadMap.visibility = View.VISIBLE
+        map = viewModel.createMapCountry(country)
 
+        if(map != null){
             binding.mapView.let {
+                it.map = map
                 it.graphicsOverlays.add(graphicsOverlay)
-                it.onTouchListener = object : DefaultMapViewOnTouchListener(context, it) {
+                it.onTouchListener = object : DefaultMapViewOnTouchListener(context, it){
                     override fun onSingleTapConfirmed(motionEvent: MotionEvent): Boolean {
 
                         val tappedPoint = it.screenToLocation(Point(motionEvent.x.roundToInt(), motionEvent.y.roundToInt()))
@@ -97,6 +99,7 @@ class CountryMapFragment : Fragment(), Injectable {
                                 Snackbar.make(activity!!.findViewById(android.R.id.content), "Point selected failed: " + e.message, Snackbar.LENGTH_LONG).show()
                             }
                         }
+
                         return super.onSingleTapConfirmed(motionEvent)
                     }
                 }
@@ -112,7 +115,21 @@ class CountryMapFragment : Fragment(), Injectable {
                     }
                 }
             }
+        }else{
+            binding.mapView.visibility = View.INVISIBLE
+            binding.mapMessage.visibility = View.VISIBLE
         }
+
+        viewModel.isOnline.observe(viewLifecycleOwner, Observer {isOnline ->
+            if(!isOnline){
+                Snackbar.make(requireActivity().findViewById(android.R.id.content), "You are offline now.", Snackbar.LENGTH_LONG).show()
+                binding.updateMap.visibility = View.INVISIBLE
+                binding.downloadMap.visibility = View.INVISIBLE
+            }else{
+                binding.updateMap.visibility = View.VISIBLE
+                binding.downloadMap.visibility = View.VISIBLE
+            }
+        })
 
         binding.updateMap.setOnClickListener {
             viewModel.refreshMap()
@@ -122,7 +139,7 @@ class CountryMapFragment : Fragment(), Injectable {
             try{
                 val minScale = binding.mapView.mapScale
                 val maxScale = binding.mapView.map.maxScale
-                viewModel.sendAreaToDownload(country.Country_Region, downloadArea!!.geometry, minScale, maxScale)
+                viewModel.sendAreaToDownload(country?.Country_Region, downloadArea!!.geometry, minScale, maxScale)
                 viewModel.downloadStatus.observe(viewLifecycleOwner, Observer { downloadStatus ->
                     when(downloadStatus){
                         "PREPARED" -> Snackbar.make(requireActivity().findViewById(android.R.id.content), "Preparing download.", Snackbar.LENGTH_LONG).show()
@@ -139,18 +156,6 @@ class CountryMapFragment : Fragment(), Injectable {
                 println("Download error, please try again.")
             }
         }
-
-        viewModel.isOnline.observe(viewLifecycleOwner, Observer { isOnline ->
-            if(!isOnline){
-                Snackbar.make(requireActivity().findViewById(android.R.id.content), "You are offline now.", Snackbar.LENGTH_LONG).show()
-                binding.mapView.map = viewModel.createOfflineMapCountry(country.Country_Region)
-                binding.updateMap.visibility =  View.INVISIBLE
-                binding.downloadMap.visibility =  View.INVISIBLE
-            }
-            if(isOnline){
-                binding.mapView.map = viewModel.createMapCountry(country)
-            }
-        })
 
         return binding.root
     }
@@ -192,21 +197,21 @@ class CountryMapFragment : Fragment(), Injectable {
 
     override fun onPause() {
         super.onPause()
-        if(viewModel.tiledMap != null){
+        if(map != null){
             mapView.pause()
         }
     }
 
     override fun onResume() {
         super.onResume()
-        if(viewModel.tiledMap != null){
+        if(map != null){
             mapView.resume()
         }
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
-        if(viewModel.tiledMap != null){
+        if(map != null){
             mapView.dispose()
         }
     }

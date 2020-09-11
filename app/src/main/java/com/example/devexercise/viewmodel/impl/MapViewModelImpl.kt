@@ -9,7 +9,7 @@ import com.example.devexercise.repository.CountryModel
 import com.example.devexercise.repository.MapPointModel
 
 interface CreateMapCountry {
-    fun createMapCountry(country: CountryModel? = null): ArcGISMap
+    fun createMapCountry(country: CountryModel? = null): ArcGISMap?
 }
 
 interface RefreshMap {

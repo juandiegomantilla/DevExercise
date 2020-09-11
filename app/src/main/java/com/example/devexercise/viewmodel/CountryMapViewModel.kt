@@ -25,11 +25,12 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class CountryMapViewModel @Inject constructor(private val mapRepository: MapRepository,  private val connectionLiveData: ConnectionLiveData): ViewModel(),
+class CountryMapViewModel @Inject constructor(private val mapRepository: MapRepository): ViewModel(),
     CreateMapCountry, RefreshMap, AddMapLayers, GetPointOnMap, GetMapPointInfo{
 
-    var tiledMap = mapRepository.tileMapToDisplay
-    private var offlineTiledMap: ArcGISTiledLayer? = null
+    var isOnline = mapRepository.isOnline
+    var tiledMap: ArcGISTiledLayer? = null
+    var offlineTiledMap: ArcGISTiledLayer? = null
     private val worldEnvelope = Envelope(-2.0037507067161843E7, -1.99718688804086E7, 2.0037507067161843E7, 1.9971868880408484E7, SpatialReference.create(3857))
 
     val downloadStatus = mapRepository.downloadStatus
@@ -38,7 +39,7 @@ class CountryMapViewModel @Inject constructor(private val mapRepository: MapRepo
     private val viewModelJob = SupervisorJob()
     private val viewModelScope = CoroutineScope(viewModelJob + Dispatchers.Main)
 
-    private var controlMap: ArcGISMap
+    private var controlMap: ArcGISMap? = null
 
     private val deathLayer = ArcgisLayer.deathLayer
     private val casesLayer = ArcgisLayer.casesLayer
@@ -51,54 +52,35 @@ class CountryMapViewModel @Inject constructor(private val mapRepository: MapRepo
     val lastUpdate: LiveData<CharSequence>
         get() = _lastUpdate
 
-    private val _isOnline = MutableLiveData<Boolean>()
-    val isOnline: LiveData<Boolean>
-        get() = _isOnline
-
     init{
-        checkConnection()
-        val baseMap = ArcGISMap().apply { basemap = Basemap(tiledMap) }
-        controlMap = baseMap
-        if(_isOnline.value == true){
+        if(isOnline.value == true){
             viewModelScope.launch {
                 mapRepository.refreshData()
             }
         }
     }
 
-    override fun createMapCountry(country: CountryModel?): ArcGISMap {
-        return try{
-            val viewPoint = Viewpoint(country!!.Lat!!, country.Long_!!, 6000000.0)
-            controlMap.initialViewpoint = viewPoint
-            addMapLayers(controlMap)
-            _mapStatus.value = "${country!!.Country_Region} successfully found in map"
-            controlMap
-        }catch (e: Exception){
-            if(_isOnline.value == true){
-                controlMap.initialViewpoint = Viewpoint(worldEnvelope)
-            }
-            addMapLayers(controlMap)
-            _mapStatus.value = "Country not found in map"
-            controlMap
-        }
-    }
+    override fun createMapCountry(country: CountryModel?): ArcGISMap? {
 
-    fun createOfflineMapCountry(countryName: String?): ArcGISMap{
-        return try{
-            offlineTiledMap = mapRepository.offlineMapToDisplay(countryName!!)
-            if(offlineTiledMap != null){
-                val baseMap = ArcGISMap().apply { basemap = Basemap(offlineTiledMap) }
-                controlMap = baseMap
-                _mapStatus.value = "Area from $countryName restored from local storage."
-                addMapLayers(controlMap)
-            }else{
-                _mapStatus.value = "Area from $countryName not stored in local storage. Displaying world map offline area."
+        tiledMap = mapRepository.getRemoteMapToLocalMap(country?.Country_Region)
+
+        if(tiledMap != null){
+            val baseMap = ArcGISMap().apply { basemap = Basemap(tiledMap) }
+            controlMap = baseMap
+            return try{
+                val viewPoint = Viewpoint(country!!.Lat!!, country.Long_!!, 6000000.0)
+                controlMap?.initialViewpoint = viewPoint
+                addMapLayers(controlMap!!)
+                _mapStatus.value = "${country.Country_Region} successfully found in map"
+                controlMap
+            }catch (e: Exception){
+                controlMap?.initialViewpoint = Viewpoint(worldEnvelope)
+                addMapLayers(controlMap!!)
+                _mapStatus.value = "Country not found in map"
+                controlMap
             }
-            controlMap
-        }catch (e: Exception){
-            addMapLayers(controlMap)
-            _mapStatus.value = "Error restoring area from $countryName."
-            controlMap
+        }else{
+            return null
         }
     }
 
@@ -113,7 +95,7 @@ class CountryMapViewModel @Inject constructor(private val mapRepository: MapRepo
     }
 
     override fun refreshMap(){
-        addMapLayers(controlMap)
+        addMapLayers(controlMap!!)
         viewModelScope.launch {
             mapRepository.refreshData()
         }
@@ -146,15 +128,8 @@ class CountryMapViewModel @Inject constructor(private val mapRepository: MapRepo
     override fun onCleared() {
         super.onCleared()
         if(tiledMap != null){
-            controlMap.operationalLayers.clear()
+            controlMap?.operationalLayers?.clear()
             viewModelJob.cancel()
         }
-    }
-
-    private fun checkConnection() {
-        val connectionObserver = Observer<Boolean> {
-            _isOnline.value = it
-        }
-        connectionLiveData.observeForever(connectionObserver)
     }
 }
