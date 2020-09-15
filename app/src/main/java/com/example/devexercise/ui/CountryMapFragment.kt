@@ -91,7 +91,6 @@ class CountryMapFragment : Fragment(), Injectable {
                                 pointRequested.observe(viewLifecycleOwner, Observer { point ->
                                     point?.apply {
                                         viewModelAdapter?.pointDetails = point
-                                        //println(point)
                                     }
                                 })
                                 showPointDetails()

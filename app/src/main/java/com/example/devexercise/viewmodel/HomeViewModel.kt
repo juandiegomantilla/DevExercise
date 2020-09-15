@@ -9,10 +9,11 @@ import com.example.devexercise.repository.CountryModel
 import com.example.devexercise.repository.CountryRepository
 import com.example.devexercise.viewmodel.impl.HomeViewModelImpl
 import kotlinx.coroutines.*
+import java.io.File
 import javax.inject.Inject
 
 @RequiresApi(Build.VERSION_CODES.O)
-class HomeViewModel @Inject constructor(private val dataRepository: CountryRepository, private val connectionLiveData: ConnectionLiveData): ViewModel(), HomeViewModelImpl {
+class HomeViewModel @Inject constructor(private val dataRepository: CountryRepository, private val connectionLiveData: ConnectionLiveData, private val localPath: String): ViewModel(), HomeViewModelImpl {
 
     private val viewModelJob = SupervisorJob()
 
@@ -41,8 +42,15 @@ class HomeViewModel @Inject constructor(private val dataRepository: CountryRepos
                 viewModelScope.launch {
                     dataRepository.refreshData()
                 }
+                deleteMapAreas()
             }
         }
+    }
+
+    private fun deleteMapAreas(){
+        val mapFile = "$localPath/offlineMap"
+        val file = File(mapFile)
+        file.deleteRecursively()
     }
 
     override fun getData(){

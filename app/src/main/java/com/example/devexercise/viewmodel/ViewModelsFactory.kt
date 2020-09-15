@@ -19,11 +19,11 @@ class CountryMapViewModelFactory(private val repository: MapRepository) : ViewMo
     }
 }
 
-class HomeViewModelFactory(val repository: CountryRepository, val connectionLiveData: ConnectionLiveData): ViewModelProvider.Factory{
+class HomeViewModelFactory(val repository: CountryRepository, val connectionLiveData: ConnectionLiveData, private val localPath: String): ViewModelProvider.Factory{
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         if(modelClass.isAssignableFrom(HomeViewModel::class.java)){
             @Suppress("UNCHECKED_CAST")
-            return HomeViewModel(repository, connectionLiveData) as T
+            return HomeViewModel(repository, connectionLiveData, localPath) as T
         }
         throw IllegalArgumentException("Unable to construct HomeViewModelFactory")
     }
