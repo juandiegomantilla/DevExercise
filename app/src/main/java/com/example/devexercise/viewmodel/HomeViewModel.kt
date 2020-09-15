@@ -1,6 +1,8 @@
 package com.example.devexercise.viewmodel
 
+import android.os.Build
 import android.text.format.DateUtils
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.*
 import com.example.devexercise.network.connection.ConnectionLiveData
 import com.example.devexercise.repository.CountryModel
@@ -9,6 +11,7 @@ import com.example.devexercise.viewmodel.impl.HomeViewModelImpl
 import kotlinx.coroutines.*
 import javax.inject.Inject
 
+@RequiresApi(Build.VERSION_CODES.O)
 class HomeViewModel @Inject constructor(private val dataRepository: CountryRepository, private val connectionLiveData: ConnectionLiveData): ViewModel(), HomeViewModelImpl {
 
     private val viewModelJob = SupervisorJob()
@@ -30,9 +33,14 @@ class HomeViewModel @Inject constructor(private val dataRepository: CountryRepos
 
     init {
         checkConnection()
+    }
+
+    fun presentData(){
         if(_isOnline.value == true){
-            viewModelScope.launch {
-                dataRepository.refreshData()
+            if(dataRepository.isCacheExpiredData()){
+                viewModelScope.launch {
+                    dataRepository.refreshData()
+                }
             }
         }
     }

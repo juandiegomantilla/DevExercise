@@ -1,7 +1,9 @@
 package com.example.devexercise.ui
 
+import android.os.Build
 import android.os.Bundle
 import android.view.*
+import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
@@ -33,12 +35,15 @@ class HomeFragment : Fragment(), Injectable {
 
     private var viewModelAdapter: HomeAdapter? = null
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val binding: FragmentHomeBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_home, container, false)
 
         binding.setLifecycleOwner(viewLifecycleOwner)
 
         binding.viewModel = viewModel
+
+        viewModel.presentData()
 
         viewModelAdapter = HomeAdapter(CountryClick{
             viewModel.displayCountryOnMap(it)
@@ -60,6 +65,7 @@ class HomeFragment : Fragment(), Injectable {
         return binding.root
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
