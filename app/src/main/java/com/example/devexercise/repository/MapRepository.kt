@@ -22,13 +22,15 @@ import com.example.devexercise.database.asMapRepositoryDomainModel
 import com.example.devexercise.network.ArcgisMapService
 import com.example.devexercise.network.MapRemoteDataSource
 import com.example.devexercise.network.asDatabaseModel
+import com.example.devexercise.repository.impl.LayerDownloadImpl
 import com.example.devexercise.repository.impl.MapRepositoryImpl
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
 import javax.inject.Inject
 
-class MapRepository @Inject constructor(private val database: LocalDatabase, private val service: ArcgisMapService, private val map: MapRemoteDataSource, private val localPath: String): MapRepositoryImpl{
+class MapRepository @Inject constructor(private val database: LocalDatabase, private val service: ArcgisMapService, private val map: MapRemoteDataSource, private val localPath: String):
+    MapRepositoryImpl, LayerDownloadImpl {
 
     var isOnline = map.isOnline
     private val worldEnvelope = Envelope(-2.0037507067161843E7, -1.99718688804086E7, 2.0037507067161843E7, 1.9971868880408484E7, SpatialReference.create(3857))
@@ -64,7 +66,7 @@ class MapRepository @Inject constructor(private val database: LocalDatabase, pri
         if(map.remoteGeodatabase != null){ prepareLayerDownloadPath() }
     }*/
 
-    fun getRemoteMapToLocalMap(mapArea: String?, latitude: Double?, longitude: Double?): ArcGISMap? {
+    override fun getRemoteMapToLocalMap(mapArea: String?, latitude: Double?, longitude: Double?): ArcGISMap? {
         return if (map.remoteTiledMap == null){
             val mapAreaStored: String = mapArea ?: "offlineMap"
             val mapFile = "$localPath/offlineMap/$mapAreaStored.tpk"
@@ -87,7 +89,7 @@ class MapRepository @Inject constructor(private val database: LocalDatabase, pri
         }
     }
 
-    private fun prepareDownloadPath(fileName: String){
+    override fun prepareDownloadPath(fileName: String){
         val mapDirectory = "$localPath/offlineMap"
         val mapFile = "$fileName.tpk"
         val directory = File(mapDirectory)
@@ -99,7 +101,7 @@ class MapRepository @Inject constructor(private val database: LocalDatabase, pri
         println(offlineMapPath)
     }
 
-    fun prepareMapForDownload(countryName: String, downloadArea: Geometry, minScale: Double, maxScale: Double){
+    override fun prepareMapForDownload(countryName: String, downloadArea: Geometry, minScale: Double, maxScale: Double){
         prepareDownloadPath(countryName)
         val exportTileCacheTask =  ExportTileCacheTask(map.remoteTiledMap!!.uri)
         exportTileCacheTask.loadAsync()
@@ -123,7 +125,7 @@ class MapRepository @Inject constructor(private val database: LocalDatabase, pri
         }
     }
 
-    private fun downloadMap(exportTileCacheTask: ExportTileCacheTask, parameters: ExportTileCacheParameters){
+    override fun downloadMap(exportTileCacheTask: ExportTileCacheTask, parameters: ExportTileCacheParameters){
         val exportTileCacheJob = exportTileCacheTask.exportTileCacheAsync(parameters, offlineMapPath)
         exportTileCacheJob.addJobChangedListener {
             if(exportTileCacheJob.status == Job.Status.FAILED){
@@ -144,7 +146,8 @@ class MapRepository @Inject constructor(private val database: LocalDatabase, pri
         exportTileCacheJob.start()
     }
 
-    private fun prepareLayerDownloadPath(){
+    //Download Layers
+    override fun prepareLayerDownloadPath(){
         val layerDirectory = "$localPath/offlineLayers"
         val layerFile = ".geodatabase"
         val directory = File(layerDirectory)
@@ -156,7 +159,7 @@ class MapRepository @Inject constructor(private val database: LocalDatabase, pri
         println(offlineLayerPath)
     }
 
-    fun prepareLayersForDownload(downloadArea: Geometry){
+    override fun prepareLayersForDownload(downloadArea: Geometry){
         val layerArea = downloadArea
         val geoDatabaseParametersFuture = map.remoteGeodatabase!!.createDefaultGenerateGeodatabaseParametersAsync(layerArea)
         geoDatabaseParametersFuture.addDoneListener {
@@ -177,7 +180,7 @@ class MapRepository @Inject constructor(private val database: LocalDatabase, pri
         }
     }
 
-    private fun downloadLayers(generateGdbParams: GenerateGeodatabaseParameters){
+    override fun downloadLayers(generateGdbParams: GenerateGeodatabaseParameters){
         val generateGdbJob = map.remoteGeodatabase!!.generateGeodatabase(generateGdbParams, offlineLayerPath)
         generateGdbJob.addJobChangedListener {
             println("Layers download status: " + generateGdbJob.status.name)

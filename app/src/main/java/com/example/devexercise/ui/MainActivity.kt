@@ -25,6 +25,7 @@ import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasAndroidInjector
 import javax.inject.Inject
 
+@Suppress("DEPRECATION")
 class MainActivity : AppCompatActivity(), HasAndroidInjector {
 
     @Inject
@@ -44,9 +45,9 @@ class MainActivity : AppCompatActivity(), HasAndroidInjector {
 
         drawerLayout = binding.drawerLayout
 
-        val navheader = binding.navView.getHeaderView(0)
+        val navHeader = binding.navView.getHeaderView(0)
 
-        val displayName = navheader.findViewById<TextView>(R.id.display_name_text)
+        val displayName = navHeader.findViewById<TextView>(R.id.display_name_text)
         val dataStored = viewModel.getDataStored()
         if(dataStored?.userId != null){
             displayName.text = dataStored.userId
@@ -87,7 +88,6 @@ class MainActivity : AppCompatActivity(), HasAndroidInjector {
             }
         }
     }
-
 
     private fun checkStartConnection(): Boolean {
         val connectionManager: ConnectivityManager = this.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager

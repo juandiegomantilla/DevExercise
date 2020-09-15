@@ -1,11 +1,8 @@
 package com.example.devexercise.viewmodel
 
-import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.example.devexercise.database.LocalDatabase
 import com.example.devexercise.network.connection.ConnectionLiveData
-import com.example.devexercise.repository.CountryModel
 import com.example.devexercise.repository.CountryRepository
 import com.example.devexercise.repository.MapRepository
 
@@ -19,7 +16,7 @@ class CountryMapViewModelFactory(private val repository: MapRepository) : ViewMo
     }
 }
 
-class HomeViewModelFactory(val repository: CountryRepository, val connectionLiveData: ConnectionLiveData, private val localPath: String): ViewModelProvider.Factory{
+class HomeViewModelFactory(val repository: CountryRepository, private val connectionLiveData: ConnectionLiveData, private val localPath: String): ViewModelProvider.Factory{
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         if(modelClass.isAssignableFrom(HomeViewModel::class.java)){
             @Suppress("UNCHECKED_CAST")

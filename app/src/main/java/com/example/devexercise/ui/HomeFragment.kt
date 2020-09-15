@@ -66,9 +66,8 @@ class HomeFragment : Fragment(), Injectable {
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         viewModel.dataList.observe(viewLifecycleOwner, Observer {countries ->
             countries?.apply {
                 viewModelAdapter?.countries = countries
