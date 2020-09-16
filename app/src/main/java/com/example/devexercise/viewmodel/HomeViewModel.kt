@@ -3,6 +3,7 @@ package com.example.devexercise.viewmodel
 import android.os.Build
 import android.text.format.DateUtils
 import androidx.annotation.RequiresApi
+import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.*
 import com.example.devexercise.network.connection.ConnectionLiveData
 import com.example.devexercise.repository.CountryModel
@@ -27,7 +28,8 @@ class HomeViewModel @Inject constructor(private val dataRepository: CountryRepos
     val navigateToSelectedCountry: LiveData<CountryModel>
         get() = _navigateToSelectedCountry
 
-    private val _isOnline = MutableLiveData<Boolean>()
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    val _isOnline = MutableLiveData<Boolean>()
     val isOnline: LiveData<Boolean>
         get() = _isOnline
 
@@ -36,18 +38,23 @@ class HomeViewModel @Inject constructor(private val dataRepository: CountryRepos
         checkConnection()
     }
 
-    fun presentData(){
-        if(_isOnline.value == true){
+    override fun presentData(): String{
+        return if(_isOnline.value == true){
             if(dataRepository.isCacheExpiredData()){
                 viewModelScope.launch {
                     dataRepository.refreshData()
                 }
                 deleteMapAreas()
+                "REFRESHED"
+            }else{
+                "NO REFRESHED"
             }
+        }else{
+            "NO NETWORK"
         }
     }
 
-    private fun deleteMapAreas(){
+    override fun deleteMapAreas(){
         val mapFile = "$localPath/offlineMap"
         val file = File(mapFile)
         file.deleteRecursively()
