@@ -39,14 +39,7 @@ class HomeViewModelTest {
     private var connectionLiveData: ConnectionLiveData = mockk(relaxed = true)
     private var localDirectoryPath = "/data/user/0/com.example.devexercise/app_offlineMode/offlineMap"
 
-    private val countryRepository = spyk(
-        CountryRepository(
-            database,
-            arcgisApiService,
-            sharedPreferences,
-            dateProvider
-        )
-    )
+    private val countryRepository = spyk(CountryRepository(database, arcgisApiService, sharedPreferences, dateProvider))
     private var homeViewModel: HomeViewModel = HomeViewModel(countryRepository, connectionLiveData, localDirectoryPath)
 
     @Before
