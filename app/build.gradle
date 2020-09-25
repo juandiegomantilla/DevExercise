@@ -113,4 +113,7 @@ dependencies {
 
     //Encrypted Shared Preferences
     implementation "androidx.security:security-crypto:$version_encrypted_shared_preferences"
+
+    //ZXing
+    implementation "com.google.zxing:core:$version_zxing"
 }
