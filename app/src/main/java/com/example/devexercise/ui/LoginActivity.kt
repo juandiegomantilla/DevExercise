@@ -3,7 +3,6 @@ package com.example.devexercise.ui
 import android.app.Activity
 import android.content.Intent
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.provider.MediaStore
 import android.text.Editable
@@ -15,7 +14,6 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.devexercise.R
 import com.example.devexercise.databinding.ActivityLoginBinding
-import com.example.devexercise.util.URIPathHelper
 import com.example.devexercise.viewmodel.LoginViewModel
 import com.google.android.material.snackbar.Snackbar
 import com.google.zxing.*
@@ -24,14 +22,11 @@ import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasAndroidInjector
 import kotlinx.android.synthetic.main.activity_login.*
-import java.io.BufferedInputStream
-import java.io.File
-import java.io.FileInputStream
-import java.io.InputStream
 import javax.inject.Inject
 
 
 const val REQUEST_CODE = 100
+const val RC_BARCODE_CAPTURE = 9001
 
 class LoginActivity : AppCompatActivity(), HasAndroidInjector {
 
@@ -77,6 +72,8 @@ class LoginActivity : AppCompatActivity(), HasAndroidInjector {
 
         binding.scanQrButton.setOnClickListener {
             openGalleryForImage()
+            //val qrScanIntent = Intent(this, QRScanActivity::class.java)
+            //startActivityForResult(qrScanIntent, RC_BARCODE_CAPTURE)
         }
     }
 
@@ -113,6 +110,9 @@ class LoginActivity : AppCompatActivity(), HasAndroidInjector {
             val decoded = scanQRFromGallery(bitmap)
             println("Secret message: $decoded")
             //Snackbar.make(this.login_layout, decoded, Snackbar.LENGTH_LONG).show()
+        }
+        if(resultCode == Activity.RESULT_OK && requestCode == RC_BARCODE_CAPTURE){
+            println("Secret message: ${data?.getStringExtra("textResult")}")
         }
     }
 

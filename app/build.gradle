@@ -116,4 +116,6 @@ dependencies {
 
     //ZXing
     implementation "com.google.zxing:core:$version_zxing"
+    implementation "me.dm7.barcodescanner:zxing:$version_barcodescanner"
+    implementation "com.karumi:dexter:$version_dexter"
 }

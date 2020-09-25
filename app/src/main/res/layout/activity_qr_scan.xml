@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <me.dm7.barcodescanner.zxing.ZXingScannerView
+            android:id="@+id/zxscanner"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" >
+        </me.dm7.barcodescanner.zxing.ZXingScannerView>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/gallery_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center"
+        android:layout_margin="16dp"
+        app:fabSize="normal"
+        app:backgroundTint="@color/colorPrimary"
+        app:elevation="6dp"
+        android:src="@drawable/ic_photo_library_black_24dp" />
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
