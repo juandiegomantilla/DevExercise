@@ -3,6 +3,7 @@ package com.example.devexercise.ui
 import android.app.Activity
 import android.content.Intent
 import android.graphics.Bitmap
+import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.text.Editable
@@ -18,6 +19,8 @@ import com.example.devexercise.viewmodel.LoginViewModel
 import com.google.android.material.snackbar.Snackbar
 import com.google.zxing.*
 import com.google.zxing.common.HybridBinarizer
+import com.theartofdev.edmodo.cropper.CropImage
+import com.theartofdev.edmodo.cropper.CropImageView
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasAndroidInjector
@@ -77,22 +80,28 @@ class LoginActivity : AppCompatActivity(), HasAndroidInjector {
         }
     }
 
-    private fun scanQRFromGallery(bMap: Bitmap): String {
+    private fun scanQRFromGallery(bMap: Bitmap, imageUri: Uri): String {
         var contents: String? = null
 
         val intArray = IntArray(bMap.width * bMap.height)
         bMap.getPixels(intArray, 0, bMap.width, 0, 0, bMap.width, bMap.height)
 
-        val source: LuminanceSource =
-            RGBLuminanceSource(bMap.width, bMap.height, intArray)
+        val source: LuminanceSource = RGBLuminanceSource(bMap.width, bMap.height, intArray)
         val bitmap = BinaryBitmap(HybridBinarizer(source))
 
         val reader: Reader = MultiFormatReader()
-        try {
+        contents = try {
             val result: Result = reader.decode(bitmap)
-            contents = result.text
+            result.text
         } catch (e: Exception) {
+            //val qrScanIntent = Intent(this, QRScanActivity::class.java)
+            //startActivityForResult(qrScanIntent, RC_BARCODE_CAPTURE)
             println("Error decoding QR code: $e")
+            CropImage.activity(imageUri)
+                .setGuidelines(CropImageView.Guidelines.ON)
+                .setAspectRatio(1,1)
+                .start(this)
+            "QR Code not found"
         }
         return contents!!
     }
@@ -106,10 +115,23 @@ class LoginActivity : AppCompatActivity(), HasAndroidInjector {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == Activity.RESULT_OK && requestCode == REQUEST_CODE){
+            val imageUri: Uri = data?.data!!
             val bitmap = MediaStore.Images.Media.getBitmap(this.contentResolver, data?.data!!)
-            val decoded = scanQRFromGallery(bitmap)
+            val decoded = scanQRFromGallery(bitmap, imageUri)
             println("Secret message: $decoded")
-            //Snackbar.make(this.login_layout, decoded, Snackbar.LENGTH_LONG).show()
+            Snackbar.make(this.login_layout, decoded, Snackbar.LENGTH_LONG).show()
+
+            //val imageUri: Uri = data?.data!!
+            //CropImage.activity(imageUri)
+            //    .setGuidelines(CropImageView.Guidelines.ON)
+            //    .setAspectRatio(1,1)
+            //    .start(this)
+        }
+        if(requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE){
+            val result: CropImage.ActivityResult = CropImage.getActivityResult(data)
+            val bitmap = MediaStore.Images.Media.getBitmap(this.contentResolver, result.uri)
+            val decoded = scanQRFromGallery(bitmap, result.uri)
+            println("Secret message: $decoded")
         }
         if(resultCode == Activity.RESULT_OK && requestCode == RC_BARCODE_CAPTURE){
             println("Secret message: ${data?.getStringExtra("textResult")}")

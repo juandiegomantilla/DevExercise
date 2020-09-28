@@ -118,4 +118,7 @@ dependencies {
     implementation "com.google.zxing:core:$version_zxing"
     implementation "me.dm7.barcodescanner:zxing:$version_barcodescanner"
     implementation "com.karumi:dexter:$version_dexter"
+
+    //Image Crop
+    implementation 'com.theartofdev.edmodo:android-image-cropper:2.8.+'
 }
