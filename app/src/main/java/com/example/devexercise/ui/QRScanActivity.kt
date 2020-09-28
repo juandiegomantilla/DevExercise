@@ -57,7 +57,11 @@ class QRScanActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
 
     override fun handleResult(rawResult: Result?) {
         val data = Intent()
-        data.putExtra("textResult", rawResult!!.text)
+        if(rawResult != null){
+            data.putExtra("textResult", rawResult.text)
+        }else{
+            data.putExtra("textResult", "QR Code not detected")
+        }
         setResult(Activity.RESULT_OK, data)
         finish()
     }
@@ -82,7 +86,6 @@ class QRScanActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
             val result: Result = reader.decode(bitmap)
             handleResult(result)
         } catch (e: Exception) {
-            println("Error decoding QR code: $e")
             CropImage.activity(imageUri)
                 .setGuidelines(CropImageView.Guidelines.ON)
                 .setAspectRatio(1,1)
@@ -97,8 +100,12 @@ class QRScanActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
             scanQRFromGallery(imageUri)
         }
         if(requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE){
-            val result: CropImage.ActivityResult = CropImage.getActivityResult(data)
-            scanQRFromGallery(result.uri)
+            val result: CropImage.ActivityResult? = CropImage.getActivityResult(data)
+            if (result != null) {
+                scanQRFromGallery(result.uri)
+            }else{
+                handleResult(null)
+            }
         }
     }
 }
