@@ -28,7 +28,6 @@ import kotlinx.android.synthetic.main.activity_login.*
 import javax.inject.Inject
 
 
-const val REQUEST_CODE = 100
 const val RC_BARCODE_CAPTURE = 9001
 
 class LoginActivity : AppCompatActivity(), HasAndroidInjector {
@@ -74,65 +73,13 @@ class LoginActivity : AppCompatActivity(), HasAndroidInjector {
         }
 
         binding.scanQrButton.setOnClickListener {
-            openGalleryForImage()
-            //val qrScanIntent = Intent(this, QRScanActivity::class.java)
-            //startActivityForResult(qrScanIntent, RC_BARCODE_CAPTURE)
+            val qrScanIntent = Intent(this, QRScanActivity::class.java)
+            startActivityForResult(qrScanIntent, RC_BARCODE_CAPTURE)
         }
-    }
-
-    private fun scanQRFromGallery(bMap: Bitmap, imageUri: Uri): String {
-        var contents: String? = null
-
-        val intArray = IntArray(bMap.width * bMap.height)
-        bMap.getPixels(intArray, 0, bMap.width, 0, 0, bMap.width, bMap.height)
-
-        val source: LuminanceSource = RGBLuminanceSource(bMap.width, bMap.height, intArray)
-        val bitmap = BinaryBitmap(HybridBinarizer(source))
-
-        val reader: Reader = MultiFormatReader()
-        contents = try {
-            val result: Result = reader.decode(bitmap)
-            result.text
-        } catch (e: Exception) {
-            //val qrScanIntent = Intent(this, QRScanActivity::class.java)
-            //startActivityForResult(qrScanIntent, RC_BARCODE_CAPTURE)
-            println("Error decoding QR code: $e")
-            CropImage.activity(imageUri)
-                .setGuidelines(CropImageView.Guidelines.ON)
-                .setAspectRatio(1,1)
-                .start(this)
-            "QR Code not found"
-        }
-        return contents!!
-    }
-
-    private fun openGalleryForImage() {
-        val intent = Intent(Intent.ACTION_PICK)
-        intent.type = "image/*"
-        startActivityForResult(intent, REQUEST_CODE)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (resultCode == Activity.RESULT_OK && requestCode == REQUEST_CODE){
-            val imageUri: Uri = data?.data!!
-            val bitmap = MediaStore.Images.Media.getBitmap(this.contentResolver, data?.data!!)
-            val decoded = scanQRFromGallery(bitmap, imageUri)
-            println("Secret message: $decoded")
-            Snackbar.make(this.login_layout, decoded, Snackbar.LENGTH_LONG).show()
-
-            //val imageUri: Uri = data?.data!!
-            //CropImage.activity(imageUri)
-            //    .setGuidelines(CropImageView.Guidelines.ON)
-            //    .setAspectRatio(1,1)
-            //    .start(this)
-        }
-        if(requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE){
-            val result: CropImage.ActivityResult = CropImage.getActivityResult(data)
-            val bitmap = MediaStore.Images.Media.getBitmap(this.contentResolver, result.uri)
-            val decoded = scanQRFromGallery(bitmap, result.uri)
-            println("Secret message: $decoded")
-        }
         if(resultCode == Activity.RESULT_OK && requestCode == RC_BARCODE_CAPTURE){
             println("Secret message: ${data?.getStringExtra("textResult")}")
         }
