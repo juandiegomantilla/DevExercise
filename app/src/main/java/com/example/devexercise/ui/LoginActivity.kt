@@ -82,6 +82,8 @@ class LoginActivity : AppCompatActivity(), HasAndroidInjector {
         super.onActivityResult(requestCode, resultCode, data)
         if(resultCode == Activity.RESULT_OK && requestCode == RC_BARCODE_CAPTURE){
             println("Secret message: ${data?.getStringExtra("textResult")}")
+        }else{
+            Snackbar.make(covid_logo, "Error reading QR Code", Snackbar.LENGTH_LONG).show()
         }
     }
 
