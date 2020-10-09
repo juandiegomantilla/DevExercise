@@ -11,7 +11,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.devexercise.R
@@ -69,15 +71,21 @@ class LoginActivity : AppCompatActivity(), HasAndroidInjector {
             }
         }
 
-        binding.unlockBiometricsButton.setOnClickListener {
-            val biometricManager = BiometricManager.from(this)
-            val canAuthenticate = biometricManager.canAuthenticate()
-            if (canAuthenticate == BiometricManager.BIOMETRIC_SUCCESS){
-                biometric().authenticate(promptInfo())
-            }else{
-                Toast.makeText(baseContext, "Could not authenticate because: $canAuthenticate",Toast.LENGTH_LONG).show()
+        if(hasBiometric()){
+            if(viewModel.storedUser()){
+                binding.unlockBiometricsButton.isEnabled = true
+                binding.unlockBiometricsButton.isVisible = true
             }
         }
+
+        binding.unlockBiometricsButton.setOnClickListener {
+            biometric().authenticate(promptInfo())
+        }
+    }
+
+    private fun hasBiometric(): Boolean {
+        val biometricManager = BiometricManager.from(this)
+        return biometricManager.canAuthenticate() == BiometricManager.BIOMETRIC_SUCCESS
     }
 
     private fun biometric(): BiometricPrompt {
@@ -85,12 +93,22 @@ class LoginActivity : AppCompatActivity(), HasAndroidInjector {
         val callback = object : BiometricPrompt.AuthenticationCallback(){
             override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
                 super.onAuthenticationError(errorCode, errString)
-                Toast.makeText(baseContext, errString,Toast.LENGTH_LONG).show()
+                if(errString != "No thanks"){
+                    Toast.makeText(baseContext, errString,Toast.LENGTH_LONG).show()
+                }
             }
 
             override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
                 super.onAuthenticationSucceeded(result)
-                Toast.makeText(baseContext, "User Authenticated!",Toast.LENGTH_LONG).show()
+                val userStored = viewModel.recoverUser()
+                if(!binding.inputUsername.text.isNullOrBlank() || !binding.inputPassword.text.isNullOrBlank()){
+                    binding.inputUsername.text.clear()
+                    binding.inputPassword.text.clear()
+                }
+                binding.inputUsername.setText(userStored[0])
+                binding.inputPassword.setText(userStored[1])
+                viewModel.login(input_username.text.toString(), input_password.text.toString(), false)
+                println("LOGIN SUCCESSFUL!")
             }
 
             override fun onAuthenticationFailed() {

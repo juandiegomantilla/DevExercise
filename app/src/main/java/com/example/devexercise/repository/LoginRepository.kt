@@ -22,6 +22,10 @@ Logout, Login, StoreUser, SetUser, UserIsRemembered {
         user = localDataSource.user
     }
 
+    fun storedUserCheck(): List<String?> {
+        return localDataSource.storedUser()
+    }
+
     override fun logout(){
         user = null
         localDataSource.logout()

@@ -20,6 +20,10 @@ class LoginLocalDataSource @Inject constructor(private val prefs: SharedPreferen
                 editor.putString(KEY_PASS, value.pass)
                 editor.putString(KEY_DISPLAY_NAME, value.displayName)
                 editor.putString(KEY_LICENSE, value.license)
+
+                editor.putString(STORED_USER, value.userId)
+                editor.putString(STORED_PASS, value.pass)
+
                 editor.apply()
             }
         }
@@ -34,11 +38,20 @@ class LoginLocalDataSource @Inject constructor(private val prefs: SharedPreferen
         editor.clear()
     }
 
+    fun storedUser(): List<String?>{
+        val user: String? = prefs.getString(STORED_USER, null)
+        val pass: String? = prefs.getString(STORED_PASS, null)
+        return listOf(user, pass)
+    }
+
     companion object {
         private const val KEY_USER_NAME = "KEY_USER_NAME"
         private const val KEY_PASS = "KEY_PASS"
         private const val KEY_LICENSE = "KEY_LICENSE"
         private const val KEY_DISPLAY_NAME = "KEY_DISPLAY_NAME"
+
+        private const val STORED_USER = "STORED_USER"
+        private const val STORED_PASS = "STORED_PASS"
 
         @Volatile
         private var INSTANCE: LoginLocalDataSource? = null

@@ -13,6 +13,15 @@ class LoginViewModel @Inject constructor(private val loginRepository: LoginRepos
         return loginRepository.login(username, password, remember)
     }
 
+    fun storedUser(): Boolean {
+        val userCred = loginRepository.storedUserCheck()
+        return (userCred[0] != null && userCred[1] != null)
+    }
+
+    fun recoverUser(): List<String?> {
+        return loginRepository.storedUserCheck()
+    }
+
     override fun getUserInfo(): LiveData<LoggedUser> = loginRepository.userInfo
 
     override fun getDataStored(): LoggedUser? = loginRepository.user

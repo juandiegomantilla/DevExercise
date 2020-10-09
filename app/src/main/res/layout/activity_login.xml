@@ -142,7 +142,8 @@
                     android:layout_height="wrap_content"
                     android:text="UNLOCK WITH BIOMETRICS"
                     android:layout_centerHorizontal="true"
-                    android:enabled="true"/>
+                    android:enabled="false"
+                    android:visibility="invisible"/>
             </RelativeLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
