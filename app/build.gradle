@@ -121,4 +121,7 @@ dependencies {
 
     //Image Crop
     implementation 'com.theartofdev.edmodo:android-image-cropper:2.8.+'
+
+    //Biometrics
+    implementation "androidx.biometric:biometric:$version_biometric"
 }
