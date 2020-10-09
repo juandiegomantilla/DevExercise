@@ -22,6 +22,12 @@ class LoginViewModel @Inject constructor(private val loginRepository: LoginRepos
         return loginRepository.storedUserCheck()
     }
 
+    fun clearCredentialIfExist(){
+        if (storedUser()){
+            loginRepository.clearStoredCredentials()
+        }
+    }
+
     override fun getUserInfo(): LiveData<LoggedUser> = loginRepository.userInfo
 
     override fun getDataStored(): LoggedUser? = loginRepository.user

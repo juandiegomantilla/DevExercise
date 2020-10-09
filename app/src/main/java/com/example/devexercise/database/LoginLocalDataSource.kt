@@ -44,6 +44,14 @@ class LoginLocalDataSource @Inject constructor(private val prefs: SharedPreferen
         return listOf(user, pass)
     }
 
+    fun clearStoredCredentials(){
+        val editor = prefs.edit()
+        editor.putString(STORED_USER, null)
+        editor.putString(STORED_PASS, null)
+        editor.apply()
+        editor.clear()
+    }
+
     companion object {
         private const val KEY_USER_NAME = "KEY_USER_NAME"
         private const val KEY_PASS = "KEY_PASS"

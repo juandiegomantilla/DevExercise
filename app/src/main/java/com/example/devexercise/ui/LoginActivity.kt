@@ -42,6 +42,9 @@ class LoginActivity : AppCompatActivity(), HasAndroidInjector {
 
     private var attempts = 0
 
+    private val newUser = "jmantilla"
+    private val newPass = "unclesam123"
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_login)
@@ -105,10 +108,20 @@ class LoginActivity : AppCompatActivity(), HasAndroidInjector {
                     binding.inputUsername.text.clear()
                     binding.inputPassword.text.clear()
                 }
-                binding.inputUsername.setText(userStored[0])
-                binding.inputPassword.setText(userStored[1])
-                viewModel.login(input_username.text.toString(), input_password.text.toString(), false)
-                println("LOGIN SUCCESSFUL!")
+
+                val currentUser = userStored[0]
+                val currentPass = userStored[1]
+
+                if((currentUser == newUser) && (currentPass == newPass)){
+                    binding.inputUsername.setText(userStored[0])
+                    binding.inputPassword.setText(userStored[1])
+                    println("CREDENTIALS NOT CHANGED")
+                }else{
+                    println("CREDENTIALS CHANGED")
+                    viewModel.clearCredentialIfExist()
+                    binding.unlockBiometricsButton.isVisible = false
+                    binding.unlockBiometricsButton.isEnabled = false
+                }
             }
 
             override fun onAuthenticationFailed() {

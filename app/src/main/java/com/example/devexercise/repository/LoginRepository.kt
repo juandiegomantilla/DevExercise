@@ -26,6 +26,10 @@ Logout, Login, StoreUser, SetUser, UserIsRemembered {
         return localDataSource.storedUser()
     }
 
+    fun clearStoredCredentials(){
+        localDataSource.clearStoredCredentials()
+    }
+
     override fun logout(){
         user = null
         localDataSource.logout()
